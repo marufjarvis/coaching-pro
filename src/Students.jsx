@@ -326,13 +326,13 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
                               </span>
                             ) : (
                               <>
-                                <span className={`status-badge ${(student.status || 'Active').toLowerCase()}`} title={student.inactiveReason || ''}>
+                                <span className={`status-badge ${(student.status || 'Active').toLowerCase()}`} title={student.attendanceSuspendedReason || student.inactiveReason || ''}>
                                   <span className="status-dot"></span>
                                   {student.status === 'Active' ? t.active : student.status === 'Inactive' ? t.inactive : student.status}
                                 </span>
-                                {student.status === 'Inactive' && student.autoInactive && (
-                                  <span style={{ display: 'block', fontSize: '0.68rem', color: '#dc2626', marginTop: '2px', fontWeight: 600 }}>
-                                    {lang === 'EN' ? 'Due > 2 days' : 'বকেয়া > ২ দিন'}
+                                {student.attendanceSuspended && (
+                                  <span style={{ display: 'block', fontSize: '0.68rem', color: '#b45309', marginTop: '2px', fontWeight: 600 }}>
+                                    {lang === 'EN' ? '⚠ Attendance Suspended (Fee Due)' : '⚠ হাজিরা সাময়িক বন্ধ (বকেয়া)'}
                                   </span>
                                 )}
                               </>

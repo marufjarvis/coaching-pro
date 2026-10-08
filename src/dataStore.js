@@ -289,28 +289,34 @@ export const dataStore = {
       note: note || `${student.feeType === 'monthly' ? 'Monthly Fee' : 'Course Fee Installment'}`
     };
 
-    // Update student paid amount in students list & automatically re-activate student!
-    let activatedStudent = null;
+    // Update student paid amount & clear attendance suspension (student remains Active throughout)
+    let updatedStudentRef = null;
     const updatedStudents = students.map(s => {
       if (s.id === studentId) {
         const newPaid = (Number(s.paidAmount) || 0) + numericAmount;
-        activatedStudent = {
+        updatedStudentRef = {
           ...s,
           paidAmount: newPaid,
-          status: 'Active',
+          status: 'Active',           // Ensure Active regardless
+          attendanceSuspended: false, // Lift attendance suspension immediately!
+          attendanceSuspendedReason: null,
           autoInactive: false,
           inactiveReason: null
         };
-        return activatedStudent;
+        return updatedStudentRef;
       }
       return s;
     });
 
     this.saveStudents(updatedStudents);
 
-    // Sync active status to Laravel API immediately
-    if (activatedStudent) {
-      api.updateStudent(studentId, { status: 'Active' }).catch(e => console.error('[API Auto-Activate Error]', e));
+    // Re-run overdue check so suspension flag is recalculated fresh after payment
+    // (async, so UI reflects immediately via notifyChange above)
+    setTimeout(() => this.checkAndUpdateOverdueStudents(), 100);
+
+    // Sync status to Laravel API
+    if (updatedStudentRef) {
+      api.updateStudent(studentId, { status: 'Active', attendanceSuspended: false }).catch(e => console.error('[API Payment Clear Error]', e));
     }
 
     const updatedPayments = [newTxn, ...payments];
@@ -826,8 +832,57 @@ export const dataStore = {
     };
   },
 
-  // Automatically inactivate students if fee is due for > 2 days without payment,
-  // and automatically re-activate when payment is cleared/received
+  // Checks and updates attendance suspension flag for overdue fee (> 2 days)
+  // Keeps student status Active so payments, collections, and notifications remain active!
+  // Only temporarily removes student from daily attendance roll-call until payment is received.
+  // All historical attendance records and reports are preserved 100%.
+  isAttendanceSuspended(student, currentDate = new Date()) {
+    if (!student) return false;
+    // If manually marked inactive by user, not in active roll-call
+    if (student.status === 'Inactive' && !student.autoInactive) return true;
+
+    // Direct flag check
+    if (student.attendanceSuspended) return true;
+
+    const totalFee = Number(student.feeAmount) || 0;
+    const paid = Number(student.paidAmount) || 0;
+    const dueAmount = Math.max(0, totalFee - paid);
+    if (dueAmount <= 0) return false;
+
+    // Check overdue (> 2 days)
+    const payments = this.getPayments();
+    if (student.feeType === 'course') {
+      const stuPayments = payments
+        .filter(p => p.studentId === student.id || p.studentName === student.name)
+        .sort((a, b) => {
+          const dA = parseDateString(a.date) || new Date(0);
+          const dB = parseDateString(b.date) || new Date(0);
+          return dB.getTime() - dA.getTime();
+        });
+
+      let refDateStr = stuPayments.length > 0 ? stuPayments[0].date : student.admissionDate;
+      const refDate = parseDateString(refDateStr);
+
+      if (refDate) {
+        let dueDate = new Date(refDate.getTime());
+        dueDate.setMonth(dueDate.getMonth() + 1);
+        if (student.nextInstallmentDate) {
+          const nDate = parseDateString(student.nextInstallmentDate);
+          if (nDate) dueDate = nDate;
+        }
+        const graceCutoff = new Date(dueDate.getTime());
+        graceCutoff.setDate(graceCutoff.getDate() + 2);
+        return currentDate > graceCutoff;
+      }
+      return true;
+    } else {
+      const currentMonthDue = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      const monthlyGraceCutoff = new Date(currentMonthDue.getTime());
+      monthlyGraceCutoff.setDate(monthlyGraceCutoff.getDate() + 2);
+      return currentDate > monthlyGraceCutoff;
+    }
+  },
+
   checkAndUpdateOverdueStudents(currentDate = new Date()) {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.STUDENTS);
@@ -845,17 +900,29 @@ export const dataStore = {
         const paid = Number(student.paidAmount) || 0;
         const dueAmount = Math.max(0, totalFee - paid);
 
-        // 1. If due is cleared (0 due), and was auto-inactive, automatically re-activate!
+        // Restore any student previously set to Inactive by autoInactive back to Active
+        let currentStatus = student.status || 'Active';
+        if (student.autoInactive && currentStatus === 'Inactive') {
+          currentStatus = 'Active';
+          hasChanged = true;
+          api.updateStudent(student.id, { status: 'Active' }).catch(() => {});
+        }
+
+        // 1. If due is cleared (0 due), lift any attendance suspension!
         if (dueAmount <= 0) {
-          if (student.status === 'Inactive' && student.autoInactive) {
+          if (student.attendanceSuspended || student.autoInactive) {
             hasChanged = true;
-            api.updateStudent(student.id, { status: 'Active' }).catch(() => {});
             return {
               ...student,
-              status: 'Active',
+              status: currentStatus,
+              attendanceSuspended: false,
+              attendanceSuspendedReason: null,
               autoInactive: false,
               inactiveReason: null
             };
+          }
+          if (student.status !== currentStatus) {
+            return { ...student, status: currentStatus };
           }
           return student;
         }
@@ -878,7 +945,6 @@ export const dataStore = {
           const refDate = parseDateString(refDateStr);
 
           if (refDate) {
-            // Due date is 1 month after refDate
             let dueDate = new Date(refDate.getTime());
             dueDate.setMonth(dueDate.getMonth() + 1);
 
@@ -894,7 +960,7 @@ export const dataStore = {
             if (currentDate > graceCutoff) {
               isOverdueByTwoDays = true;
               const daysOver = Math.floor((currentDate.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
-              overdueReason = `কোর্স ফি পরবর্তী কিস্তি বকেয়া (${daysOver} দিন অতিক্রান্ত)`;
+              overdueReason = `কোর্স ফি কিস্তি বকেয়া (${daysOver} দিন অতিক্রান্ত)`;
             }
           } else {
             isOverdueByTwoDays = true;
@@ -913,15 +979,17 @@ export const dataStore = {
           }
         }
 
-        // If overdue by > 2 days and currently Active -> Auto-inactivate!
-        if (isOverdueByTwoDays && student.status === 'Active') {
+        // Only suspend attendance, do NOT mark the student Inactive!
+        // Student remains Active for payments, collections, and notifications.
+        if (isOverdueByTwoDays !== Boolean(student.attendanceSuspended) || student.status !== currentStatus) {
           hasChanged = true;
-          api.updateStudent(student.id, { status: 'Inactive' }).catch(() => {});
           return {
             ...student,
-            status: 'Inactive',
-            autoInactive: true,
-            inactiveReason: overdueReason
+            status: currentStatus,
+            attendanceSuspended: isOverdueByTwoDays,
+            attendanceSuspendedReason: isOverdueByTwoDays ? overdueReason : null,
+            autoInactive: false,
+            inactiveReason: null
           };
         }
 

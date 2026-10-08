@@ -41,9 +41,19 @@ function Attendance({ lang: propLang }) {
     }
   }, [batches, selectedBatch]);
 
-  // Active Students in selected batch (Inactive students due to overdue fees are excluded from attendance)
-  const batchStudents = allStudents.filter(s => s.batch === selectedBatch && s.status === 'Active');
-  const inactiveBatchStudents = allStudents.filter(s => s.batch === selectedBatch && s.status === 'Inactive');
+  // Filter: show only students whose attendance is NOT suspended (overdue fee > 2 days)
+  // Students remain Active for payments, notifications, and reports — only hidden from roll-call temporarily.
+  // Historical attendance data is preserved 100% — this only affects the CURRENT roll-call.
+  const batchStudents = allStudents.filter(s =>
+    s.batch === selectedBatch &&
+    s.status !== 'Inactive' &&   // keep manually-inactivated students out
+    !s.attendanceSuspended        // keep fee-overdue students out of today's roll-call only
+  );
+  const suspendedBatchStudents = allStudents.filter(s =>
+    s.batch === selectedBatch &&
+    s.status !== 'Inactive' &&
+    s.attendanceSuspended === true
+  );
 
   // Load existing attendance for date + batch
   useEffect(() => {
@@ -178,8 +188,8 @@ function Attendance({ lang: propLang }) {
         </div>
       </div>
 
-      {/* Auto-inactivated Students Notice (Overdue > 2 days) */}
-      {inactiveBatchStudents.length > 0 && (
+      {/* Fee-Suspended Students Notice (temporarily off roll-call, still Active) */}
+      {suspendedBatchStudents.length > 0 && (
         <div className="att-inactive-banner">
           <div className="att-inactive-icon">
             <UserMinus size={18} />
@@ -187,11 +197,11 @@ function Attendance({ lang: propLang }) {
           <div className="att-inactive-text">
             <strong>
               {lang === 'EN' 
-                ? `${inactiveBatchStudents.length} student(s) auto-inactivated due to overdue fees (> 2 days) and excluded from attendance:`
-                : `বকেয়া ফি ২ দিনের বেশি অপরিশোধিত থাকায় এই ব্যাচে ${inactiveBatchStudents.length} জন শিক্ষার্থী অটো-নিষ্ক্রিয় (হাজিরা তালিকা থেকে বাদ):`}
+                ? `${suspendedBatchStudents.length} student(s) temporarily hidden from today's roll-call (fee overdue > 2 days). Still Active — payments & all reports unaffected:`
+                : `বকেয়া ফি ২ দিনের বেশি অপরিশোধিত থাকায় এই ব্যাচে ${suspendedBatchStudents.length} জন শিক্ষার্থী অটো-নিষ্ক্রিয় (হাজিরা তালিকা থেকে বাদ):`}
             </strong>
             <div className="inactive-names-list">
-              {inactiveBatchStudents.map(s => (
+              {suspendedBatchStudents.map(s => (
                 <span key={s.id} className="inactive-student-tag">
                   {s.name} ({s.feeType === 'course' ? (lang === 'EN' ? 'Course Due' : 'কোর্স বকেয়া') : (lang === 'EN' ? 'Monthly Due' : 'মাসিক বকেয়া')})
                 </span>
@@ -199,7 +209,7 @@ function Attendance({ lang: propLang }) {
             </div>
             <span className="inactive-note">
               {lang === 'EN' 
-                ? 'Payment clearance will automatically re-activate them.' 
+                ? 'Once fee is paid, they will automatically reappear in attendance. All previous attendance history is fully preserved.' 
                 : 'বকেয়া পেমেন্ট ক্লিয়ার করলেই সঙ্গে সঙ্গে অটোমেটিক একটিভ হয়ে যাবে।'}
             </span>
           </div>

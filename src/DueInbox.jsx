@@ -33,9 +33,10 @@ function DueInbox({ lang: propLang }) {
     };
   }, []);
 
-  // Compute dues dynamically for all students with dues (including auto-inactive students)
+  // Compute dues dynamically for ALL students (status Active or Inactive) with dues
+  // attendanceSuspended students are Active but temporarily off roll-call; they must show here!
   const dueStudents = students
-    .filter(s => s.status === 'Active' || s.autoInactive || s.status === 'Inactive')
+    .filter(s => s.status === 'Active' || s.status === 'Inactive')
     .map(student => {
       const { dueAmount, isDue } = dataStore.calculateDue(student);
       const dueDateStr = student.feeType === 'course' 
@@ -175,9 +176,14 @@ function DueInbox({ lang: propLang }) {
                   <div>
                     <div className="student-name" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                       {student.name}
+                      {student.attendanceSuspended && (
+                        <span style={{ background: '#fef3c7', color: '#b45309', fontSize: '0.68rem', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                          {lang === 'EN' ? 'Attendance Suspended (Fee Due)' : 'হাজিরা সাময়িক বন্ধ (বকেয়া ফি)'}
+                        </span>
+                      )}
                       {student.status === 'Inactive' && (
                         <span style={{ background: '#fee2e2', color: '#b91c1c', fontSize: '0.68rem', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
-                          {lang === 'EN' ? 'Inactive (Attendance Suspended)' : 'অটো-নিষ্ক্রিয় (হাজিরা বন্ধ)'}
+                          {lang === 'EN' ? 'Inactive' : 'নিষ্ক্রিয়'}
                         </span>
                       )}
                     </div>
