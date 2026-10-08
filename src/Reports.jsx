@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart2, Receipt, Ban, Wallet, ClipboardCheck, Users, FileQuestion, ChevronRight, X, Printer } from 'lucide-react';
+import { BarChart2, Receipt, Ban, Wallet, ClipboardCheck, Users, FileQuestion, ChevronRight, X, Printer, Calendar, CalendarDays, Check, Copy } from 'lucide-react';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './reports.css';
@@ -12,9 +12,37 @@ function Reports({ lang: propLang }) {
   const [expenses, setExpenses] = useState(() => dataStore.getExpenses());
   const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [exams, setExams] = useState(() => dataStore.getExams());
+  const [attendance, setAttendance] = useState(() => dataStore.getAttendance());
 
   const [selectedBatch, setSelectedBatch] = useState(batches.length > 0 ? batches[0].name : '');
   const [selectedExamId, setSelectedExamId] = useState(exams.length > 0 ? exams[0].id : '');
+
+  // Attendance Dual Mode (Date-wise & Monthly) States
+  const [attendanceMode, setAttendanceMode] = useState('dateWise'); // 'dateWise' | 'monthly'
+  const [attendanceDate, setAttendanceDate] = useState(() => {
+    // Look for latest recorded attendance date or default to today
+    const allAtt = dataStore.getAttendance();
+    const keys = Object.keys(allAtt);
+    if (keys.length > 0) {
+      const dates = keys.map(k => k.split('_')[0]).sort().reverse();
+      if (dates[0]) return dates[0];
+    }
+    return new Date().toISOString().substring(0, 10);
+  });
+  const [attendanceMonth, setAttendanceMonth] = useState(() => new Date().toISOString().substring(0, 7));
+  const [copiedPhoneKey, setCopiedPhoneKey] = useState(null);
+  const [attendanceCopyToast, setAttendanceCopyToast] = useState(null);
+
+  const handleCopyPhone = (number, key, label) => {
+    if (!number) return;
+    navigator.clipboard.writeText(number);
+    setCopiedPhoneKey(key);
+    setAttendanceCopyToast(`${label} ${propLang === 'EN' ? 'phone copied!' : 'মোবাইল নম্বর কপি হয়েছে!'}`);
+    setTimeout(() => {
+      setCopiedPhoneKey(null);
+      setAttendanceCopyToast(null);
+    }, 2000);
+  };
 
   useEffect(() => {
     const handleSync = () => {
@@ -23,6 +51,7 @@ function Reports({ lang: propLang }) {
       setExpenses(dataStore.getExpenses());
       setBatches(dataStore.getBatches());
       setExams(dataStore.getExams());
+      setAttendance(dataStore.getAttendance());
     };
     window.addEventListener('coaching-data-change', handleSync);
     window.addEventListener('storage', handleSync);
@@ -174,51 +203,337 @@ function Reports({ lang: propLang }) {
           </div>
         );
 
-      case 'Attendance':
+      case 'Attendance': {
         const currentBatchStudents = students.filter(s => s.batch === selectedBatch);
+        const dateKey = `${attendanceDate}_${selectedBatch}`;
+        const dateRecords = attendance[dateKey] || {};
+
+        // Date-wise counts
+        let datePresent = 0, dateAbsent = 0, dateLate = 0, dateLeave = 0;
+        currentBatchStudents.forEach(s => {
+          const st = dateRecords[s.id];
+          if (st === 'Present') datePresent++;
+          else if (st === 'Absent') dateAbsent++;
+          else if (st === 'Late') dateLate++;
+          else if (st === 'Leave') dateLeave++;
+        });
+
+        // Monthly calculations
+        const monthPrefix = `${attendanceMonth}-`;
+        const monthRecordedDates = Array.from(new Set(
+          Object.keys(attendance)
+            .filter(k => k.startsWith(monthPrefix) && k.endsWith(`_${selectedBatch}`))
+            .map(k => k.split('_')[0])
+        )).sort();
+
+        const totalMonthClasses = monthRecordedDates.length;
+
+        const monthlyStats = currentBatchStudents.map(student => {
+          let present = 0, absent = 0, late = 0, leave = 0;
+          monthRecordedDates.forEach(d => {
+            const rec = attendance[`${d}_${selectedBatch}`] || {};
+            const st = rec[student.id];
+            if (st === 'Present') present++;
+            else if (st === 'Absent') absent++;
+            else if (st === 'Late') late++;
+            else if (st === 'Leave') leave++;
+          });
+          const attended = present + late;
+          const percentage = totalMonthClasses > 0 ? Math.round((attended / totalMonthClasses) * 100) : 0;
+          return { student, present, absent, late, leave, percentage, totalClasses: totalMonthClasses };
+        });
+
+        const totalPresentAll = monthlyStats.reduce((sum, s) => sum + s.present, 0);
+        const totalPossibleClasses = currentBatchStudents.length * totalMonthClasses;
+        const monthAvgPercentage = totalPossibleClasses > 0 ? Math.round((totalPresentAll / totalPossibleClasses) * 100) + '%' : '—';
+
         return (
-          <div>
-            <div className="form-group" style={{ maxWidth: '250px', marginBottom: '1rem' }}>
-              <label>{t.batchSelectLabel}</label>
-              <select className="form-control" value={selectedBatch} onChange={(e) => setSelectedBatch(e.target.value)}>
-                {batches.map(b => <option key={b.id || b.name} value={b.name}>{b.name}</option>)}
-              </select>
-            </div>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>{t.thId}</th>
-                  <th>{t.thStudentName}</th>
-                  <th>{t.present}</th>
-                  <th>{t.absent}</th>
-                  <th>{t.attendance} %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentBatchStudents.length > 0 ? (
-                  currentBatchStudents.map(student => {
-                    const stats = dataStore.getStudentAttendanceStats(student.id);
-                    return (
-                      <tr key={student.id}>
-                        <td>{student.id}</td>
-                        <td><strong>{student.name}</strong></td>
-                        <td style={{ color: '#16a34a', fontWeight: 600 }}>{stats.present}</td>
-                        <td style={{ color: '#dc2626', fontWeight: 600 }}>{stats.absent}</td>
-                        <td>
-                          <span className="badge-gray" style={{ fontWeight: 700 }}>
-                            {stats.percentage}%
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })
+          <div className="attendance-report-view">
+            {attendanceCopyToast && (
+              <div className="copy-toast-badge" style={{ marginBottom: '0.5rem' }}>
+                <Check size={14} />
+                <span>{attendanceCopyToast}</span>
+              </div>
+            )}
+
+            {/* Mode Selector & Filters Header */}
+            <div className="att-report-mode-bar">
+              <div className="attendance-view-toggle">
+                <button
+                  type="button"
+                  className={`toggle-tab-btn ${attendanceMode === 'dateWise' ? 'active' : ''}`}
+                  onClick={() => setAttendanceMode('dateWise')}
+                >
+                  <Calendar size={15} />
+                  <span>{t.dateWiseAttendance || 'Date-wise'}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`toggle-tab-btn ${attendanceMode === 'monthly' ? 'active' : ''}`}
+                  onClick={() => setAttendanceMode('monthly')}
+                >
+                  <CalendarDays size={15} />
+                  <span>{t.monthlyAttendance || 'Monthly'}</span>
+                </button>
+              </div>
+
+              {/* Filters */}
+              <div className="att-filter-row">
+                <div className="form-group" style={{ margin: 0, minWidth: '180px' }}>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
+                    {t.batchSelectLabel}
+                  </label>
+                  <select
+                    className="form-control"
+                    value={selectedBatch}
+                    onChange={(e) => setSelectedBatch(e.target.value)}
+                  >
+                    {batches.map(b => (
+                      <option key={b.id || b.name} value={b.name}>{b.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {attendanceMode === 'dateWise' ? (
+                  <div className="form-group" style={{ margin: 0, minWidth: '160px' }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
+                      {t.selectDateLabel || 'Select Date'}
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={attendanceDate}
+                      onChange={(e) => setAttendanceDate(e.target.value)}
+                    />
+                  </div>
                 ) : (
-                  <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>{t.noStudentsInBatchMsg}</td></tr>
+                  <div className="form-group" style={{ margin: 0, minWidth: '160px' }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
+                      {t.selectMonthLabel || 'Select Month'}
+                    </label>
+                    <input
+                      type="month"
+                      className="form-control"
+                      value={attendanceMonth}
+                      onChange={(e) => setAttendanceMonth(e.target.value)}
+                    />
+                  </div>
                 )}
-              </tbody>
-            </table>
+              </div>
+            </div>
+
+            {/* DATE-WISE ATTENDANCE VIEW */}
+            {attendanceMode === 'dateWise' && (
+              <div>
+                <div className="att-kpis-mini-grid" style={{ marginBottom: '1rem' }}>
+                  <div className="att-kpi-pill kpi-total">
+                    <span className="kpi-label">{t.enrolledStudents || 'Total'}</span>
+                    <span className="kpi-num">{currentBatchStudents.length}</span>
+                  </div>
+                  <div className="att-kpi-pill kpi-present">
+                    <span className="kpi-label">{t.present}</span>
+                    <span className="kpi-num">{datePresent}</span>
+                  </div>
+                  <div className="att-kpi-pill kpi-absent">
+                    <span className="kpi-label">{t.absent}</span>
+                    <span className="kpi-num">{dateAbsent}</span>
+                  </div>
+                  <div className="att-kpi-pill kpi-late">
+                    <span className="kpi-label">{t.late} / {t.leave}</span>
+                    <span className="kpi-num">{dateLate + dateLeave}</span>
+                  </div>
+                </div>
+
+                <div className="table-responsive">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: '40px' }}>{t.thSerial}</th>
+                        <th>{t.thStudentName}</th>
+                        <th>{t.thStudentId}</th>
+                        <th>{t.thStudentPhone}</th>
+                        <th>{t.thGuardianPhone}</th>
+                        <th>{t.thStatus}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {currentBatchStudents.length > 0 ? (
+                        currentBatchStudents.map((student, index) => {
+                          const status = dateRecords[student.id];
+                          const studentPhoneKey = `rep-dw-${student.id}-stu`;
+                          const guardianPhoneKey = `rep-dw-${student.id}-guard`;
+                          return (
+                            <tr key={student.id}>
+                              <td>{index + 1}</td>
+                              <td><strong>{student.name}</strong></td>
+                              <td><span className="text-muted" style={{ fontWeight: 600 }}>{student.id}</span></td>
+                              <td>
+                                {student.phone ? (
+                                  <div className="copy-phone-cell">
+                                    <span className="phone-number-text">{student.phone}</span>
+                                    <button
+                                      type="button"
+                                      className={`btn-copy-phone ${copiedPhoneKey === studentPhoneKey ? 'copied' : ''}`}
+                                      onClick={() => handleCopyPhone(student.phone, studentPhoneKey, propLang === 'EN' ? 'Student' : 'শিক্ষার্থী')}
+                                      title={copiedPhoneKey === studentPhoneKey ? (propLang === 'EN' ? 'Copied!' : 'কপি হয়েছে!') : (propLang === 'EN' ? 'Click to copy student phone' : 'শিক্ষার্থীর মোবাইল নম্বর কপি করুন')}
+                                    >
+                                      {copiedPhoneKey === studentPhoneKey ? <Check size={14} color="#16a34a" /> : <Copy size={14} />}
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span className="text-muted">—</span>
+                                )}
+                              </td>
+                              <td>
+                                {student.guardianPhone ? (
+                                  <div className="copy-phone-cell">
+                                    <span className="phone-number-text">{student.guardianPhone}</span>
+                                    <button
+                                      type="button"
+                                      className={`btn-copy-phone ${copiedPhoneKey === guardianPhoneKey ? 'copied' : ''}`}
+                                      onClick={() => handleCopyPhone(student.guardianPhone, guardianPhoneKey, propLang === 'EN' ? 'Guardian' : 'অভিভাবক')}
+                                      title={copiedPhoneKey === guardianPhoneKey ? (propLang === 'EN' ? 'Copied!' : 'কপি হয়েছে!') : (propLang === 'EN' ? 'Click to copy guardian phone' : 'অভিভাবকের মোবাইল নম্বর কপি করুন')}
+                                    >
+                                      {copiedPhoneKey === guardianPhoneKey ? <Check size={14} color="#16a34a" /> : <Copy size={14} />}
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span className="text-muted">—</span>
+                                )}
+                              </td>
+                              <td>
+                                {status ? (
+                                  <span className={`status-badge ${status === 'Present' ? 'badge-present' : status === 'Absent' ? 'badge-absent' : status === 'Late' ? 'badge-late' : 'badge-leave'}`}>
+                                    {status === 'Present' ? t.present : status === 'Absent' ? t.absent : status === 'Late' ? t.late : t.leave}
+                                  </span>
+                                ) : (
+                                  <span className="badge-gray" style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                                    {propLang === 'EN' ? 'Not recorded' : 'হাজিরা নেওয়া হয়নি'}
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>{t.noStudentsInBatchMsg}</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* MONTHLY ATTENDANCE VIEW */}
+            {attendanceMode === 'monthly' && (
+              <div>
+                <div className="att-kpis-mini-grid" style={{ marginBottom: '1rem' }}>
+                  <div className="att-kpi-pill kpi-total">
+                    <span className="kpi-label">{t.enrolledStudents || 'Total Students'}</span>
+                    <span className="kpi-num">{currentBatchStudents.length}</span>
+                  </div>
+                  <div className="att-kpi-pill kpi-classes">
+                    <span className="kpi-label">{t.classDaysHeld || 'Classes Held'}</span>
+                    <span className="kpi-num">{totalMonthClasses}</span>
+                  </div>
+                  <div className="att-kpi-pill kpi-rate">
+                    <span className="kpi-label">{t.attendanceRateLabel || 'Batch Avg Rate'}</span>
+                    <span className="kpi-num">{monthAvgPercentage}</span>
+                  </div>
+                </div>
+
+                <div className="table-responsive">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: '40px' }}>{t.thSerial}</th>
+                        <th>{t.thStudentName}</th>
+                        <th>{t.thStudentId}</th>
+                        <th>{t.thStudentPhone}</th>
+                        <th>{t.thGuardianPhone}</th>
+                        <th style={{ textAlign: 'center' }}>{t.presentDaysLabel || 'Present'}</th>
+                        <th style={{ textAlign: 'center' }}>{t.absentDaysLabel || 'Absent'}</th>
+                        <th style={{ textAlign: 'center' }}>{t.lateDaysLabel || 'Late'}/{t.leaveDaysLabel || 'Leave'}</th>
+                        <th style={{ textAlign: 'center' }}>{t.classDaysHeld || 'Classes'}</th>
+                        <th style={{ textAlign: 'right' }}>{t.attendanceRateLabel || 'Rate %'}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {monthlyStats.length > 0 ? (
+                        monthlyStats.map((item, index) => {
+                          const student = item.student;
+                          const studentPhoneKey = `rep-m-${student.id}-stu`;
+                          const guardianPhoneKey = `rep-m-${student.id}-guard`;
+                          return (
+                            <tr key={student.id}>
+                              <td>{index + 1}</td>
+                              <td><strong>{student.name}</strong></td>
+                              <td><span className="text-muted" style={{ fontWeight: 600 }}>{student.id}</span></td>
+                              <td>
+                                {student.phone ? (
+                                  <div className="copy-phone-cell">
+                                    <span className="phone-number-text">{student.phone}</span>
+                                    <button
+                                      type="button"
+                                      className={`btn-copy-phone ${copiedPhoneKey === studentPhoneKey ? 'copied' : ''}`}
+                                      onClick={() => handleCopyPhone(student.phone, studentPhoneKey, propLang === 'EN' ? 'Student' : 'শিক্ষার্থী')}
+                                      title={copiedPhoneKey === studentPhoneKey ? (propLang === 'EN' ? 'Copied!' : 'কপি হয়েছে!') : (propLang === 'EN' ? 'Click to copy student phone' : 'শিক্ষার্থীর মোবাইল নম্বর কপি করুন')}
+                                    >
+                                      {copiedPhoneKey === studentPhoneKey ? <Check size={14} color="#16a34a" /> : <Copy size={14} />}
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span className="text-muted">—</span>
+                                )}
+                              </td>
+                              <td>
+                                {student.guardianPhone ? (
+                                  <div className="copy-phone-cell">
+                                    <span className="phone-number-text">{student.guardianPhone}</span>
+                                    <button
+                                      type="button"
+                                      className={`btn-copy-phone ${copiedPhoneKey === guardianPhoneKey ? 'copied' : ''}`}
+                                      onClick={() => handleCopyPhone(student.guardianPhone, guardianPhoneKey, propLang === 'EN' ? 'Guardian' : 'অভিভাবক')}
+                                      title={copiedPhoneKey === guardianPhoneKey ? (propLang === 'EN' ? 'Copied!' : 'কপি হয়েছে!') : (propLang === 'EN' ? 'Click to copy guardian phone' : 'অভিভাবকের মোবাইল নম্বর কপি করুন')}
+                                    >
+                                      {copiedPhoneKey === guardianPhoneKey ? <Check size={14} color="#16a34a" /> : <Copy size={14} />}
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <span className="text-muted">—</span>
+                                )}
+                              </td>
+                              <td style={{ textAlign: 'center', color: '#16a34a', fontWeight: 700 }}>
+                                {item.present}
+                              </td>
+                              <td style={{ textAlign: 'center', color: '#dc2626', fontWeight: 700 }}>
+                                {item.absent}
+                              </td>
+                              <td style={{ textAlign: 'center', color: '#d97706', fontWeight: 600 }}>
+                                {item.late + item.leave}
+                              </td>
+                              <td style={{ textAlign: 'center', fontWeight: 600 }}>
+                                {item.totalClasses}
+                              </td>
+                              <td style={{ textAlign: 'right' }}>
+                                <span className={`status-badge ${item.percentage >= 80 ? 'badge-present' : item.percentage >= 60 ? 'badge-late' : 'badge-absent'}`} style={{ fontWeight: 700 }}>
+                                  {item.percentage}%
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr><td colSpan="10" style={{ textAlign: 'center', padding: '2rem' }}>{t.noStudentsInBatchMsg}</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         );
+      }
 
       case 'StudentList':
         return (
