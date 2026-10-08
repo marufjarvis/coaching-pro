@@ -15,7 +15,6 @@ function Reports({ lang: propLang }) {
   const [attendance, setAttendance] = useState(() => dataStore.getAttendance());
 
   const [selectedBatch, setSelectedBatch] = useState(batches.length > 0 ? batches[0].name : '');
-  const [selectedClass, setSelectedClass] = useState('HSC');
   const [selectedExamId, setSelectedExamId] = useState(exams.length > 0 ? exams[0].id : '');
 
   // Attendance Dual Mode (Date-wise & Monthly) States
@@ -133,7 +132,7 @@ function Reports({ lang: propLang }) {
               <span>{t.insightsAndReports || 'INSIGHTS & REPORTS'}</span>
             </div>
             <h1>{t.attendanceReportCardTitle || 'Attendance Report'}</h1>
-            <p>{t.attendanceReportSubtitle || 'Daily roll-call or monthly day grid with class filters'}</p>
+            <p>{t.attendanceReportSubtitle || 'Daily roll-call or monthly day grid by batch'}</p>
           </div>
           <button 
             type="button" 
@@ -190,22 +189,6 @@ function Reports({ lang: propLang }) {
             </div>
           )}
 
-          {/* Class Select */}
-          <div className="att-filter-item">
-            <label>{t.classLabel || 'Class'}</label>
-            <select
-              className="form-control"
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-            >
-              <option value="HSC">HSC</option>
-              <option value="SSC">SSC</option>
-              <option value="Class 10">Class 10</option>
-              <option value="Class 9">Class 9</option>
-              <option value="All">All Classes</option>
-            </select>
-          </div>
-
           {/* Batch Select */}
           <div className="att-filter-item">
             <label>{t.batchSelectLabel || 'Batch'}</label>
@@ -238,7 +221,7 @@ function Reports({ lang: propLang }) {
           <div className="monthly-report-card">
             <div className="monthly-report-card-header">
               <h3>{t.attendanceReportCardTitle || 'Attendance Report'} — {monthDisplayName}</h3>
-              <p>{filteredStudents.length} student(s) · {selectedClass} · {selectedBatch}</p>
+              <p>{filteredStudents.length} {propLang === 'BN' ? 'জন শিক্ষার্থী' : 'student(s)'} · {selectedBatch}</p>
             </div>
 
             <div className="table-responsive">
@@ -330,11 +313,10 @@ function Reports({ lang: propLang }) {
               <table className="daily-records-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '120px' }}>ID</th>
-                    <th>NAME</th>
-                    <th>CLASS</th>
-                    <th>BATCH</th>
-                    <th>STATUS</th>
+                    <th style={{ width: '120px' }}>{propLang === 'BN' ? 'আইডি' : 'ID'}</th>
+                    <th>{propLang === 'BN' ? 'শিক্ষার্থীর নাম' : 'NAME'}</th>
+                    <th>{propLang === 'BN' ? 'ব্যাচ' : 'BATCH'}</th>
+                    <th>{propLang === 'BN' ? 'স্ট্যাটাস' : 'STATUS'}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -348,17 +330,16 @@ function Reports({ lang: propLang }) {
                             <strong>{student.name}</strong>
                             {student.phone && <div className="sub-phone">{student.phone}</div>}
                           </td>
-                          <td>{selectedClass}</td>
                           <td>{student.batch}</td>
                           <td>
                             {status === 'Present' ? (
-                              <span className="status-badge badge-present">Present</span>
+                              <span className="status-badge badge-present">{propLang === 'BN' ? 'উপস্থিত' : 'Present'}</span>
                             ) : status === 'Absent' ? (
-                              <span className="status-badge badge-absent">Absent</span>
+                              <span className="status-badge badge-absent">{propLang === 'BN' ? 'অনুপস্থিত' : 'Absent'}</span>
                             ) : status === 'Late' ? (
-                              <span className="status-badge badge-late">Late</span>
+                              <span className="status-badge badge-late">{propLang === 'BN' ? 'দেরি' : 'Late'}</span>
                             ) : status === 'Leave' ? (
-                              <span className="status-badge badge-leave">Leave</span>
+                              <span className="status-badge badge-leave">{propLang === 'BN' ? 'ছুটি' : 'Leave'}</span>
                             ) : (
                               <span className="text-muted">—</span>
                             )}
@@ -368,8 +349,8 @@ function Reports({ lang: propLang }) {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="5" style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
-                        {t.noStudentsInBatchMsg || 'No students found in this batch'}
+                      <td colSpan="4" style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
+                        {t.noStudentsInBatchMsg || (propLang === 'BN' ? 'এই ব্যাচে কোনো শিক্ষার্থী পাওয়া যায়নি' : 'No students found in this batch')}
                       </td>
                     </tr>
                   )}

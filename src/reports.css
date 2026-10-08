@@ -5,7 +5,7 @@
 }
 
 .reports-container .fee-followup-tag {
-  color: #6366f1;
+  color: var(--accent, #00a1ff);
 }
 
 .reports-section-title {
@@ -79,7 +79,7 @@
   background: none;
   border: none;
   padding: 0;
-  color: #6366f1;
+  color: var(--accent, #00a1ff);
   font-size: 0.875rem;
   font-weight: 600;
   display: flex;
@@ -92,7 +92,7 @@
 }
 
 .btn-open-report:hover {
-  color: #4f46e5;
+  color: var(--accent-hover, #0089d6);
 }
 
 .report-watermark {
@@ -159,7 +159,7 @@
 
 .toggle-tab-btn.active {
   background: white;
-  color: #4f46e5;
+  color: var(--accent, #00a1ff);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -223,9 +223,9 @@
 }
 
 .att-kpi-pill.kpi-classes {
-  background: #eef2ff;
-  border-color: #c7d2fe;
-  color: #3730a3;
+  background: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0284c7;
 }
 
 .att-kpi-pill.kpi-rate {
@@ -389,7 +389,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #4338ca;
+  color: #0284c7;
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.5px;
@@ -445,11 +445,11 @@
   margin: 1rem 0 1.5rem 0;
 }
 
-/* Filter Card - with left purple accent (Screenshot 1 & 2) */
+/* Filter Card - with left accent (Screenshot 1 & 2) */
 .att-filter-card {
   background: white;
   border: 1px solid #cbd5e1;
-  border-left: 4px solid #4338ca;
+  border-left: 4px solid var(--accent, #00a1ff);
   border-radius: 12px;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -483,7 +483,7 @@
 }
 
 .att-toggle-group .toggle-btn.active {
-  background: #4338ca;
+  background: var(--accent, #00a1ff);
   color: white;
 }
 
@@ -515,7 +515,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: #4338ca;
+  background: var(--accent, #00a1ff);
   color: white;
   border: none;
   border-radius: 8px;
@@ -524,11 +524,18 @@
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s ease;
+  box-shadow: 0 2px 5px rgba(0, 161, 255, 0.25);
+  transition: all 0.15s ease;
 }
 
 .btn-generate-submit:hover {
-  background: #3730a3;
+  background: var(--accent-hover, #0089d6);
+  box-shadow: 0 4px 10px rgba(0, 161, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-generate-submit:active {
+  transform: translateY(0);
 }
 
 /* Daily View KPI Banner (Screenshot 2) */
