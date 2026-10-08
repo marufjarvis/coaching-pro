@@ -923,6 +923,11 @@
 }
 
 @media (max-width: 1024px) {
+  .header-search {
+    margin: 0 0.75rem;
+    max-width: 240px;
+  }
+
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1012,5 +1017,17 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .header-actions button {
+    flex: 1;
+    min-width: 120px;
   }
 }

@@ -105,3 +105,27 @@
   opacity: 0.8;
   pointer-events: none;
 }
+
+.reports-container .data-table {
+  min-width: 650px;
+}
+
+/* Responsive Breakpoints for Reports */
+@media (max-width: 1024px) {
+  .reports-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .reports-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reports-container .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+

@@ -52,3 +52,39 @@
   font-weight: 600;
   color: #0f172a;
 }
+
+.expenses-container .data-table {
+  min-width: 650px;
+}
+
+/* Responsive Breakpoints for Expenses */
+@media (max-width: 1024px) {
+  .expenses-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .expenses-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .expenses-container .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .expenses-container .header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .expenses-container .header-actions button {
+    flex: 1;
+    min-width: 130px;
+  }
+}
+

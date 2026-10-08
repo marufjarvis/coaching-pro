@@ -66,3 +66,39 @@
   color: #dc2626;
   background: #fef2f2;
 }
+
+.exams-container .data-table {
+  min-width: 650px;
+}
+
+/* Responsive Breakpoints for Exams */
+@media (max-width: 1024px) {
+  .exams-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .exams-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .exams-container .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .exams-container .header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .exams-container .header-actions button {
+    flex: 1;
+    min-width: 130px;
+  }
+}
+

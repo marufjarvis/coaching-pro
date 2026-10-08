@@ -28,7 +28,7 @@
 
 .setup-filters {
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
@@ -260,4 +260,54 @@
 
 .large-modal {
   max-width: 800px;
+  width: 95%;
 }
+
+.attendance-table {
+  min-width: 650px;
+}
+
+/* Responsive Breakpoints for Attendance */
+@media (max-width: 1024px) {
+  .attendance-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .setup-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-container .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .attendance-container .header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .attendance-container .header-actions button {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .phone-legend {
+    flex-wrap: wrap;
+  }
+
+  .large-modal {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+

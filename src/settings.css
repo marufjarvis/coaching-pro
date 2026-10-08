@@ -13,7 +13,7 @@
 
 .settings-col {
   flex: 1;
-  min-width: 400px;
+  min-width: 280px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -179,3 +179,23 @@
   background-color: #f8fafc;
   box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
 }
+
+/* Responsive Breakpoints for Settings */
+@media (max-width: 768px) {
+  .settings-col {
+    min-width: 100%;
+  }
+
+  .settings-container .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .language-selection {
+    flex-direction: column;
+  }
+}
+

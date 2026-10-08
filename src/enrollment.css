@@ -111,12 +111,14 @@
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .links-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px;
 }
 
 .links-table th {
