@@ -1,101 +1,114 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, Calendar, Filter, Plus, FileText, Search, ChevronLeft, ChevronRight, Inbox, Wallet, X } from 'lucide-react';
+import { CreditCard, Calendar, Filter, Plus, FileText, Search, ChevronLeft, ChevronRight, Inbox, Wallet, X, Printer, CheckCircle2 } from 'lucide-react';
+import { dataStore } from './dataStore';
 import './payments.css';
 
 function Payments({ setActiveTab }) {
-  const [payments, setPayments] = useState([
-    {
-      id: 'TXN-001',
-      studentName: 'Maruf Hossain',
-      studentId: 'STU-66115',
-      amount: 500,
-      feeType: 'Monthly',
-      method: 'bKash',
-      collectedBy: 'Manager',
-      date: new Date().toLocaleDateString('en-GB'),
-      time: '10:30 AM'
-    },
-    {
-      id: 'TXN-002',
-      studentName: 'Rakib Hasan',
-      studentId: 'STU-45213',
-      amount: 2000,
-      feeType: 'Course',
-      method: 'Cash',
-      collectedBy: 'Admin',
-      date: new Date().toLocaleDateString('en-GB'),
-      time: '11:45 AM'
-    }
-  ]);
+  const [payments, setPayments] = useState(() => dataStore.getPayments());
+  const [students, setStudents] = useState(() => dataStore.getStudents());
+  const [batches, setBatches] = useState(() => dataStore.getBatches());
+  const [settings, setSettings] = useState(() => dataStore.getSettings());
 
   const [isCollectModalOpen, setIsCollectModalOpen] = useState(false);
-  const [selectedBatch, setSelectedBatch] = useState('Sat-6:45am');
+  const [viewingReceipt, setViewingReceipt] = useState(null);
+
+  const [selectedBatch, setSelectedBatch] = useState(batches.length > 0 ? batches[0].name : '');
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [paymentAmount, setPaymentAmount] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('Cash');
+  const [paymentMethod, setPaymentMethod] = useState('bKash');
   const [collectedBy, setCollectedBy] = useState('Admin');
-  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().substring(0, 10)); // For Monthly fee month/date selection
-  
-  const studentsList = [
-    { id: 'STU-66115', name: 'Maruf Hossain', batch: 'Sat-6:45am', feeType: 'Monthly', feeAmount: 500, paidAmount: 0 },
-    { id: 'STU-45213', name: 'Rakib Hasan', batch: 'Sat-6:45am', feeType: 'Course', feeAmount: 2000, totalCourseFee: 4000, paidAmount: 0 },
-    { id: 'STU-10293', name: 'Ayesha Siddiqua', batch: 'Sun-8am', feeType: 'Monthly', feeAmount: 500, paidAmount: 0 }
-  ].map(student => {
-    const totalPaid = payments
-      .filter(p => p.studentId === student.id)
-      .reduce((sum, p) => sum + p.amount, 0);
-    return { ...student, paidAmount: totalPaid };
-  });
+  const [paymentNote, setPaymentNote] = useState('');
 
-  const filteredStudents = studentsList.filter(s => s.batch === selectedBatch);
-  const selectedStudent = studentsList.find(s => s.id === selectedStudentId);
+  const [selectedMonth, setSelectedMonth] = useState('October 2026');
+  const [selectedFeeType, setSelectedFeeType] = useState('All types');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setPayments(dataStore.getPayments());
+      setStudents(dataStore.getStudents());
+      setBatches(dataStore.getBatches());
+      setSettings(dataStore.getSettings());
+    };
+    window.addEventListener('coaching-data-change', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('coaching-data-change', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
+
+  // Update selected batch if empty
+  useEffect(() => {
+    if (!selectedBatch && batches.length > 0) {
+      setSelectedBatch(batches[0].name);
+    }
+  }, [batches, selectedBatch]);
+
+  // Students belonging to selected batch
+  const filteredBatchStudents = students.filter(s => s.batch === selectedBatch);
+  const selectedStudent = students.find(s => s.id === selectedStudentId);
 
   useEffect(() => {
     // Reset student when batch changes
     setSelectedStudentId('');
+    setPaymentAmount('');
   }, [selectedBatch]);
 
   useEffect(() => {
-    // Reset amount when student selected
-    setPaymentAmount('');
+    // Auto-fill suggested amount when student is selected
+    if (selectedStudent) {
+      const due = Math.max(0, (Number(selectedStudent.feeAmount) || 0) - (Number(selectedStudent.paidAmount) || 0));
+      setPaymentAmount(due > 0 ? due.toString() : (selectedStudent.feeAmount || '500'));
+      setPaymentNote(selectedStudent.feeType === 'monthly' ? 'Monthly Tuition Fee' : 'Course Fee Installment');
+    } else {
+      setPaymentAmount('');
+    }
   }, [selectedStudentId]);
 
   const handleRecordPayment = () => {
     if (!selectedStudent || !paymentAmount) return;
 
-    const newPayment = {
-      id: `TXN-00${payments.length + 1}`,
-      studentName: selectedStudent.name,
+    const newTxn = dataStore.recordPayment({
       studentId: selectedStudent.id,
-      amount: parseInt(paymentAmount),
-      feeType: selectedStudent.feeType,
+      amount: paymentAmount,
       method: paymentMethod,
       collectedBy: collectedBy,
-      date: new Date().toLocaleDateString('en-GB'),
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-    };
+      note: paymentNote
+    });
 
-    setPayments([...payments, newPayment]);
-    setIsCollectModalOpen(false);
-    setSelectedStudentId('');
-    setPaymentAmount('');
-    setPaymentMethod('Cash');
-    setCollectedBy('Admin');
+    if (newTxn) {
+      setIsCollectModalOpen(false);
+      setSelectedStudentId('');
+      setPaymentAmount('');
+      setViewingReceipt(newTxn);
+    }
   };
 
-  const [selectedMonth, setSelectedMonth] = useState('October 2026');
-  const [selectedFeeType, setSelectedFeeType] = useState('All types');
+  const handlePrintReceipt = () => {
+    window.print();
+  };
 
-  // Calculations for KPIs
+  // Filter payments
+  const filteredPayments = payments.filter(p => {
+    const matchesFee = selectedFeeType === 'All types' || 
+      (p.feeType && p.feeType.toLowerCase() === selectedFeeType.toLowerCase());
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch = !q || 
+      p.studentName.toLowerCase().includes(q) || 
+      p.id.toLowerCase().includes(q) || 
+      p.studentId.toLowerCase().includes(q);
+    return matchesFee && matchesSearch;
+  });
+
+  // KPI Calculations
   const today = new Date().toLocaleDateString('en-GB');
-  
   const todaysCollection = payments
     .filter(p => p.date === today)
-    .reduce((sum, p) => sum + p.amount, 0);
+    .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
-  const thisMonthsCollection = payments.reduce((sum, p) => sum + p.amount, 0); // Simplified for demo
-
-  const lastPayment = payments.length > 0 ? payments[payments.length - 1] : null;
+  const thisMonthsCollection = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+  const lastPayment = payments.length > 0 ? payments[0] : null;
 
   return (
     <div className="payments-page">
@@ -106,21 +119,32 @@ function Payments({ setActiveTab }) {
           <p className="page-desc">Collect student fees, review transactions, and issue receipts.</p>
         </div>
         <div className="header-actions">
-          {setActiveTab && <button className="btn-secondary" onClick={() => setActiveTab('due-inbox')}><Inbox size={18} /> Due inbox</button>}
-          {!setActiveTab && <button className="btn-secondary"><Inbox size={18} /> Due inbox</button>}
-          <button className="btn-primary" onClick={() => setIsCollectModalOpen(true)}><Wallet size={18} /> Collect fee</button>
+          {setActiveTab && (
+            <button className="btn-secondary" onClick={() => setActiveTab('due-inbox')}>
+              <Inbox size={18} /> Due inbox
+            </button>
+          )}
+          <button className="btn-primary" onClick={() => setIsCollectModalOpen(true)}>
+            <Wallet size={18} /> Collect fee
+          </button>
         </div>
       </div>
 
-      <div className="filter-card">
-        <div className="form-group">
-          <label>Collection month</label>
+      <div className="filter-card" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div className="form-group" style={{ flex: 1, minWidth: '200px' }}>
+          <label>Search payment</label>
           <div className="input-with-icon">
-            <input type="text" value={selectedMonth} readOnly className="filter-input" />
-            <Calendar size={16} className="input-icon" />
+            <input 
+              type="text" 
+              placeholder="Search by student name, ID or receipt #..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="filter-input" 
+            />
+            <Search size={16} className="input-icon" />
           </div>
         </div>
-        <div className="form-group">
+        <div className="form-group" style={{ width: '180px' }}>
           <label>Fee type</label>
           <select 
             className="filter-select"
@@ -128,8 +152,8 @@ function Payments({ setActiveTab }) {
             onChange={(e) => setSelectedFeeType(e.target.value)}
           >
             <option value="All types">All types</option>
-            <option value="Monthly">Monthly fee</option>
-            <option value="Course">Course fee</option>
+            <option value="monthly">Monthly fee</option>
+            <option value="course">Course fee</option>
           </select>
         </div>
       </div>
@@ -138,7 +162,7 @@ function Payments({ setActiveTab }) {
         <div className="kpi-card highlight">
           <div className="kpi-label">আজকের কালেকশন</div>
           <div className="kpi-value">৳ {todaysCollection.toLocaleString()}</div>
-          <div className="kpi-desc">Today's collection</div>
+          <div className="kpi-desc">Today's collection ({today})</div>
         </div>
         
         <div className="kpi-card">
@@ -148,18 +172,18 @@ function Payments({ setActiveTab }) {
         </div>
 
         <div className="kpi-card">
-          <div className="kpi-label">শেষ পেমেন্ট টাইপ</div>
-          <div className="kpi-value">{lastPayment ? (lastPayment.feeType === 'Monthly' ? 'বেতন সিস্টেম' : 'কোর্স সিস্টেম') : '—'}</div>
-          <div className="kpi-desc">Last collected fee type</div>
+          <div className="kpi-label">সর্বমোট ট্রানজেকশন</div>
+          <div className="kpi-value">{payments.length}</div>
+          <div className="kpi-desc">Recorded payments</div>
         </div>
       </div>
 
       <div className="ledger-section">
         <div className="ledger-header">
           <h2 className="section-title">
-            Transaction ledger <span className="count-badge">{payments.length}</span>
+            Transaction ledger <span className="count-badge">{filteredPayments.length}</span>
           </h2>
-          <p className="section-desc">Review a payment or open its receipt.</p>
+          <p className="section-desc">Review payments or click to view and print official receipt.</p>
         </div>
 
         <div className="table-container">
@@ -168,6 +192,7 @@ function Payments({ setActiveTab }) {
               <tr>
                 <th>TRANSACTION ID</th>
                 <th>STUDENT</th>
+                <th>BATCH</th>
                 <th>FEE TYPE</th>
                 <th>METHOD</th>
                 <th>COLLECTED BY</th>
@@ -177,28 +202,27 @@ function Payments({ setActiveTab }) {
               </tr>
             </thead>
             <tbody>
-              {payments.length > 0 ? (
-                [...payments].reverse().map(payment => (
+              {filteredPayments.length > 0 ? (
+                filteredPayments.map(payment => (
                   <tr key={payment.id}>
-                    <td className="tx-id">{payment.id}</td>
+                    <td className="tx-id"><strong>{payment.id}</strong></td>
                     <td>
                       <div className="student-info-cell">
                         <span className="student-name">{payment.studentName}</span>
                         <span className="student-id">{payment.studentId}</span>
                       </div>
                     </td>
+                    <td>{payment.batch || '—'}</td>
                     <td>
-                      <span className={`fee-type-badge ${payment.feeType.toLowerCase()}`}>
-                        {payment.feeType === 'Monthly' ? 'বেতন' : 'কোর্স'}
+                      <span className={`fee-type-badge ${(payment.feeType || 'monthly').toLowerCase()}`}>
+                        {payment.feeType === 'monthly' ? 'বেতন' : 'কোর্স'}
                       </span>
                     </td>
-                    <td>{payment.method}</td>
+                    <td><span className="status-badge active">{payment.method}</span></td>
                     <td>
-                      {payment.collectedBy === 'Admin' ? (
-                        <span className="role-badge admin" style={{fontSize: '0.65rem'}}>Admin</span>
-                      ) : (
-                        <span className="role-badge manager" style={{fontSize: '0.65rem'}}>Manager</span>
-                      )}
+                      <span className="role-badge admin" style={{fontSize: '0.7rem'}}>
+                        {payment.collectedBy || 'Admin'}
+                      </span>
                     </td>
                     <td>
                       <div className="date-time-cell">
@@ -206,21 +230,25 @@ function Payments({ setActiveTab }) {
                         <span className="time">{payment.time}</span>
                       </div>
                     </td>
-                    <td style={{ textAlign: 'right', fontWeight: '700', color: '#111827' }}>
-                      ৳ {payment.amount.toLocaleString()}
+                    <td style={{ textAlign: 'right', fontWeight: '700', color: '#16a34a' }}>
+                      ৳ {Number(payment.amount).toLocaleString()}
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <button className="btn-icon" title="View Receipt">
-                        <FileText size={16} />
+                      <button 
+                        className="btn-icon" 
+                        title="View Money Receipt"
+                        onClick={() => setViewingReceipt(payment)}
+                      >
+                        <FileText size={18} color="#0284c7" />
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="empty-state">
+                  <td colSpan="9" className="empty-state">
                     <div className="empty-icon"><CreditCard size={24} /></div>
-                    <p>No payments for this month</p>
+                    <p>No payments recorded yet</p>
                   </td>
                 </tr>
               )}
@@ -229,13 +257,14 @@ function Payments({ setActiveTab }) {
         </div>
       </div>
 
+      {/* Collect Fee Modal */}
       {isCollectModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
               <div>
-                <h2>Collect fee</h2>
-                <p>Record tuition for months or course installments.</p>
+                <h2>Collect Fee (ফি আদায়)</h2>
+                <p>Select student, specify amount and payment method.</p>
               </div>
               <button className="btn-close-modal" onClick={() => setIsCollectModalOpen(false)}>
                 <X size={20} />
@@ -243,90 +272,85 @@ function Payments({ setActiveTab }) {
             </div>
             
             <div className="modal-body">
-              <div className="form-row">
-                <div className="form-group">
-                  <label>BATCH</label>
-                  <select 
-                    className="form-control"
-                    value={selectedBatch}
-                    onChange={(e) => setSelectedBatch(e.target.value)}
-                  >
-                    <option value="Sat-6:45am">Sat-6:45am</option>
-                    <option value="Sun-8am">Sun-8am</option>
-                  </select>
-                </div>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label>BATCH</label>
+                <select 
+                  className="form-control"
+                  value={selectedBatch}
+                  onChange={(e) => setSelectedBatch(e.target.value)}
+                >
+                  {batches.map(b => (
+                    <option key={b.id || b.name} value={b.name}>{b.name}</option>
+                  ))}
+                </select>
               </div>
 
-              <div className="form-group">
-                <label>STUDENT</label>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label>STUDENT <span className="text-danger">*</span></label>
                 <select 
                   className="form-control"
                   value={selectedStudentId}
                   onChange={(e) => setSelectedStudentId(e.target.value)}
                 >
-                  <option value="">Select a student...</option>
-                  {filteredStudents.map(s => (
-                    <option key={s.id} value={s.id}>{s.name} ({s.id})</option>
-                  ))}
+                  <option value="">Select a student in this batch...</option>
+                  {filteredBatchStudents.map(s => {
+                    const due = Math.max(0, (Number(s.feeAmount) || 0) - (Number(s.paidAmount) || 0));
+                    return (
+                      <option key={s.id} value={s.id}>
+                        {s.name} ({s.id}) — Due: ৳ {due}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
               {selectedStudent && (
                 <>
-                  {selectedStudent.feeType === 'Monthly' ? (
-                    <div className="form-group">
-                      <label>MONTH / DATE (For Monthly Fee)</label>
-                      <input 
-                        type="date" 
-                        className="form-control" 
-                        value={paymentDate}
-                        onChange={(e) => setPaymentDate(e.target.value)}
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="course-fee-summary" style={{ backgroundColor: '#f0fdf4', padding: '12px', borderRadius: '8px', marginBottom: '8px', fontSize: '0.85rem', color: '#166534', border: '1px solid #bbf7d0', display: 'flex', justifyContent: 'space-between' }}>
-                        <span><strong>Total Course Fee:</strong> ৳ {selectedStudent.totalCourseFee}</span>
-                        <span><strong>Paid:</strong> ৳ {selectedStudent.paidAmount}</span>
-                        <span><strong>Due:</strong> ৳ {selectedStudent.totalCourseFee - selectedStudent.paidAmount}</span>
-                      </div>
-                      <div className="form-group">
-                        <label>PAYMENT TYPE (Course Fee)</label>
-                        <select className="form-control">
-                          <option>Installment Payment</option>
-                          <option>Full Payment</option>
-                        </select>
-                      </div>
-                    </>
-                  )}
-                  
+                  <div style={{ backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0', padding: '10px 14px', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.85rem', color: '#166534' }}>
+                    <strong>Fee Model:</strong> {selectedStudent.feeType === 'monthly' ? 'Monthly' : 'Course'} | <strong>Total Fee:</strong> ৳ {selectedStudent.feeAmount} | <strong>Paid:</strong> ৳ {selectedStudent.paidAmount} | <strong>Due:</strong> ৳ {Math.max(0, (Number(selectedStudent.feeAmount) || 0) - (Number(selectedStudent.paidAmount) || 0))}
+                  </div>
+
                   <div className="form-row">
-                    <div className="form-group">
-                      <label>AMOUNT</label>
+                    <div className="form-group half">
+                      <label>AMOUNT (৳) <span className="text-danger">*</span></label>
                       <input 
                         type="number" 
                         className="form-control"
-                        placeholder="0"
+                        placeholder="e.g. 500"
                         value={paymentAmount}
                         onChange={(e) => setPaymentAmount(e.target.value)}
+                        autoFocus
                       />
                     </div>
-                    <div className="form-group">
+                    <div className="form-group half">
                       <label>PAYMENT METHOD</label>
                       <select 
                         className="form-control"
                         value={paymentMethod}
                         onChange={(e) => setPaymentMethod(e.target.value)}
                       >
-                        <option value="Cash">Cash</option>
+                        <option value="Cash">Cash (নগদ)</option>
                         <option value="bKash">bKash</option>
-                        <option value="Bank">Bank</option>
+                        <option value="Nagad">Nagad</option>
+                        <option value="Rocket">Rocket</option>
+                        <option value="Bank">Bank Transfer</option>
                       </select>
                     </div>
                   </div>
 
                   <div className="form-group" style={{ marginTop: '1rem' }}>
-                    <label>COLLECTED BY (SIMULATION)</label>
+                    <label>NOTE / DESCRIPTION</label>
+                    <input 
+                      type="text" 
+                      className="form-control"
+                      placeholder="e.g. October 2026 tuition fee"
+                      value={paymentNote}
+                      onChange={(e) => setPaymentNote(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ marginTop: '1rem' }}>
+                    <label>COLLECTED BY</label>
                     <select 
                       className="form-control"
                       value={collectedBy}
@@ -335,9 +359,6 @@ function Payments({ setActiveTab }) {
                       <option value="Admin">Admin</option>
                       <option value="Manager">Manager</option>
                     </select>
-                    <small className="text-muted" style={{display: 'block', marginTop: '4px'}}>
-                      In final app, this is auto-set by logged-in user.
-                    </small>
                   </div>
                 </>
               )}
@@ -345,7 +366,64 @@ function Payments({ setActiveTab }) {
             
             <div className="modal-footer">
               <button className="btn-secondary" onClick={() => setIsCollectModalOpen(false)}>Cancel</button>
-              <button className="btn-primary" onClick={handleRecordPayment} disabled={!selectedStudent || !paymentAmount}>Record payment</button>
+              <button className="btn-primary" onClick={handleRecordPayment} disabled={!selectedStudent || !paymentAmount}>
+                Confirm & Issue Receipt
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Official Money Receipt Modal */}
+      {viewingReceipt && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '520px', padding: '24px' }}>
+            <div className="receipt-print-area" style={{ border: '2px dashed #cbd5e1', padding: '20px', borderRadius: '12px', background: '#fafafa' }}>
+              <div style={{ textAlign: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px', marginBottom: '16px' }}>
+                <h2 style={{ fontSize: '1.25rem', margin: '0 0 4px 0', color: '#0f172a' }}>{settings.coachingName}</h2>
+                <p style={{ margin: '0', fontSize: '0.8rem', color: '#64748b' }}>{settings.address}</p>
+                <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>Phone: {settings.phone}</p>
+                <div style={{ display: 'inline-block', background: '#e0f2fe', color: '#0369a1', padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, marginTop: '8px' }}>
+                  MONEY RECEIPT (ফি পরিশোধের রসিদ)
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.85rem', marginBottom: '16px' }}>
+                <div><strong>Receipt No:</strong> {viewingReceipt.id}</div>
+                <div style={{ textAlign: 'right' }}><strong>Date:</strong> {viewingReceipt.date}</div>
+                <div><strong>Student Name:</strong> {viewingReceipt.studentName}</div>
+                <div style={{ textAlign: 'right' }}><strong>Student ID:</strong> {viewingReceipt.studentId}</div>
+                <div><strong>Batch:</strong> {viewingReceipt.batch || '—'}</div>
+                <div style={{ textAlign: 'right' }}><strong>Fee Type:</strong> {viewingReceipt.feeType === 'monthly' ? 'Monthly' : 'Course'}</div>
+                <div><strong>Payment Method:</strong> {viewingReceipt.method}</div>
+                <div style={{ textAlign: 'right' }}><strong>Collected By:</strong> {viewingReceipt.collectedBy}</div>
+              </div>
+
+              <div style={{ background: '#f1f5f9', padding: '12px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div>
+                  <span style={{ fontSize: '0.85rem', color: '#475569' }}>Paid Description:</span>
+                  <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{viewingReceipt.note || 'Coaching tuition fee'}</div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>PAID AMOUNT</span>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#16a34a' }}>৳ {Number(viewingReceipt.amount).toLocaleString()}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '24px', borderTop: '1px solid #e2e8f0', fontSize: '0.75rem', color: '#64748b' }}>
+                <div>Thank you for learning with us!</div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ width: '100px', borderBottom: '1px solid #94a3b8', marginBottom: '4px' }}></div>
+                  Authorized Signature
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
+              <button className="btn-secondary" onClick={() => setViewingReceipt(null)}>Close</button>
+              <button className="btn-primary" onClick={handlePrintReceipt}>
+                <Printer size={16} /> Print Receipt
+              </button>
             </div>
           </div>
         </div>

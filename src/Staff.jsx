@@ -1,32 +1,38 @@
-import React, { useState } from 'react';
-import { UserPlus, Shield, X, Edit3, Trash2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { UserPlus, Shield, X, Trash2 } from 'lucide-react';
+import { dataStore } from './dataStore';
 import './staff.css';
 
 function Staff() {
-  const [staffList, setStaffList] = useState([
-    { id: 1, name: 'Maruf Hossain', phone: '01700000001', role: 'Admin', status: 'Active' },
-    { id: 2, name: 'Sakib Ahmed', phone: '01800000002', role: 'Manager', status: 'Active' }
-  ]);
+  const [staffList, setStaffList] = useState(() => dataStore.getStaff());
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newStaff, setNewStaff] = useState({ name: '', phone: '', role: 'Manager' });
 
-  const handleAddStaff = () => {
-    if (!newStaff.name || !newStaff.phone) return;
-    const newEntry = {
-      id: Date.now(),
-      name: newStaff.name,
-      phone: newStaff.phone,
-      role: newStaff.role,
-      status: 'Active'
+  useEffect(() => {
+    const handleSync = () => {
+      setStaffList(dataStore.getStaff());
     };
-    setStaffList([newEntry, ...staffList]);
+    window.addEventListener('coaching-data-change', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('coaching-data-change', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
+
+  const handleAddStaff = () => {
+    if (!newStaff.name.trim() || !newStaff.phone.trim()) {
+      alert("Please enter Name and Mobile number.");
+      return;
+    }
+    dataStore.addStaff(newStaff);
     setIsAddModalOpen(false);
     setNewStaff({ name: '', phone: '', role: 'Manager' });
   };
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to remove this staff member?')) {
-      setStaffList(staffList.filter(s => s.id !== id));
+      dataStore.deleteStaff(id);
     }
   };
 
@@ -62,7 +68,7 @@ function Staff() {
               <th>MOBILE NUMBER</th>
               <th>ROLE</th>
               <th>STATUS</th>
-              <th>ACTIONS</th>
+              <th style={{ textAlign: 'right' }}>ACTIONS</th>
             </tr>
           </thead>
           <tbody>
@@ -78,9 +84,10 @@ function Staff() {
                 <td>
                   <span className="status-badge active"><span className="status-dot"></span>{staff.status}</span>
                 </td>
-                <td>
-                  <button className="btn-icon"><Edit3 size={16} /></button>
-                  <button className="btn-icon text-danger" onClick={() => handleDelete(staff.id)}><Trash2 size={16} /></button>
+                <td style={{ textAlign: 'right' }}>
+                  <button className="btn-icon text-danger" onClick={() => handleDelete(staff.id)} title="Remove Staff">
+                    <Trash2 size={16} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -101,28 +108,29 @@ function Staff() {
               </button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label>Name</label>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label>Name <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
                   className="form-control" 
-                  placeholder="e.g. John Doe"
+                  placeholder="e.g. Shakil Ahmed"
                   value={newStaff.name}
                   onChange={(e) => setNewStaff({...newStaff, name: e.target.value})}
+                  autoFocus
                 />
               </div>
               <div className="form-row">
-                <div className="form-group">
-                  <label>Mobile Number</label>
+                <div className="form-group half">
+                  <label>Mobile Number <span className="text-danger">*</span></label>
                   <input 
                     type="text" 
                     className="form-control" 
-                    placeholder="e.g. 017..."
+                    placeholder="01XXXXXXXXX"
                     value={newStaff.phone}
                     onChange={(e) => setNewStaff({...newStaff, phone: e.target.value})}
                   />
                 </div>
-                <div className="form-group">
+                <div className="form-group half">
                   <label>Role</label>
                   <select 
                     className="form-control"
@@ -134,7 +142,7 @@ function Staff() {
                   </select>
                 </div>
               </div>
-              <div className="role-description">
+              <div className="role-description" style={{ marginTop: '1rem' }}>
                 {newStaff.role === 'Admin' ? (
                   <p className="text-muted"><Shield size={14} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }}/> <strong>Admin:</strong> Has full access to delete data, view reports, and manage all settings.</p>
                 ) : (

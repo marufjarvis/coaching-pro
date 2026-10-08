@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
-import { Link as LinkIcon, Copy, ExternalLink, Trash2, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link as LinkIcon, Copy, ExternalLink, Trash2, Plus, Check } from 'lucide-react';
+import { dataStore } from './dataStore';
 import './enrollment.css';
 
 function EnrollmentLinks() {
-  const [links, setLinks] = useState([
-    { id: 1, batch: 'Sat-6:45am', url: `${window.location.origin}/#/enroll/Sat-6:45am` },
-    { id: 2, batch: 'Sun-5pm', url: `${window.location.origin}/#/enroll/Sun-5pm` },
-    { id: 3, batch: 'Sun-4pm', url: `${window.location.origin}/#/enroll/Sun-4pm` },
-    { id: 4, batch: 'Sun-3pm', url: `${window.location.origin}/#/enroll/Sun-3pm` },
-    { id: 5, batch: 'Sun-2pm', url: `${window.location.origin}/#/enroll/Sun-2pm` }
-  ]);
+  const [batches, setBatches] = useState(() => dataStore.getBatches());
+  const [links, setLinks] = useState(() => {
+    try {
+      const saved = localStorage.getItem('coachingEnrollmentLinks');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return [
+      { id: 1, batch: 'Sat-6:45am', url: `${window.location.origin}/#/enroll/Sat-6:45am` },
+      { id: 2, batch: 'Sun-8am', url: `${window.location.origin}/#/enroll/Sun-8am` }
+    ];
+  });
 
   const [selectedBatch, setSelectedBatch] = useState('');
+  const [copiedId, setCopiedId] = useState(null);
+
+  useEffect(() => {
+    const handleSync = () => setBatches(dataStore.getBatches());
+    window.addEventListener('coaching-data-change', handleSync);
+    return () => window.removeEventListener('coaching-data-change', handleSync);
+  }, []);
 
   const handleCreateLink = () => {
     if (!selectedBatch) return;
@@ -22,16 +34,22 @@ function EnrollmentLinks() {
       url: `${window.location.origin}/#/enroll/${encodeURIComponent(selectedBatch)}`
     };
     
-    setLinks([newLink, ...links]);
+    const updated = [newLink, ...links];
+    setLinks(updated);
+    localStorage.setItem('coachingEnrollmentLinks', JSON.stringify(updated));
     setSelectedBatch('');
   };
 
-  const handleCopy = (url) => {
+  const handleCopy = (id, url) => {
     navigator.clipboard.writeText(url);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   const handleDelete = (id) => {
-    setLinks(links.filter(link => link.id !== id));
+    const updated = links.filter(link => link.id !== id);
+    setLinks(updated);
+    localStorage.setItem('coachingEnrollmentLinks', JSON.stringify(updated));
   };
 
   return (
@@ -53,19 +71,9 @@ function EnrollmentLinks() {
             onChange={(e) => setSelectedBatch(e.target.value)}
           >
             <option value="">Select a batch</option>
-            <option value="Sat-6:45am">Sat-6:45am</option>
-            <option value="Sat-7:45am">Sat-7:45am</option>
-            <option value="Sat-9am">Sat-9am</option>
-            <option value="Sat-10am">Sat-10am</option>
-            <option value="Sat-2pm">Sat-2pm</option>
-            <option value="Sat-3pm">Sat-3pm</option>
-            <option value="Sat-4pm">Sat-4pm</option>
-            <option value="Sat-5pm">Sat-5pm</option>
-            <option value="Sun-6:45am">Sun-6:45am</option>
-            <option value="Sun-8am">Sun-8am</option>
-            <option value="Sun-9am">Sun-9am</option>
-            <option value="Sun-10am">Sun-10am</option>
-            <option value="Mon-4:00pm">Mon-4:00pm</option>
+            {batches.map(b => (
+              <option key={b.id || b.name} value={b.name}>{b.name}</option>
+            ))}
           </select>
 
           <button 
@@ -84,13 +92,13 @@ function EnrollmentLinks() {
             <tr>
               <th style={{ width: '25%' }}>BATCH</th>
               <th style={{ width: '55%' }}>LINK</th>
-              <th style={{ width: '20%', textAlign: 'right' }}></th>
+              <th style={{ width: '20%', textAlign: 'right' }}>ACTIONS</th>
             </tr>
           </thead>
           <tbody>
             {links.map((link) => (
               <tr key={link.id}>
-                <td style={{ fontWeight: '500' }}>{link.batch}</td>
+                <td style={{ fontWeight: '600' }}>{link.batch}</td>
                 <td>
                   <a href={link.url} target="_blank" rel="noreferrer" className="link-url">
                     {link.url}
@@ -98,26 +106,34 @@ function EnrollmentLinks() {
                 </td>
                 <td style={{ textAlign: 'right' }}>
                   <div className="link-actions">
-                    <button className="btn-icon" onClick={() => handleCopy(link.url)} title="Copy link">
-                      <Copy size={16} />
+                    <button 
+                      className="link-action-btn copy-btn" 
+                      onClick={() => handleCopy(link.id, link.url)}
+                      title="Copy Link"
+                    >
+                      {copiedId === link.id ? <Check size={14} color="#16a34a" /> : <Copy size={14} />}
+                      {copiedId === link.id ? 'Copied' : 'Copy'}
                     </button>
-                    <a href={link.url} target="_blank" rel="noreferrer" className="btn-icon" title="Open link">
-                      <ExternalLink size={16} />
+                    <a 
+                      href={link.url} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="link-action-btn view-btn"
+                      title="Open Link"
+                    >
+                      <ExternalLink size={14} /> View
                     </a>
-                    <button className="btn-icon btn-danger-icon" onClick={() => handleDelete(link.id)} title="Delete link">
-                      <Trash2 size={16} />
+                    <button 
+                      className="link-action-btn delete-btn" 
+                      onClick={() => handleDelete(link.id)}
+                      title="Delete Link"
+                    >
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </td>
               </tr>
             ))}
-            {links.length === 0 && (
-              <tr>
-                <td colSpan="3" style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                  No enrollment links created yet.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>

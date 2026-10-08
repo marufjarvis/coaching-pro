@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserCheck, CheckCircle2, XCircle, Search, X } from 'lucide-react';
+import { dataStore } from './dataStore';
 import './online-admission.css';
 
 function OnlineAdmission() {
+  const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [pendingAdmissions, setPendingAdmissions] = useState(() => {
     const saved = localStorage.getItem('pendingAdmissions');
     if (saved) {
@@ -105,56 +107,26 @@ function OnlineAdmission() {
       return;
     }
     
-    // Save student to coachingStudents in localStorage
-    let currentStudents = [];
-    const saved = localStorage.getItem('coachingStudents');
-    if (saved) {
-      try { currentStudents = JSON.parse(saved); } catch (e) {}
-    } else {
-      currentStudents = [
-        { 
-          id: 'STU-66115', name: 'Maruf Hossain', initials: 'MA', batch: 'Sat-6:45am', status: 'Active', 
-          phone: '01723619524', guardianPhone: '01586232012', feeType: 'monthly', feeAmount: '500', paidAmount: '0',
-          billingDate: '1st of every month', admissionDate: '01/10/2026'
-        },
-        { 
-          id: 'STU-45213', name: 'Rakib Hasan', initials: 'RA', batch: 'Sat-6:45am', status: 'Active', 
-          phone: '01534343434', guardianPhone: '01711122233', feeType: 'course', feeAmount: '4000', installments: '2', paidAmount: '0',
-          nextInstallmentDate: '01/11/2026', admissionDate: '05/10/2026'
-        }
-      ];
-    }
-
-    const initials = editForm.name.trim().substring(0, 2).toUpperCase() || 'ST';
-    const newStudentObj = {
+    // Add student to dataStore
+    dataStore.addStudent({
       id: editForm.idNumber.trim(),
       name: editForm.name.trim(),
-      initials: initials,
-      batch: editForm.batch || 'Unassigned',
+      batch: editForm.batch || (batches.length > 0 ? batches[0].name : 'Unassigned'),
       status: 'Active',
       phone: editForm.phone.trim(),
       guardianPhone: editForm.guardianPhone.trim(),
       feeType: editForm.feeType,
-      feeAmount: editForm.feeAmount,
-      admissionFee: editForm.feeType === 'monthly' ? editForm.admissionFee : null,
-      discount: editForm.discount,
-      installments: editForm.feeType === 'course' ? editForm.installments : null,
-      paidAmount: 0,
-      billingDate: editForm.feeType === 'monthly' ? '1st of every month' : null,
-      nextInstallmentDate: editForm.feeType === 'course' ? '01/11/2026' : null,
-      admissionDate: new Date().toLocaleDateString('en-GB')
-    };
-
-    const updatedStudents = [...currentStudents, newStudentObj];
-    localStorage.setItem('coachingStudents', JSON.stringify(updatedStudents));
+      feeAmount: Number(editForm.feeAmount) || 0,
+      admissionFee: editForm.feeType === 'monthly' ? (Number(editForm.admissionFee) || 0) : null,
+      discount: Number(editForm.discount) || 0,
+      installments: editForm.feeType === 'course' ? (Number(editForm.installments) || 1) : null,
+      paidAmount: 0
+    });
 
     // Remove from pending admissions list
     const updatedPending = pendingAdmissions.filter(app => app.id !== selectedApp.id);
     setPendingAdmissions(updatedPending);
     localStorage.setItem('pendingAdmissions', JSON.stringify(updatedPending));
-
-    // Dispatch event to sync other components
-    window.dispatchEvent(new Event('storage'));
 
     setSelectedApp(null);
   };
@@ -194,9 +166,9 @@ function OnlineAdmission() {
                 onChange={(e) => setSelectedBatchFilter(e.target.value)}
               >
                 <option value="All">All Batches</option>
-                <option value="Sat-6:45am">Sat-6:45am</option>
-                <option value="Sun-8am">Sun-8am</option>
-                <option value="Mon-4:00pm">Mon-4:00pm</option>
+                {batches.map(b => (
+                  <option key={b.id || b.name} value={b.name}>{b.name}</option>
+                ))}
               </select>
             </div>
 
@@ -345,20 +317,10 @@ function OnlineAdmission() {
                     value={editForm.batch} 
                     onChange={(e) => setEditForm({...editForm, batch: e.target.value})}
                   >
-                    <option value="">Optional</option>
-                    <option value="Sat-6:45am">Sat-6:45am</option>
-                    <option value="Sat-7:45am">Sat-7:45am</option>
-                    <option value="Sat-9am">Sat-9am</option>
-                    <option value="Sat-10am">Sat-10am</option>
-                    <option value="Sat-2pm">Sat-2pm</option>
-                    <option value="Sat-3pm">Sat-3pm</option>
-                    <option value="Sat-4pm">Sat-4pm</option>
-                    <option value="Sat-5pm">Sat-5pm</option>
-                    <option value="Sun-6:45am">Sun-6:45am</option>
-                    <option value="Sun-8am">Sun-8am</option>
-                    <option value="Sun-9am">Sun-9am</option>
-                    <option value="Sun-10am">Sun-10am</option>
-                    <option value="Mon-4:00pm">Mon-4:00pm</option>
+                    <option value="">Select Batch</option>
+                    {batches.map(b => (
+                      <option key={b.id || b.name} value={b.name}>{b.name}</option>
+                    ))}
                   </select>
                 </div>
               </div>

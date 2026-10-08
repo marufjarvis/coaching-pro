@@ -1,55 +1,84 @@
-import React, { useState } from 'react';
-import { FileText, Plus, X, Edit3, Trash2, ListChecks } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { FileText, Plus, X, Trash2, ListChecks, Printer, CheckCircle2 } from 'lucide-react';
+import { dataStore } from './dataStore';
 import './exams.css';
 
-const MOCK_STUDENTS = [
-  { id: 'STU-66115', name: 'Maruf', batch: 'Sat-6:45am' },
-  { id: 'STU-66116', name: 'Rahim', batch: 'Sat-6:45am' },
-  { id: 'STU-66117', name: 'Karim', batch: 'Sat-6:45am' },
-  { id: 'STU-66118', name: 'Jamal', batch: 'Sun-8:00am' },
-  { id: 'STU-66119', name: 'Kamal', batch: 'Sun-8:00am' },
-];
-
 function Exams() {
-  const [exams, setExams] = useState([]);
+  const [exams, setExams] = useState(() => dataStore.getExams());
+  const [batches, setBatches] = useState(() => dataStore.getBatches());
+  const [allStudents, setAllStudents] = useState(() => dataStore.getStudents());
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newExam, setNewExam] = useState({
     name: '',
     batch: 'All Batches',
-    subject: '',
+    subject: 'ICT',
     date: new Date().toISOString().substring(0, 10),
     totalMarks: '50',
     passMarks: '40'
   });
   
   const [selectedExamForMarks, setSelectedExamForMarks] = useState(null);
-  const [examMarks, setExamMarks] = useState({});
+  const [marksState, setMarksState] = useState({});
+  const [successToast, setSuccessToast] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setExams(dataStore.getExams());
+      setBatches(dataStore.getBatches());
+      setAllStudents(dataStore.getStudents());
+    };
+    window.addEventListener('coaching-data-change', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('coaching-data-change', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
 
   const handleAddExam = () => {
-    if (!newExam.name || !newExam.subject) return;
+    if (!newExam.name.trim() || !newExam.subject.trim()) {
+      alert("Please enter Exam Name and Subject.");
+      return;
+    }
 
-    const examEntry = {
-      id: `EXM-${Math.floor(Math.random() * 10000)}`,
-      ...newExam
-    };
-
-    setExams([examEntry, ...exams]);
+    dataStore.addExam(newExam);
     setIsAddModalOpen(false);
     setNewExam({
       name: '',
       batch: 'All Batches',
-      subject: '',
+      subject: 'ICT',
       date: new Date().toISOString().substring(0, 10),
       totalMarks: '50',
       passMarks: '40'
     });
   };
 
-  const handleMarkChange = (studentId, marks) => {
-    setExamMarks({
-      ...examMarks,
-      [`${selectedExamForMarks.id}_${studentId}`]: marks
-    });
+  const handleDeleteExam = (examId) => {
+    if (window.confirm("Are you sure you want to delete this exam?")) {
+      const updated = exams.filter(e => e.id !== examId);
+      dataStore.saveExams(updated);
+    }
+  };
+
+  const handleOpenMarksModal = (exam) => {
+    setSelectedExamForMarks(exam);
+    setMarksState(exam.marks || {});
+  };
+
+  const handleMarkChange = (studentId, val) => {
+    setMarksState(prev => ({
+      ...prev,
+      [studentId]: val
+    }));
+  };
+
+  const handleSaveMarks = () => {
+    if (!selectedExamForMarks) return;
+    dataStore.saveExamMarks(selectedExamForMarks.id, marksState);
+    setSuccessToast(`Marks saved for ${selectedExamForMarks.name}!`);
+    setTimeout(() => setSuccessToast(''), 3000);
+    setSelectedExamForMarks(null);
   };
 
   const uniqueBatches = new Set(exams.map(e => e.batch)).size;
@@ -63,13 +92,20 @@ function Exams() {
             <FileText size={14} /> ASSESSMENT WORKSPACE
           </div>
           <h1>পরীক্ষা</h1>
-          <p className="subtitle">Create exams, enter marks, and print marksheets.</p>
+          <p className="subtitle">Create exams, enter marks, and track student assessments.</p>
         </div>
         <div className="header-actions">
-          <button className="btn-secondary">Combined result</button>
-          <button className="btn-primary" onClick={() => setIsAddModalOpen(true)}>যোগ</button>
+          <button className="btn-primary" onClick={() => setIsAddModalOpen(true)}>
+            <Plus size={16} /> নতুন পরীক্ষা
+          </button>
         </div>
       </div>
+
+      {successToast && (
+        <div style={{ backgroundColor: '#dcfce7', border: '1px solid #86efac', color: '#166534', padding: '10px 16px', borderRadius: '8px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500 }}>
+          <CheckCircle2 size={18} /> {successToast}
+        </div>
+      )}
 
       <div className="summary-cards exams-kpis">
         <div className="summary-card highlight-purple">
@@ -100,7 +136,7 @@ function Exams() {
         <div className="balances-header">
           <div>
             <h2>Exam register</h2>
-            <p>Open an assessment to enter marks and prepare student results.</p>
+            <p>Open an assessment to enter marks and evaluate student performance.</p>
           </div>
         </div>
 
@@ -112,25 +148,36 @@ function Exams() {
                 <th>EXAM NAME</th>
                 <th>BATCH & SUBJECT</th>
                 <th>MARKS (PASS / TOTAL)</th>
-                <th>ACTIONS</th>
+                <th>ENTRIES</th>
+                <th style={{ textAlign: 'right' }}>ACTIONS</th>
               </tr>
             </thead>
             <tbody>
-              {exams.map(exam => (
-                <tr key={exam.id}>
-                  <td>{exam.date}</td>
-                  <td><strong>{exam.name}</strong></td>
-                  <td>
-                    {exam.batch} <br />
-                    <span className="text-muted">{exam.subject}</span>
-                  </td>
-                  <td>{exam.passMarks} / {exam.totalMarks}</td>
-                  <td>
-                    <button className="btn-icon" onClick={() => setSelectedExamForMarks(exam)} title="Enter Marks"><ListChecks size={16} /></button>
-                    <button className="btn-icon text-danger" title="Delete"><Trash2 size={16} /></button>
-                  </td>
-                </tr>
-              ))}
+              {exams.map(exam => {
+                const markCount = exam.marks ? Object.keys(exam.marks).length : 0;
+                return (
+                  <tr key={exam.id}>
+                    <td>{exam.date}</td>
+                    <td><strong>{exam.name}</strong></td>
+                    <td>
+                      {exam.batch} <br />
+                      <span className="text-muted">{exam.subject}</span>
+                    </td>
+                    <td>{exam.passMarks} / {exam.totalMarks}</td>
+                    <td>
+                      <span className="badge-gray">{markCount} marked</span>
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button className="btn-icon" onClick={() => handleOpenMarksModal(exam)} title="Enter Marks">
+                        <ListChecks size={18} color="#0284c7" />
+                      </button>
+                      <button className="btn-icon text-danger" onClick={() => handleDeleteExam(exam.id)} title="Delete Exam">
+                        <Trash2 size={18} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         ) : (
@@ -143,6 +190,7 @@ function Exams() {
         )}
       </div>
 
+      {/* Add Exam Modal */}
       {isAddModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -156,18 +204,19 @@ function Exams() {
               </button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label>পরীক্ষার নাম (Exam Name)</label>
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label>পরীক্ষার নাম (Exam Name) <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
                   className="form-control" 
-                  placeholder="e.g. Monthly Test 1"
+                  placeholder="e.g. Chapter 2 Quiz"
                   value={newExam.name}
                   onChange={(e) => setNewExam({...newExam, name: e.target.value})}
+                  autoFocus
                 />
               </div>
               <div className="form-row">
-                <div className="form-group">
+                <div className="form-group half">
                   <label>ব্যাচ (Batch)</label>
                   <select 
                     className="form-control"
@@ -175,33 +224,33 @@ function Exams() {
                     onChange={(e) => setNewExam({...newExam, batch: e.target.value})}
                   >
                     <option value="All Batches">All Batches (সবার জন্য)</option>
-                    <option value="Sat-6:45am">Sat-6:45am</option>
-                    <option value="Sun-8:00am">Sun-8:00am</option>
-                    <option value="Mon-4:00pm">Mon-4:00pm</option>
+                    {batches.map(b => (
+                      <option key={b.id || b.name} value={b.name}>{b.name}</option>
+                    ))}
                   </select>
                 </div>
-                <div className="form-group">
+                <div className="form-group half">
                   <label>বিষয় (Subject)</label>
                   <input 
                     type="text" 
                     className="form-control" 
-                    placeholder="e.g. ICT Chapter 1"
+                    placeholder="e.g. ICT"
                     value={newExam.subject}
                     onChange={(e) => setNewExam({...newExam, subject: e.target.value})}
                   />
                 </div>
               </div>
               <div className="form-row">
-                <div className="form-group">
+                <div className="form-group half">
                   <label>তারিখ (Date)</label>
                   <input 
                     type="date" 
-                    className="form-control"
+                    className="form-control" 
                     value={newExam.date}
                     onChange={(e) => setNewExam({...newExam, date: e.target.value})}
                   />
                 </div>
-                <div className="form-group">
+                <div className="form-group half">
                   <label>মোট নম্বর (Total Marks)</label>
                   <input 
                     type="number" 
@@ -211,17 +260,14 @@ function Exams() {
                   />
                 </div>
               </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>পাস নম্বর (Pass Marks)</label>
-                  <input 
-                    type="number" 
-                    className="form-control" 
-                    value={newExam.passMarks}
-                    onChange={(e) => setNewExam({...newExam, passMarks: e.target.value})}
-                  />
-                </div>
-                <div className="form-group"></div>
+              <div className="form-group">
+                <label>পাস নম্বর (Pass Marks)</label>
+                <input 
+                  type="number" 
+                  className="form-control" 
+                  value={newExam.passMarks}
+                  onChange={(e) => setNewExam({...newExam, passMarks: e.target.value})}
+                />
               </div>
             </div>
             <div className="modal-footer">
@@ -232,6 +278,7 @@ function Exams() {
         </div>
       )}
 
+      {/* Enter Marks Modal */}
       {selectedExamForMarks && (
         <div className="modal-overlay">
           <div className="modal-content large-modal">
@@ -243,51 +290,62 @@ function Exams() {
               <button className="btn-close-modal" onClick={() => setSelectedExamForMarks(null)}><X size={20} /></button>
             </div>
             <div className="modal-body">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>NAME</th>
-                    <th>BATCH</th>
-                    <th style={{ width: '150px' }}>MARKS OBTAINED</th>
-                    <th>STATUS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {MOCK_STUDENTS
-                    .filter(s => selectedExamForMarks.batch === 'All Batches' || s.batch === selectedExamForMarks.batch)
-                    .map((student, index) => {
-                      const marks = examMarks[`${selectedExamForMarks.id}_${student.id}`] || '';
-                      const isPassed = marks !== '' && Number(marks) >= Number(selectedExamForMarks.passMarks);
-                      const isFailed = marks !== '' && Number(marks) < Number(selectedExamForMarks.passMarks);
-                      
-                      return (
-                        <tr key={student.id}>
-                          <td>{index + 1}</td>
-                          <td><strong>{student.name}</strong><br/><span className="text-muted">{student.id}</span></td>
-                          <td>{student.batch}</td>
-                          <td>
-                            <input 
-                              type="number" 
-                              className="form-control" 
-                              placeholder="Marks"
-                              value={marks}
-                              onChange={(e) => handleMarkChange(student.id, e.target.value)}
-                            />
-                          </td>
-                          <td>
-                            {isPassed && <span className="status-badge badge-present">Passed</span>}
-                            {isFailed && <span className="status-badge badge-absent">Failed</span>}
-                            {marks === '' && <span className="text-muted">-</span>}
-                          </td>
-                        </tr>
-                      );
-                  })}
-                </tbody>
-              </table>
+              {allStudents
+                .filter(s => selectedExamForMarks.batch === 'All Batches' || s.batch === selectedExamForMarks.batch)
+                .length > 0 ? (
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>NAME</th>
+                      <th>STUDENT ID</th>
+                      <th>BATCH</th>
+                      <th style={{ width: '160px' }}>MARKS OBTAINED</th>
+                      <th>STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {allStudents
+                      .filter(s => selectedExamForMarks.batch === 'All Batches' || s.batch === selectedExamForMarks.batch)
+                      .map((student, index) => {
+                        const score = marksState[student.id] !== undefined ? marksState[student.id] : '';
+                        const isPassed = score !== '' && Number(score) >= Number(selectedExamForMarks.passMarks);
+                        const isFailed = score !== '' && Number(score) < Number(selectedExamForMarks.passMarks);
+                        
+                        return (
+                          <tr key={student.id}>
+                            <td>{index + 1}</td>
+                            <td><strong>{student.name}</strong></td>
+                            <td>{student.id}</td>
+                            <td>{student.batch}</td>
+                            <td>
+                              <input 
+                                type="number" 
+                                className="form-control" 
+                                placeholder="Marks"
+                                value={score}
+                                onChange={(e) => handleMarkChange(student.id, e.target.value)}
+                              />
+                            </td>
+                            <td>
+                              {isPassed && <span className="status-badge badge-present">Passed</span>}
+                              {isFailed && <span className="status-badge badge-absent">Failed</span>}
+                              {score === '' && <span className="text-muted">-</span>}
+                            </td>
+                          </tr>
+                        );
+                    })}
+                  </tbody>
+                </table>
+              ) : (
+                <p style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                  No students enrolled in batch {selectedExamForMarks.batch}.
+                </p>
+              )}
             </div>
             <div className="modal-footer">
-              <button className="btn-primary" onClick={() => setSelectedExamForMarks(null)}>Done</button>
+              <button className="btn-secondary" onClick={() => setSelectedExamForMarks(null)}>Cancel</button>
+              <button className="btn-primary" onClick={handleSaveMarks}>Save Marks</button>
             </div>
           </div>
         </div>

@@ -1,35 +1,38 @@
-import React from 'react';
-import { Bell, AlertCircle, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Bell, AlertCircle, UserCheck, ArrowRight } from 'lucide-react';
+import { dataStore } from './dataStore';
 import './notifications.css';
 
 function Notifications({ setActiveTab }) {
-  // Mock notifications based on Due Inbox
-  const dueNotifications = [
-    {
-      id: 1,
-      studentName: 'Karim Islam',
-      batch: 'Sat-6:45am',
-      amount: '500',
-      date: '2 hours ago',
-      type: 'monthly'
-    },
-    {
-      id: 2,
-      studentName: 'Jamal Uddin',
-      batch: 'Sun-8:00am',
-      amount: '1500',
-      date: '5 hours ago',
-      type: 'course'
-    },
-    {
-      id: 3,
-      studentName: 'Ayesha Siddiqua',
-      batch: 'Mon-4:00pm',
-      amount: '500',
-      date: '1 day ago',
-      type: 'monthly'
+  const [students, setStudents] = useState(() => dataStore.getStudents());
+  const [pendingAdmissions, setPendingAdmissions] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('pendingAdmissions') || '[]');
+    } catch (e) {
+      return [];
     }
-  ];
+  });
+
+  useEffect(() => {
+    const handleSync = () => {
+      setStudents(dataStore.getStudents());
+      try {
+        setPendingAdmissions(JSON.parse(localStorage.getItem('pendingAdmissions') || '[]'));
+      } catch (e) {}
+    };
+    window.addEventListener('coaching-data-change', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('coaching-data-change', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
+
+  // Compute live due notifications
+  const dueStudents = students
+    .filter(s => s.status === 'Active')
+    .map(s => ({ ...s, ...dataStore.calculateDue(s) }))
+    .filter(s => s.isDue);
 
   return (
     <div className="notifications-container">
@@ -39,12 +42,37 @@ function Notifications({ setActiveTab }) {
             <Bell size={14} /> UPDATES & ALERTS
           </div>
           <h1>Notifications</h1>
-          <p className="subtitle">Stay updated on due payments and important activities.</p>
+          <p className="subtitle">Stay updated on due payments and pending online admissions.</p>
         </div>
       </div>
 
       <div className="notifications-list">
-        {dueNotifications.map((notif) => (
+        {/* Pending Admissions Alert */}
+        {pendingAdmissions.map((admission) => (
+          <div key={admission.id} className="notification-card" style={{ borderLeft: '4px solid #0284c7' }}>
+            <div className="notif-icon">
+              <UserCheck size={24} color="#0284c7" />
+            </div>
+            <div className="notif-content">
+              <h4>New Online Admission Application</h4>
+              <p>
+                <strong>{admission.name}</strong> ({admission.phone}) submitted an admission form for batch <strong>{admission.preferredBatch}</strong>.
+              </p>
+              <span className="notif-time">{admission.date || 'Recent application'}</span>
+            </div>
+            <div className="notif-action">
+              <button 
+                className="btn-secondary" 
+                onClick={() => setActiveTab('online-admission')}
+              >
+                Review Application <ArrowRight size={16} style={{ marginLeft: '4px' }} />
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {/* Payment Due Alerts */}
+        {dueStudents.map((notif) => (
           <div key={notif.id} className="notification-card">
             <div className="notif-icon">
               <AlertCircle size={24} color="#ef4444" />
@@ -52,9 +80,9 @@ function Notifications({ setActiveTab }) {
             <div className="notif-content">
               <h4>Payment Due Alert</h4>
               <p>
-                <strong>{notif.studentName}</strong> ({notif.batch}) has an outstanding due of <strong>৳ {notif.amount}</strong> for their {notif.type} fee.
+                <strong>{notif.name}</strong> ({notif.batch}) has an outstanding due of <strong>৳ {notif.dueAmount.toLocaleString()}</strong> for their {notif.feeType} fee.
               </p>
-              <span className="notif-time">{notif.date}</span>
+              <span className="notif-time">Due for collection</span>
             </div>
             <div className="notif-action">
               <button 
@@ -67,10 +95,10 @@ function Notifications({ setActiveTab }) {
           </div>
         ))}
 
-        {dueNotifications.length === 0 && (
+        {dueStudents.length === 0 && pendingAdmissions.length === 0 && (
           <div className="empty-state-box">
             <Bell size={48} color="#cbd5e1" style={{ marginBottom: '1rem' }} />
-            <p>You're all caught up! No new notifications.</p>
+            <p>You're all caught up! No active alerts or pending items.</p>
           </div>
         )}
       </div>

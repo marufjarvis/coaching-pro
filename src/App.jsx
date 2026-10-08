@@ -6,7 +6,9 @@ import { useEffect } from 'react';
 import './index.css';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('coachingLoggedIn') !== 'false';
+  });
   const [currentHash, setCurrentHash] = useState(window.location.hash);
 
   useEffect(() => {
@@ -20,7 +22,17 @@ function App() {
     return <AdmissionForm batch={batchName} />;
   }
 
-  return isLoggedIn ? <Dashboard /> : <Login onLogin={() => setIsLoggedIn(true)} />;
+  const handleLogin = () => {
+    localStorage.setItem('coachingLoggedIn', 'true');
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.setItem('coachingLoggedIn', 'false');
+    setIsLoggedIn(false);
+  };
+
+  return isLoggedIn ? <Dashboard onLogout={handleLogout} /> : <Login onLogin={handleLogin} />;
 }
 
 export default App;

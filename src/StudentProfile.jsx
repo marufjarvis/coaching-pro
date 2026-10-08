@@ -1,23 +1,98 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Wallet, DollarSign, Calendar, FileText, Phone, MessageSquare, Download, CreditCard, Edit, MoreVertical, Plus, CalendarDays, User, AlertCircle, Copy, Award } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Wallet, DollarSign, Calendar, FileText, Copy, Award, AlertCircle, Edit, Trash2, Printer, CheckCircle2, X } from 'lucide-react';
+import { dataStore } from './dataStore';
 import './student-profile.css';
 
-function StudentProfile({ student, onBack, onEdit }) {
-  const [showDropdown, setShowDropdown] = useState(false);
+function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
+  const [payments, setPayments] = useState(() => {
+    return dataStore.getPayments().filter(p => p.studentId === student.id);
+  });
+  const [attendanceStats, setAttendanceStats] = useState(() => {
+    return dataStore.getStudentAttendanceStats(student.id);
+  });
+  const [exams, setExams] = useState(() => dataStore.getExams());
+  const [isCollectModalOpen, setIsCollectModalOpen] = useState(false);
+  const [payAmount, setPayAmount] = useState('');
+  const [payMethod, setPayMethod] = useState('bKash');
+  const [copySuccess, setCopySuccess] = useState('');
+
+  useEffect(() => {
+    const handleSync = () => {
+      setPayments(dataStore.getPayments().filter(p => p.studentId === student.id));
+      setAttendanceStats(dataStore.getStudentAttendanceStats(student.id));
+      setExams(dataStore.getExams());
+    };
+    window.addEventListener('coaching-data-change', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('coaching-data-change', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, [student.id]);
 
   if (!student) return null;
 
-  const handleCopy = (text) => {
+  const handleCopy = (text, label) => {
     if (text) {
       navigator.clipboard.writeText(text);
+      setCopySuccess(`${label} copied!`);
+      setTimeout(() => setCopySuccess(''), 2000);
     }
   };
 
+  const handleRecordPayment = () => {
+    const num = Number(payAmount);
+    if (!num || num <= 0) {
+      alert("Please enter a valid payment amount.");
+      return;
+    }
+
+    dataStore.recordPayment({
+      studentId: student.id,
+      amount: num,
+      method: payMethod,
+      collectedBy: 'Admin',
+      note: `${student.feeType === 'monthly' ? 'Monthly Fee' : 'Course Fee'}`
+    });
+
+    setIsCollectModalOpen(false);
+    setPayAmount('');
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(`Are you sure you want to permanently delete ${student.name}?`)) {
+      dataStore.deleteStudent(student.id);
+      onBack();
+    }
+  };
+
+  const handlePrintReport = () => {
+    window.print();
+  };
+
+  // Student calculations
+  const totalPaid = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+  const totalFee = Number(student.feeAmount) || 0;
+  const totalDue = Math.max(0, totalFee - totalPaid);
+
+  // Filter exams that include this student
+  const studentExams = exams.filter(e => e.marks && e.marks[student.id] !== undefined);
+  const avgScore = studentExams.length > 0
+    ? Math.round(studentExams.reduce((sum, e) => sum + Number(e.marks[student.id]), 0) / studentExams.length)
+    : 0;
+
   return (
     <div className="student-profile-page">
-      <button className="btn-back" onClick={onBack}>
-        <ArrowLeft size={16} /> Back to students
-      </button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <button className="btn-back" onClick={onBack}>
+          <ArrowLeft size={16} /> Back to students
+        </button>
+        {copySuccess && (
+          <span style={{ background: '#dcfce7', color: '#166534', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem' }}>
+            {copySuccess}
+          </span>
+        )}
+      </div>
 
       {/* Header Card */}
       <div className="profile-header-card">
@@ -25,127 +100,65 @@ function StudentProfile({ student, onBack, onEdit }) {
           <div className="profile-avatar-large">{student.initials || 'ST'}</div>
           <div className="profile-info-top">
             <div className="profile-name-row">
-              <h1>{student.name || 'Student Name'}</h1>
-              <span className={`status-badge active`}>
-                <span className="status-dot"></span>Active
+              <h1>{student.name}</h1>
+              <span className={`status-badge ${student.status.toLowerCase()}`}>
+                <span className="status-dot"></span>{student.status}
               </span>
             </div>
             <div className="profile-badges">
-              <span className="badge-gray">{student.id || 'STU-00000'}</span>
-              <span className="badge-gray">{student.batch || 'Batch Name'}</span>
+              <span className="badge-gray">{student.id}</span>
+              <span className="badge-gray">{student.batch}</span>
             </div>
           </div>
         </div>
         <div className="profile-header-right">
-          <button className="btn-primary"><Wallet size={16} /> Collect fee</button>
-          <button className="btn-secondary" onClick={onEdit}><Edit size={16} /> Edit profile</button>
-          <div style={{ position: 'relative' }}>
-            <button className="btn-icon-border" onClick={() => setShowDropdown(!showDropdown)}>
-              <MoreVertical size={16} />
-            </button>
-            {showDropdown && (
-              <div className="profile-actions-dropdown">
-                <button className="dropdown-item" onClick={() => setShowDropdown(false)}>Mark inactive</button>
-                <button className="dropdown-item" onClick={() => setShowDropdown(false)}>Open in payments</button>
-                <button className="dropdown-item text-danger" onClick={() => {
-                  if(window.confirm('Are you sure you want to delete this student?')) {
-                    onBack();
-                  }
-                  setShowDropdown(false);
-                }}>Delete student</button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Batches Section */}
-      <div className="profile-section-card">
-        <div className="section-header-flex">
-          <div>
-            <h2 className="section-title">Enrolled Batch</h2>
-            <p className="section-subtitle">Student's assigned batch and admission date.</p>
-          </div>
-        </div>
-        <div className="enrolled-batch-card">
-          <div className="batch-info-left">
-            <div className="batch-title-row">
-              <h3>{student.batch || 'Unassigned'}</h3>
-            </div>
-            <div className="batch-date-info" style={{ marginTop: '0.5rem' }}>Admitted on {student.admissionDate || 'N/A'}</div>
-          </div>
-          <div className="batch-info-right">
-            <button className="btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}><Edit size={14} style={{ marginRight: '4px' }} /> Change batch</button>
-          </div>
+          <button className="btn-primary" onClick={() => {
+            setPayAmount(totalDue > 0 ? totalDue.toString() : '');
+            setIsCollectModalOpen(true);
+          }}>
+            <Wallet size={16} /> Collect fee
+          </button>
+          <button className="btn-secondary" onClick={onEdit}>
+            <Edit size={16} /> Edit profile
+          </button>
+          <button className="btn-secondary text-danger" onClick={handleDelete} title="Delete Student">
+            <Trash2 size={16} />
+          </button>
         </div>
       </div>
 
       {/* 4 KPI Cards */}
-      {/* 4 KPI Cards */}
-      {student.feeType === 'course' ? (
-        <div className="profile-kpi-grid">
-          <div className="kpi-card">
-            <div className="kpi-header">
-              <span className="kpi-title">COURSE FEE</span>
-              <div className="kpi-icon blue"><Wallet size={18} /></div>
-            </div>
-            <div className="kpi-value">৳ {student.feeAmount || 0}</div>
+      <div className="profile-kpi-grid">
+        <div className="kpi-card">
+          <div className="kpi-header">
+            <span className="kpi-title">{student.feeType === 'course' ? 'COURSE FEE' : 'MONTHLY FEE'}</span>
+            <div className="kpi-icon blue"><Wallet size={18} /></div>
           </div>
-          <div className="kpi-card">
-            <div className="kpi-header">
-              <span className="kpi-title">TOTAL PAID</span>
-              <div className="kpi-icon cyan"><DollarSign size={18} /></div>
-            </div>
-            <div className="kpi-value">৳ {student.paidAmount || 0}</div>
-          </div>
-          <div className="kpi-card">
-            <div className="kpi-header">
-              <span className="kpi-title">TOTAL DUE</span>
-              <div className="kpi-icon yellow"><AlertCircle size={18} /></div>
-            </div>
-            <div className="kpi-value text-danger">৳ {Math.max(0, Number(student.feeAmount || 0) - Number(student.paidAmount || 0))}</div>
-          </div>
-          <div className="kpi-card">
-            <div className="kpi-header">
-              <span className="kpi-title">NEXT INSTALLMENT</span>
-              <div className="kpi-icon green"><Calendar size={18} /></div>
-            </div>
-            <div className="kpi-value" style={{fontSize: '1.25rem'}}>{student.nextInstallmentDate || 'N/A'}</div>
-          </div>
+          <div className="kpi-value">৳ {totalFee}</div>
         </div>
-      ) : (
-        <div className="profile-kpi-grid">
-          <div className="kpi-card">
-            <div className="kpi-header">
-              <span className="kpi-title">MONTHLY FEE</span>
-              <div className="kpi-icon blue"><Wallet size={18} /></div>
-            </div>
-            <div className="kpi-value">৳ {student.feeAmount || 0}</div>
+        <div className="kpi-card">
+          <div className="kpi-header">
+            <span className="kpi-title">TOTAL PAID</span>
+            <div className="kpi-icon cyan"><DollarSign size={18} /></div>
           </div>
-          <div className="kpi-card">
-            <div className="kpi-header">
-              <span className="kpi-title">TOTAL PAID</span>
-              <div className="kpi-icon cyan"><DollarSign size={18} /></div>
-            </div>
-            <div className="kpi-value">৳ {student.paidAmount || 0}</div>
-          </div>
-          <div className="kpi-card">
-            <div className="kpi-header">
-              <span className="kpi-title">BILLING DATE</span>
-              <div className="kpi-icon yellow"><CalendarDays size={18} /></div>
-            </div>
-            <div className="kpi-value" style={{fontSize: '1.25rem'}}>{student.billingDate || 'N/A'}</div>
-          </div>
-          <div className="kpi-card">
-            <div className="kpi-header">
-              <span className="kpi-title">ATTENDANCE</span>
-              <div className="kpi-icon green"><Calendar size={18} /></div>
-            </div>
-            <div className="kpi-value">0%</div>
-            <div className="kpi-subtext">P 0 · A 0 · L 0</div>
-          </div>
+          <div className="kpi-value">৳ {totalPaid}</div>
         </div>
-      )}
+        <div className="kpi-card">
+          <div className="kpi-header">
+            <span className="kpi-title">TOTAL DUE</span>
+            <div className="kpi-icon yellow"><AlertCircle size={18} /></div>
+          </div>
+          <div className={`kpi-value ${totalDue > 0 ? 'text-danger' : ''}`}>৳ {totalDue}</div>
+        </div>
+        <div className="kpi-card">
+          <div className="kpi-header">
+            <span className="kpi-title">ATTENDANCE</span>
+            <div className="kpi-icon green"><Calendar size={18} /></div>
+          </div>
+          <div className="kpi-value">{attendanceStats.percentage}%</div>
+          <div className="kpi-subtext">P {attendanceStats.present} · A {attendanceStats.absent} · L {attendanceStats.late}</div>
+        </div>
+      </div>
 
       {/* Main Grid */}
       <div className="profile-main-grid">
@@ -153,51 +166,63 @@ function StudentProfile({ student, onBack, onEdit }) {
         <div className="main-col-left">
           <div className="profile-section-card">
             <div className="section-header-flex">
-              <h2 className="section-title flex-align"><User size={18} /> Profile information</h2>
+              <h2 className="section-title">Profile information</h2>
             </div>
             
             <div className="info-list">
               <div className="info-row">
                 <div className="info-label">Name</div>
-                <div className="info-value">{student.name || '—'}</div>
+                <div className="info-value">{student.name}</div>
               </div>
               <div className="info-row">
                 <div className="info-label">Student ID</div>
-                <div className="info-value">{student.id || '—'}</div>
+                <div className="info-value">{student.id}</div>
               </div>
               <div className="info-row">
                 <div className="info-label">Batch</div>
-                <div className="info-value">{student.batch || '—'}</div>
+                <div className="info-value">{student.batch}</div>
               </div>
               <div className="info-row">
-                <div className="info-label">Mobile</div>
+                <div className="info-label">Phone</div>
                 <div className="info-value flex-align">
                   {student.phone || '—'} 
-                  {student.phone && <button className="btn-small" style={{ marginLeft: '4px' }} onClick={() => handleCopy(student.phone)} title="Copy"><Copy size={14} /></button>}
+                  {student.phone && (
+                    <button className="btn-small" onClick={() => handleCopy(student.phone, 'Phone')} title="Copy phone">
+                      <Copy size={14} />
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="info-row">
                 <div className="info-label">Guardian Phone</div>
                 <div className="info-value flex-align">
                   {student.guardianPhone || '—'}
-                  {student.guardianPhone && <button className="btn-small" style={{ marginLeft: '4px' }} onClick={() => handleCopy(student.guardianPhone)} title="Copy"><Copy size={14} /></button>}
+                  {student.guardianPhone && (
+                    <button className="btn-small" onClick={() => handleCopy(student.guardianPhone, 'Guardian Phone')} title="Copy guardian phone">
+                      <Copy size={14} />
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="info-row">
-                <div className="info-label">Admission date</div>
+                <div className="info-label">Admission Date</div>
                 <div className="info-value">{student.admissionDate || 'N/A'}</div>
+              </div>
+              <div className="info-row">
+                <div className="info-label">Fee Billing Model</div>
+                <div className="info-value" style={{ textTransform: 'capitalize' }}>{student.feeType}</div>
               </div>
             </div>
 
-            <div className="profile-actions-grid">
-              <button className="btn-secondary outline"><Download size={16} /> Progress report</button>
-              <button className="btn-secondary outline"><Download size={16} /> Payment ledger</button>
-              <button className="btn-secondary outline full-width"><Download size={16} /> Fee statement (PDF / JPG)</button>
+            <div className="profile-actions-grid" style={{ marginTop: '1.5rem' }}>
+              <button className="btn-secondary outline full-width" onClick={handlePrintReport}>
+                <Printer size={16} /> Print / Save Fee Statement (PDF)
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Exams & Payments */}
+        {/* Right Column: Performance & Payment History */}
         <div className="main-col-right">
           <div className="profile-section-card min-h">
             <div className="section-header-flex">
@@ -207,61 +232,133 @@ function StudentProfile({ student, onBack, onEdit }) {
             <div className="performance-kpi-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div className="kpi-card" style={{ background: '#f5f3ff', border: '1px solid #ede9fe' }}>
                 <div className="kpi-header">
-                  <span className="kpi-title" style={{ color: '#6d28d9' }}>OVERALL SCORE</span>
+                  <span className="kpi-title" style={{ color: '#6d28d9' }}>AVERAGE EXAM SCORE</span>
                 </div>
-                <div className="kpi-value" style={{ color: '#6d28d9' }}>88 / 100</div>
+                <div className="kpi-value" style={{ color: '#6d28d9' }}>{avgScore > 0 ? `${avgScore} / 50` : '—'}</div>
               </div>
               <div className="kpi-card" style={{ background: '#fffbeb', border: '1px solid #fde68a' }}>
                 <div className="kpi-header">
-                  <span className="kpi-title" style={{ color: '#92400e' }}>BATCH RANK</span>
+                  <span className="kpi-title" style={{ color: '#92400e' }}>EXAMS TAKEN</span>
                 </div>
-                <div className="kpi-value" style={{ color: '#b45309' }}>2nd <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>out of 45</span></div>
+                <div className="kpi-value" style={{ color: '#b45309' }}>{studentExams.length} <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>Tests</span></div>
               </div>
             </div>
 
-            <div className="section-header-flex" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
-              <h2 className="section-title flex-align"><FileText size={18} /> Recent Exams</h2>
-            </div>
-            <table className="data-table" style={{ fontSize: '0.875rem' }}>
-              <thead>
-                <tr>
-                  <th>DATE</th>
-                  <th>EXAM</th>
-                  <th>SCORE</th>
-                  <th>STATUS</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>12/10/2026</td>
-                  <td><strong>Monthly Test 1</strong><br/><span className="text-muted">ICT Chapter 1</span></td>
-                  <td>45 / 50</td>
-                  <td><span className="status-badge badge-present">Passed</span></td>
-                </tr>
-                <tr>
-                  <td>25/10/2026</td>
-                  <td><strong>Weekly Quiz</strong><br/><span className="text-muted">ICT Chapter 2</span></td>
-                  <td>43 / 50</td>
-                  <td><span className="status-badge badge-present">Passed</span></td>
-                </tr>
-              </tbody>
-            </table>
+            {studentExams.length > 0 ? (
+              <table className="data-table" style={{ fontSize: '0.875rem', marginTop: '1rem' }}>
+                <thead>
+                  <tr>
+                    <th>DATE</th>
+                    <th>EXAM</th>
+                    <th>SCORE</th>
+                    <th>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {studentExams.map(ex => {
+                    const score = Number(ex.marks[student.id]);
+                    const isPassed = score >= Number(ex.passMarks || 40);
+                    return (
+                      <tr key={ex.id}>
+                        <td>{ex.date}</td>
+                        <td><strong>{ex.name}</strong><br/><span className="text-muted">{ex.subject}</span></td>
+                        <td>{score} / {ex.totalMarks}</td>
+                        <td>
+                          <span className={`status-badge ${isPassed ? 'badge-present' : 'status-danger'}`}>
+                            {isPassed ? 'Passed' : 'Needs improvement'}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-muted" style={{ fontSize: '0.9rem', margin: '0.5rem 0' }}>No exam marks recorded yet.</p>
+            )}
           </div>
 
           <div className="profile-section-card min-h">
             <div className="section-header-flex">
-              <h2 className="section-title flex-align"><CreditCard size={18} /> Payment history</h2>
-              <a href="#" className="text-link">View all payments →</a>
+              <h2 className="section-title flex-align"><Wallet size={18} /> Payment history</h2>
             </div>
-            <div className="empty-state-full">
-              <div className="empty-icon"><CreditCard size={24} /></div>
-              <h3>No payments yet</h3>
-              <p>Recorded payments will appear here.</p>
-              <button className="btn-primary mt-3">Collect first payment</button>
-            </div>
+            {payments.length > 0 ? (
+              <table className="data-table" style={{ fontSize: '0.875rem' }}>
+                <thead>
+                  <tr>
+                    <th>RECEIPT #</th>
+                    <th>DATE</th>
+                    <th>METHOD</th>
+                    <th>NOTE</th>
+                    <th style={{ textAlign: 'right' }}>AMOUNT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payments.map(p => (
+                    <tr key={p.id}>
+                      <td><strong>{p.id}</strong></td>
+                      <td>{p.date}</td>
+                      <td><span className="status-badge active">{p.method}</span></td>
+                      <td>{p.note || 'Coaching Fee'}</td>
+                      <td style={{ textAlign: 'right', fontWeight: 600, color: '#16a34a' }}>৳ {p.amount}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="empty-state-full">
+                <h3>No payments yet</h3>
+                <p>Recorded payments will appear here.</p>
+                <button className="btn-primary mt-3" onClick={() => setIsCollectModalOpen(true)}>Collect first payment</button>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Collect Fee Modal */}
+      {isCollectModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <div>
+                <h2>Collect Fee: {student.name}</h2>
+                <p>{student.batch} • Total Due: ৳ {totalDue}</p>
+              </div>
+              <button className="btn-close-modal" onClick={() => setIsCollectModalOpen(false)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group" style={{ marginBottom: '1rem' }}>
+                <label>AMOUNT (৳)</label>
+                <input 
+                  type="number" 
+                  className="form-control" 
+                  value={payAmount} 
+                  onChange={(e) => setPayAmount(e.target.value)}
+                  placeholder="e.g. 500" 
+                  autoFocus
+                />
+              </div>
+              <div className="form-group">
+                <label>PAYMENT METHOD</label>
+                <select className="form-control" value={payMethod} onChange={(e) => setPayMethod(e.target.value)}>
+                  <option value="Cash">Cash (নগদ)</option>
+                  <option value="bKash">bKash</option>
+                  <option value="Nagad">Nagad</option>
+                  <option value="Rocket">Rocket</option>
+                  <option value="Bank">Bank Transfer</option>
+                </select>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-cancel" onClick={() => setIsCollectModalOpen(false)}>Cancel</button>
+              <button className="btn-save" onClick={handleRecordPayment}>Confirm Payment</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
