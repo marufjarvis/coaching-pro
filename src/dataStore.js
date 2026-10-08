@@ -17,18 +17,18 @@ const STORAGE_KEYS = {
 
 // Initial Seed Batches
 const DEFAULT_BATCHES = [
-  { id: 'BAT-01', name: 'Sat-6:45am', schedule: 'Sat, Mon, Wed (6:45 AM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-02', name: 'Sat-7:45am', schedule: 'Sat, Mon, Wed (7:45 AM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-03', name: 'Sat-9am', schedule: 'Sat, Mon, Wed (9:00 AM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-04', name: 'Sat-10am', schedule: 'Sat, Mon, Wed (10:00 AM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-05', name: 'Sat-2pm', schedule: 'Sat, Mon, Wed (2:00 PM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-06', name: 'Sat-3pm', schedule: 'Sat, Mon, Wed (3:00 PM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-07', name: 'Sat-4pm', schedule: 'Sat, Mon, Wed (4:00 PM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-08', name: 'Sat-5pm', schedule: 'Sat, Mon, Wed (5:00 PM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-09', name: 'Sun-6:45am', schedule: 'Sun, Tue, Thu (6:45 AM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-10', name: 'Sun-8am', schedule: 'Sun, Tue, Thu (8:00 AM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-11', name: 'Sun-9am', schedule: 'Sun, Tue, Thu (9:00 AM)', monthlyFee: 500, courseFee: 4000 },
-  { id: 'BAT-12', name: 'Sun-10am', schedule: 'Sun, Tue, Thu (10:00 AM)', monthlyFee: 500, courseFee: 4000 },
+  { id: 'BAT-01', name: 'Sat-6:45am' },
+  { id: 'BAT-02', name: 'Sat-7:45am' },
+  { id: 'BAT-03', name: 'Sat-9am' },
+  { id: 'BAT-04', name: 'Sat-10am' },
+  { id: 'BAT-05', name: 'Sat-2pm' },
+  { id: 'BAT-06', name: 'Sat-3pm' },
+  { id: 'BAT-07', name: 'Sat-4pm' },
+  { id: 'BAT-08', name: 'Sat-5pm' },
+  { id: 'BAT-09', name: 'Sun-6:45am' },
+  { id: 'BAT-10', name: 'Sun-8am' },
+  { id: 'BAT-11', name: 'Sun-9am' },
+  { id: 'BAT-12', name: 'Sun-10am' },
 ];
 
 // Initial Seed Students
@@ -150,7 +150,12 @@ export const dataStore = {
       const data = localStorage.getItem(STORAGE_KEYS.BATCHES);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(b => ({
+            id: b.id || `BAT-${Math.random().toString().slice(2, 6)}`,
+            name: typeof b === 'string' ? b.trim() : b.name.trim()
+          }));
+        }
       }
     } catch (e) {}
     localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(DEFAULT_BATCHES));
@@ -158,19 +163,23 @@ export const dataStore = {
   },
 
   saveBatches(batches) {
-    localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(batches));
+    const cleaned = batches.map(b => ({
+      id: b.id,
+      name: b.name.trim()
+    }));
+    localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(cleaned));
     notifyChange();
   },
 
-  addBatch(batch) {
+  addBatch(batchInput) {
     const batches = this.getBatches();
+    const batchName = typeof batchInput === 'string' 
+      ? batchInput.trim() 
+      : (batchInput && batchInput.name ? batchInput.name.trim() : '');
+    if (!batchName) return null;
     const newBatch = {
       id: `BAT-${Date.now().toString().slice(-4)}`,
-      name: batch.name.trim(),
-      schedule: batch.schedule || 'Regular Batch',
-      monthlyFee: Number(batch.monthlyFee) || 500,
-      courseFee: Number(batch.courseFee) || 4000,
-      createdAt: new Date().toISOString()
+      name: batchName
     };
     const updated = [...batches, newBatch];
     this.saveBatches(updated);
@@ -179,7 +188,10 @@ export const dataStore = {
 
   updateBatch(id, updatedData) {
     const batches = this.getBatches();
-    const updated = batches.map(b => (b.id === id || b.name === id ? { ...b, ...updatedData } : b));
+    const newName = typeof updatedData === 'string' 
+      ? updatedData.trim() 
+      : (updatedData && updatedData.name ? updatedData.name.trim() : '');
+    const updated = batches.map(b => (b.id === id || b.name === id ? { ...b, name: newName || b.name } : b));
     this.saveBatches(updated);
   },
 

@@ -73,7 +73,7 @@ function Dashboard({ onLogout }) {
     ).map(s => ({ type: 'student', title: s.name, subtitle: `${s.id} • ${s.batch}`, targetTab: 'students' })),
     ...batches.filter(b => 
       b.name.toLowerCase().includes(headerSearch.toLowerCase())
-    ).map(b => ({ type: 'batch', title: b.name, subtitle: `Batch • ৳ ${b.monthlyFee}/mo`, targetTab: 'batches' })),
+    ).map(b => ({ type: 'batch', title: b.name, subtitle: `Academic Batch`, targetTab: 'batches' })),
     ...payments.filter(p => 
       p.id.toLowerCase().includes(headerSearch.toLowerCase()) ||
       p.studentName.toLowerCase().includes(headerSearch.toLowerCase())
@@ -348,7 +348,7 @@ function Dashboard({ onLogout }) {
 
               <div className="guide-footer">
                 <div className="guide-desc">
-                  Batches <ArrowRight size={14} /> Add batch <ArrowRight size={14} /> ফি সেট <ArrowRight size={14} /> নতুন ব্যাচ যোগ করুন।
+                  Batches <ArrowRight size={14} /> Add batch <ArrowRight size={14} /> ব্যাচের নাম দিয়ে ব্যাচ তৈরি করুন।
                 </div>
                 <button className="btn-primary" onClick={() => setActiveTab('batches')}>Batches খুলুন <ArrowRight size={16} /></button>
               </div>
@@ -394,7 +394,7 @@ function Dashboard({ onLogout }) {
                     <div key={b.id || b.name} className="batch-item">
                       <div>
                         <div className="batch-name">{b.name}</div>
-                        <div className="batch-info">{enrolled} students • ৳ {b.monthlyFee || 500}/mo</div>
+                        <div className="batch-info">{enrolled} {enrolled === 1 ? 'student' : 'students'}</div>
                       </div>
                       <button 
                         className="link-action" 
