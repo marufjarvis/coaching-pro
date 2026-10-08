@@ -107,28 +107,27 @@ function EnrollmentLinks() {
                 <td style={{ textAlign: 'right' }}>
                   <div className="link-actions">
                     <button 
-                      className="link-action-btn copy-btn" 
+                      className="btn-icon" 
                       onClick={() => handleCopy(link.id, link.url)}
-                      title="Copy Link"
+                      title={copiedId === link.id ? "Copied!" : "Copy Link"}
                     >
-                      {copiedId === link.id ? <Check size={14} color="#16a34a" /> : <Copy size={14} />}
-                      {copiedId === link.id ? 'Copied' : 'Copy'}
+                      {copiedId === link.id ? <Check size={16} color="#16a34a" /> : <Copy size={16} />}
                     </button>
                     <a 
                       href={link.url} 
                       target="_blank" 
                       rel="noreferrer" 
-                      className="link-action-btn view-btn"
+                      className="btn-icon"
                       title="Open Link"
                     >
-                      <ExternalLink size={14} /> View
+                      <ExternalLink size={16} />
                     </a>
                     <button 
-                      className="link-action-btn delete-btn" 
+                      className="btn-icon btn-danger-icon" 
                       onClick={() => handleDelete(link.id)}
                       title="Delete Link"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </td>
