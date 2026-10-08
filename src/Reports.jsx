@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart2, Receipt, Ban, Wallet, ClipboardCheck, Users, FileQuestion, ChevronRight, X, Printer, Calendar, CalendarDays, Check, Copy } from 'lucide-react';
+import { BarChart2, Receipt, Ban, Wallet, ClipboardCheck, Users, FileQuestion, ChevronRight, X, Printer, Calendar, CalendarDays, Check, Copy, ArrowLeft, Search } from 'lucide-react';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './reports.css';
@@ -15,10 +15,11 @@ function Reports({ lang: propLang }) {
   const [attendance, setAttendance] = useState(() => dataStore.getAttendance());
 
   const [selectedBatch, setSelectedBatch] = useState(batches.length > 0 ? batches[0].name : '');
+  const [selectedClass, setSelectedClass] = useState('HSC');
   const [selectedExamId, setSelectedExamId] = useState(exams.length > 0 ? exams[0].id : '');
 
   // Attendance Dual Mode (Date-wise & Monthly) States
-  const [attendanceMode, setAttendanceMode] = useState('dateWise'); // 'dateWise' | 'monthly'
+  const [attendanceMode, setAttendanceMode] = useState('monthly'); // default to 'monthly' or 'dateWise'
   const [attendanceDate, setAttendanceDate] = useState(() => {
     // Look for latest recorded attendance date or default to today
     const allAtt = dataStore.getAttendance();
@@ -73,6 +74,313 @@ function Reports({ lang: propLang }) {
   const handlePrint = () => {
     window.print();
   };
+
+  // Dedicated Full-Page Attendance Report (Matches Screenshots 1 & 2)
+  if (activeReport === 'Attendance') {
+    const currentBatch = selectedBatch || (batches.length > 0 ? batches[0].name : '');
+    const filteredStudents = students.filter(s => {
+      if (!currentBatch || currentBatch === 'All Batches') return true;
+      return s.batch === currentBatch;
+    });
+
+    const getStatusForDay = (dayDateStr, studentId) => {
+      const key1 = `${dayDateStr}_${currentBatch}`;
+      if (attendance[key1] && attendance[key1][studentId]) return attendance[key1][studentId];
+      const [y, m, d] = dayDateStr.split('-');
+      const key2 = `${d}/${m}/${y}_${currentBatch}`;
+      if (attendance[key2] && attendance[key2][studentId]) return attendance[key2][studentId];
+      return null;
+    };
+
+    // Date-wise lookup:
+    let datePresent = 0, dateAbsent = 0;
+    filteredStudents.forEach(s => {
+      const st = getStatusForDay(attendanceDate, s.id);
+      if (st === 'Present' || st === 'Late') datePresent++;
+      else if (st === 'Absent') dateAbsent++;
+    });
+
+    // Monthly calculations:
+    const [yearStr, monthStr] = (attendanceMonth || '2026-10').split('-');
+    const yearNum = parseInt(yearStr, 10);
+    const monthNum = parseInt(monthStr, 10);
+    const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
+    const dayNumbers = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+    const monthNamesEn = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthNamesBn = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+    const monthDisplayName = propLang === 'BN' 
+      ? `${monthNamesBn[monthNum - 1]} ${yearNum}`
+      : `${monthNamesEn[monthNum - 1]} ${yearNum}`;
+
+    return (
+      <div className="reports-container attendance-report-page">
+        {/* Back Link to All Reports */}
+        <button
+          type="button"
+          className="btn-back-reports"
+          onClick={() => setActiveReport(null)}
+        >
+          <ArrowLeft size={16} />
+          <span>{t.allReports || 'All reports'}</span>
+        </button>
+
+        {/* Page Header */}
+        <div className="att-page-header-row">
+          <div>
+            <div className="att-insights-badge">
+              <BarChart2 size={13} />
+              <span>{t.insightsAndReports || 'INSIGHTS & REPORTS'}</span>
+            </div>
+            <h1>{t.attendanceReportCardTitle || 'Attendance Report'}</h1>
+            <p>{t.attendanceReportSubtitle || 'Daily roll-call or monthly day grid with class filters'}</p>
+          </div>
+          <button 
+            type="button" 
+            className="btn-print-pdf"
+            onClick={handlePrint}
+          >
+            <Printer size={16} />
+            <span>{t.printPdfBtn || 'Print / PDF'}</span>
+          </button>
+        </div>
+
+        <div className="att-page-divider"></div>
+
+        {/* Filter Card (Matches Screenshots 1 & 2) */}
+        <div className="att-filter-card">
+          {/* Segmented Button: Daily | Monthly */}
+          <div className="att-toggle-group">
+            <button
+              type="button"
+              className={`toggle-btn ${attendanceMode === 'dateWise' ? 'active' : ''}`}
+              onClick={() => setAttendanceMode('dateWise')}
+            >
+              {t.daily || 'Daily'}
+            </button>
+            <button
+              type="button"
+              className={`toggle-btn ${attendanceMode === 'monthly' ? 'active' : ''}`}
+              onClick={() => setAttendanceMode('monthly')}
+            >
+              {t.monthly || 'Monthly'}
+            </button>
+          </div>
+
+          {/* Date Picker (Daily) or Month Picker (Monthly) */}
+          {attendanceMode === 'dateWise' ? (
+            <div className="att-filter-item">
+              <label>{t.dateLabel || 'Date'}</label>
+              <input
+                type="date"
+                className="form-control"
+                value={attendanceDate}
+                onChange={(e) => setAttendanceDate(e.target.value)}
+              />
+            </div>
+          ) : (
+            <div className="att-filter-item">
+              <label>{t.monthLabel || 'Month'}</label>
+              <input
+                type="month"
+                className="form-control"
+                value={attendanceMonth}
+                onChange={(e) => setAttendanceMonth(e.target.value)}
+              />
+            </div>
+          )}
+
+          {/* Class Select */}
+          <div className="att-filter-item">
+            <label>{t.classLabel || 'Class'}</label>
+            <select
+              className="form-control"
+              value={selectedClass}
+              onChange={(e) => setSelectedClass(e.target.value)}
+            >
+              <option value="HSC">HSC</option>
+              <option value="SSC">SSC</option>
+              <option value="Class 10">Class 10</option>
+              <option value="Class 9">Class 9</option>
+              <option value="All">All Classes</option>
+            </select>
+          </div>
+
+          {/* Batch Select */}
+          <div className="att-filter-item">
+            <label>{t.batchSelectLabel || 'Batch'}</label>
+            <select
+              className="form-control"
+              value={selectedBatch}
+              onChange={(e) => setSelectedBatch(e.target.value)}
+            >
+              {batches.map(b => (
+                <option key={b.id || b.name} value={b.name}>{b.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Generate Button */}
+          <button
+            type="button"
+            className="btn-generate-submit"
+            onClick={() => {
+              setAttendance(dataStore.getAttendance());
+            }}
+          >
+            <Search size={16} />
+            <span>{t.generateBtn || 'Generate'}</span>
+          </button>
+        </div>
+
+        {/* MONTHLY VIEW (Screenshot 1) */}
+        {attendanceMode === 'monthly' && (
+          <div className="monthly-report-card">
+            <div className="monthly-report-card-header">
+              <h3>{t.attendanceReportCardTitle || 'Attendance Report'} — {monthDisplayName}</h3>
+              <p>{filteredStudents.length} student(s) · {selectedClass} · {selectedBatch}</p>
+            </div>
+
+            <div className="table-responsive">
+              <table className="monthly-grid-table">
+                <thead>
+                  <tr>
+                    <th className="th-student">{t.student || 'Student'}</th>
+                    {dayNumbers.map(d => (
+                      <th key={d} className="th-day">{d}</th>
+                    ))}
+                    <th className="th-total">{t.total || 'Total'}</th>
+                    <th className="th-pct">%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredStudents.length > 0 ? (
+                    filteredStudents.map(student => {
+                      let presentCount = 0;
+                      let classDaysCount = 0;
+                      const dayCells = dayNumbers.map(d => {
+                        const dayPadded = String(d).padStart(2, '0');
+                        const dayDateStr = `${yearStr}-${String(monthNum).padStart(2, '0')}-${dayPadded}`;
+                        const status = getStatusForDay(dayDateStr, student.id);
+
+                        if (status) classDaysCount++;
+                        if (status === 'Present' || status === 'Late') presentCount++;
+
+                        return (
+                          <td key={d}>
+                            {status === 'Absent' ? (
+                              <span className="cell-a">A</span>
+                            ) : status === 'Present' ? (
+                              <span className="cell-p">P</span>
+                            ) : status === 'Late' ? (
+                              <span className="cell-l">L</span>
+                            ) : status === 'Leave' ? (
+                              <span className="cell-v">V</span>
+                            ) : (
+                              <span className="cell-empty">—</span>
+                            )}
+                          </td>
+                        );
+                      });
+
+                      const pct = classDaysCount > 0 ? Math.round((presentCount / classDaysCount) * 100) : 0;
+
+                      return (
+                        <tr key={student.id}>
+                          <td className="td-student">
+                            <strong>{student.name}</strong>
+                          </td>
+                          {dayCells}
+                          <td className="th-total">
+                            <strong>{presentCount}</strong>
+                          </td>
+                          <td className="th-pct">
+                            <strong style={{ color: pct > 0 ? '#16a34a' : '#dc2626' }}>
+                              {pct}%
+                            </strong>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={daysInMonth + 3} style={{ padding: '2.5rem', color: '#64748b' }}>
+                        {t.noStudentsInBatchMsg || 'No students found in this batch'}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* DAILY VIEW (Screenshot 2) */}
+        {attendanceMode === 'dateWise' && (
+          <div>
+            {/* KPI Banner */}
+            <div className="daily-summary-banner">
+              <span><strong>Students:</strong> {filteredStudents.length}</span>
+              <span className="txt-present"><strong>Present:</strong> {datePresent}</span>
+              <span className="txt-absent"><strong>Absent:</strong> {dateAbsent}</span>
+            </div>
+
+            {/* Daily Table */}
+            <div className="table-responsive">
+              <table className="daily-records-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '120px' }}>ID</th>
+                    <th>NAME</th>
+                    <th>CLASS</th>
+                    <th>BATCH</th>
+                    <th>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredStudents.length > 0 ? (
+                    filteredStudents.map(student => {
+                      const status = getStatusForDay(attendanceDate, student.id);
+                      return (
+                        <tr key={student.id}>
+                          <td>{student.id}</td>
+                          <td className="cell-name">
+                            <strong>{student.name}</strong>
+                            {student.phone && <div className="sub-phone">{student.phone}</div>}
+                          </td>
+                          <td>{selectedClass}</td>
+                          <td>{student.batch}</td>
+                          <td>
+                            {status === 'Present' ? (
+                              <span className="status-badge badge-present">Present</span>
+                            ) : status === 'Absent' ? (
+                              <span className="status-badge badge-absent">Absent</span>
+                            ) : status === 'Late' ? (
+                              <span className="status-badge badge-late">Late</span>
+                            ) : status === 'Leave' ? (
+                              <span className="status-badge badge-leave">Leave</span>
+                            ) : (
+                              <span className="text-muted">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="5" style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
+                        {t.noStudentsInBatchMsg || 'No students found in this batch'}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   const renderReportModalContent = () => {
     switch (activeReport) {

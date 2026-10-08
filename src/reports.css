@@ -357,4 +357,342 @@
   }
 }
 
+/* ===================================================
+   DEDICATED ATTENDANCE REPORT PAGE (Matches Screenshot 1 & 2)
+   =================================================== */
+.attendance-report-page {
+  padding-bottom: 3rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.btn-back-reports {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1.25rem;
+  transition: color 0.15s ease;
+}
+
+.btn-back-reports:hover {
+  color: #0f172a;
+}
+
+.att-insights-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #4338ca;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.att-page-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.att-page-header-row h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.att-page-header-row p {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0.35rem 0 0 0;
+}
+
+.btn-print-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.btn-print-pdf:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.att-page-divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 1rem 0 1.5rem 0;
+}
+
+/* Filter Card - with left purple accent (Screenshot 1 & 2) */
+.att-filter-card {
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #4338ca;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  margin-bottom: 1.75rem;
+}
+
+.att-toggle-group {
+  display: inline-flex;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  height: 42px;
+}
+
+.att-toggle-group .toggle-btn {
+  padding: 0 20px;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.att-toggle-group .toggle-btn.active {
+  background: #4338ca;
+  color: white;
+}
+
+.att-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+}
+
+.att-filter-item label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.att-filter-item .form-control {
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  padding: 0 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.btn-generate-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #4338ca;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  height: 42px;
+  padding: 0 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-generate-submit:hover {
+  background: #3730a3;
+}
+
+/* Daily View KPI Banner (Screenshot 2) */
+.daily-summary-banner {
+  background: white;
+  border: 1.5px solid #1e293b;
+  border-radius: 4px;
+  padding: 12px 20px;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.daily-summary-banner .txt-present {
+  color: #166534;
+}
+
+.daily-summary-banner .txt-absent {
+  color: #dc2626;
+}
+
+/* Daily Table (Screenshot 2) */
+.daily-records-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1.5px solid #1e293b;
+  background: white;
+}
+
+.daily-records-table th {
+  background: #f8fafc;
+  border: 1px solid #1e293b;
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+.daily-records-table td {
+  border: 1px solid #1e293b;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.daily-records-table td.cell-name strong {
+  display: block;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.daily-records-table td.cell-name .sub-phone {
+  font-size: 0.8rem;
+  color: #475569;
+  margin-top: 2px;
+}
+
+/* Monthly Card (Screenshot 1) */
+.monthly-report-card {
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.monthly-report-card-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.monthly-report-card-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.monthly-report-card-header p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 4px 0 0 0;
+}
+
+/* Monthly 1-31 Day Grid Table */
+.monthly-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  font-size: 0.825rem;
+}
+
+.monthly-grid-table th {
+  border: 1px solid #cbd5e1;
+  padding: 8px 4px;
+}
+
+.monthly-grid-table th.th-student {
+  background: #1e293b;
+  color: white;
+  text-align: left;
+  padding-left: 14px;
+  min-width: 120px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.monthly-grid-table th.th-day {
+  background: #f8fafc;
+  color: #475569;
+  min-width: 26px;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.monthly-grid-table th.th-total,
+.monthly-grid-table th.th-pct {
+  background: #f8fafc;
+  color: #1e293b;
+  font-weight: 700;
+  min-width: 50px;
+}
+
+.monthly-grid-table td {
+  border: 1px solid #e2e8f0;
+  padding: 10px 4px;
+  vertical-align: middle;
+}
+
+.monthly-grid-table td.td-student {
+  text-align: left;
+  padding-left: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  background: white;
+}
+
+.monthly-grid-table .cell-a {
+  color: #dc2626;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.monthly-grid-table .cell-p {
+  color: #16a34a;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.monthly-grid-table .cell-l {
+  color: #d97706;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.monthly-grid-table .cell-empty {
+  color: #94a3b8;
+}
+
+
 
