@@ -133,7 +133,8 @@ function Payments({ setActiveTab }) {
       <div className="filter-card" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         <div className="form-group" style={{ flex: 1, minWidth: '200px' }}>
           <label>Search payment</label>
-          <div className="input-with-icon">
+          <div className="search-input-wrapper">
+            <Search size={18} className="search-icon" />
             <input 
               type="text" 
               placeholder="Search by student name, ID or receipt #..." 
@@ -141,7 +142,6 @@ function Payments({ setActiveTab }) {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="filter-input" 
             />
-            <Search size={16} className="input-icon" />
           </div>
         </div>
         <div className="form-group" style={{ width: '180px' }}>
