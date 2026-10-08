@@ -196,7 +196,6 @@ function Attendance({ lang: propLang }) {
                   <th>{t.thSerial}</th>
                   <th>{t.thStudentName}</th>
                   <th>{t.thStudentId}</th>
-                  <th>{t.thStudentPhone}</th>
                   <th>{t.thAttendanceStatus}</th>
                 </tr>
               </thead>
@@ -206,23 +205,6 @@ function Attendance({ lang: propLang }) {
                     <td>{index + 1}</td>
                     <td><strong>{student.name}</strong></td>
                     <td>{student.id}</td>
-                    <td>
-                      {student.phone ? (
-                        <div className="copy-phone-cell">
-                          <span className="phone-number-text">{student.phone}</span>
-                          <button
-                            type="button"
-                            className={`btn-copy-phone ${copiedPhoneKey === student.id ? 'copied' : ''}`}
-                            onClick={() => handleCopyPhone(student.phone, student.id, lang === 'EN' ? 'Phone' : 'মোবাইল')}
-                            title={copiedPhoneKey === student.id ? (lang === 'EN' ? 'Copied!' : 'কপি হয়েছে!') : (lang === 'EN' ? 'Click to copy' : 'কপি করতে ক্লিক করুন')}
-                          >
-                            {copiedPhoneKey === student.id ? <Check size={14} color="#16a34a" /> : <Copy size={14} />}
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="text-muted">—</span>
-                      )}
-                    </td>
                     <td>
                       <div className="status-buttons">
                         <button 
