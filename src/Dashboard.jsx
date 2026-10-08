@@ -149,9 +149,9 @@ function Dashboard({ onLogout }) {
             <div className="nav-label">{t.account}</div>
             <a href="#" className={`nav-item ${activeTab === 'notifications' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('notifications'); setIsSidebarOpen(false); }}>
               <Bell size={20} /> {t.notifications}
-              {stats.dueCount > 0 && (
-                <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '10px' }}>
-                  {stats.dueCount}
+              {((stats.notificationCount !== undefined ? stats.notificationCount : stats.dueCount) > 0) && (
+                <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', fontSize: '10px', padding: '2px 7px', borderRadius: '10px', fontWeight: '700' }}>
+                  {stats.notificationCount !== undefined ? stats.notificationCount : stats.dueCount}
                 </span>
               )}
             </a>
@@ -242,8 +242,26 @@ function Dashboard({ onLogout }) {
             </div>
             <button className="icon-btn" onClick={() => setActiveTab('notifications')} title={t.notifications} style={{ position: 'relative' }}>
               <Bell size={20} />
-              {stats.dueCount > 0 && (
-                <span style={{ position: 'absolute', top: '2px', right: '2px', width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }}></span>
+              {((stats.notificationCount !== undefined ? stats.notificationCount : stats.dueCount) > 0) && (
+                <span style={{ 
+                  position: 'absolute', 
+                  top: '-3px', 
+                  right: '-3px', 
+                  minWidth: '18px', 
+                  height: '18px', 
+                  borderRadius: '9px', 
+                  background: '#ef4444', 
+                  color: 'white', 
+                  fontSize: '10px', 
+                  fontWeight: '700', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  padding: '0 4px', 
+                  border: '2px solid white' 
+                }}>
+                  {stats.notificationCount !== undefined ? stats.notificationCount : stats.dueCount}
+                </span>
               )}
             </button>
             <div className="profile-circle" title="Admin Account" onClick={() => setActiveTab('settings')}>MH</div>

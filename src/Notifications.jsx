@@ -1,26 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, AlertCircle, UserCheck, ArrowRight } from 'lucide-react';
+import { 
+  Bell, 
+  AlertCircle, 
+  UserCheck, 
+  ArrowRight, 
+  Clock, 
+  Calendar, 
+  Check, 
+  Copy, 
+  Phone, 
+  DollarSign, 
+  Send, 
+  CheckCircle2, 
+  Sparkles,
+  X,
+  CreditCard,
+  User
+} from 'lucide-react';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './notifications.css';
 
 function Notifications({ setActiveTab, lang: propLang }) {
   const { t, lang } = useTranslation(propLang);
-  const [students, setStudents] = useState(() => dataStore.getStudents());
-  const [pendingAdmissions, setPendingAdmissions] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('pendingAdmissions') || '[]');
-    } catch (e) {
-      return [];
-    }
-  });
+  const [notifData, setNotifData] = useState(() => dataStore.getNotifications());
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [copiedKey, setCopiedKey] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
+
+  // Quick Collect Payment Modal State
+  const [collectingStudent, setCollectingStudent] = useState(null);
+  const [payAmount, setPayAmount] = useState('');
+  const [payMethod, setPayMethod] = useState('Cash');
 
   useEffect(() => {
     const handleSync = () => {
-      setStudents(dataStore.getStudents());
-      try {
-        setPendingAdmissions(JSON.parse(localStorage.getItem('pendingAdmissions') || '[]'));
-      } catch (e) {}
+      setNotifData(dataStore.getNotifications());
     };
     window.addEventListener('coaching-data-change', handleSync);
     window.addEventListener('storage', handleSync);
@@ -30,80 +45,489 @@ function Notifications({ setActiveTab, lang: propLang }) {
     };
   }, []);
 
-  // Compute live due notifications
-  const dueStudents = students
-    .filter(s => s.status === 'Active')
-    .map(s => ({ ...s, ...dataStore.calculateDue(s) }))
-    .filter(s => s.isDue);
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  const handleCopy = (text, key, label) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    showToast(`${label} ${lang === 'EN' ? 'copied to clipboard!' : 'কপি হয়েছে!'}`);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  const handleCopySms = (student, type) => {
+    let msg = '';
+    if (type === 'course') {
+      msg = lang === 'EN'
+        ? `Dear Guardian, course installment of ৳ ${student.installmentAmount || student.dueAmount} for ${student.studentName} (${student.batch}) at Maruf's ICT Care is now due. Please settle soon. Thank you.`
+        : `শ্রদ্ধেয় অভিভাবক, মারুফ'স আইসিটি কেয়ার-এ আপনার সন্তান ${student.studentName} (${student.batch})-এর কোর্স ফি পরবর্তী কিস্তি ৳ ${student.installmentAmount || student.dueAmount} বকেয়া রয়েছে। অনুগ্রহ করে দ্রুত পরিশোধ করুন। ধন্যবাদ।`;
+    } else {
+      msg = lang === 'EN'
+        ? `Dear Guardian, monthly tuition fee of ৳ ${student.dueAmount} for ${student.studentName} (${student.batch}) at Maruf's ICT Care is now due. Please settle soon. Thank you.`
+        : `শ্রদ্ধেয় অভিভাবক, মারুফ'স আইসিটি কেয়ার-এ আপনার সন্তান ${student.studentName} (${student.batch})-এর চলতি মাসের কোচিং ফি ৳ ${student.dueAmount} বকেয়া রয়েছে। অনুগ্রহ করে পরিশোধ করুন। ধন্যবাদ।`;
+    }
+    navigator.clipboard.writeText(msg);
+    showToast(lang === 'EN' ? 'SMS reminder copied!' : 'এসএমএস রিমাইন্ডার কপি হয়েছে!');
+  };
+
+  const handleOpenQuickCollect = (studentItem) => {
+    const fullStudent = studentItem.studentObj || dataStore.getStudents().find(s => s.id === studentItem.studentId);
+    if (!fullStudent) return;
+    setCollectingStudent(fullStudent);
+    setPayAmount(String(studentItem.installmentAmount || studentItem.dueAmount || ''));
+    setPayMethod('Cash');
+  };
+
+  const handleConfirmQuickCollect = (e) => {
+    e.preventDefault();
+    if (!collectingStudent || !payAmount) return;
+    dataStore.recordPayment({
+      studentId: collectingStudent.id,
+      amount: Number(payAmount),
+      method: payMethod,
+      collectedBy: 'Admin',
+      note: collectingStudent.feeType === 'course' ? 'Course Fee Installment' : 'Monthly Fee'
+    });
+    showToast(lang === 'EN' ? 'Payment recorded successfully!' : 'পেমেন্ট সফলভাবে সংরক্ষিত হয়েছে!');
+    setCollectingStudent(null);
+    setPayAmount('');
+  };
+
+  // Filter items based on selectedCategory
+  const displayedItems = (() => {
+    if (selectedCategory === 'admission') return notifData.onlineAdmissions;
+    if (selectedCategory === 'course') return notifData.courseDues;
+    if (selectedCategory === 'monthly') return notifData.monthlyDues;
+    return notifData.all;
+  })();
 
   return (
     <div className="notifications-container">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="notif-toast">
+          <CheckCircle2 size={16} color="#16a34a" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Page Header */}
       <div className="page-header">
         <div>
           <div className="fee-followup-tag">
-            <Bell size={14} /> {lang === 'EN' ? 'UPDATES & ALERTS' : 'আপডেট ও সতর্কতা'}
+            <Bell size={14} /> {lang === 'EN' ? 'UPDATES & ALERTS' : 'আপডেট ও নোটিফিকেশন সেন্টার'}
           </div>
           <h1>{t.notifications}</h1>
-          <p className="subtitle">{lang === 'EN' ? 'Stay updated on due payments and pending online admissions.' : 'বকেয়া পেমেন্ট এবং অনলাইন ভর্তি আবেদনের সর্বশেষ তথ্য।'}</p>
+          <p className="subtitle">
+            {lang === 'EN' 
+              ? 'Real-time alerts for online admissions, 1-month course installments, and monthly tuition dues.' 
+              : 'অনলাইন ভর্তি আবেদন, কোর্স ফি ১ মাসের পরবর্তী কিস্তি এবং মাসিক বকেয়া বেতনের স্বয়ংক্রিয় নোটিফিকেশন।'}
+          </p>
         </div>
       </div>
 
+      {/* Filter Tabs with Counter Badges */}
+      <div className="notif-category-bar">
+        <button
+          type="button"
+          className={`notif-tab ${selectedCategory === 'all' ? 'active' : ''}`}
+          onClick={() => setSelectedCategory('all')}
+        >
+          <span>{lang === 'EN' ? 'All Alerts' : 'সব নোটিফিকেশন'}</span>
+          <span className="notif-pill-count">{notifData.totalCount}</span>
+        </button>
+
+        <button
+          type="button"
+          className={`notif-tab tab-admission ${selectedCategory === 'admission' ? 'active' : ''}`}
+          onClick={() => setSelectedCategory('admission')}
+        >
+          <UserCheck size={14} />
+          <span>{lang === 'EN' ? 'Online Admissions' : 'অনলাইন ভর্তি আবেদন'}</span>
+          {notifData.admissionCount > 0 && (
+            <span className="notif-pill-count pill-admission">{notifData.admissionCount}</span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          className={`notif-tab tab-course ${selectedCategory === 'course' ? 'active' : ''}`}
+          onClick={() => setSelectedCategory('course')}
+        >
+          <Clock size={14} />
+          <span>{lang === 'EN' ? 'Course Installments (1-Mo)' : 'কোর্স পরবর্তী কিস্তি (১ মাস)'}</span>
+          {notifData.courseCount > 0 && (
+            <span className="notif-pill-count pill-course">{notifData.courseCount}</span>
+          )}
+        </button>
+
+        <button
+          type="button"
+          className={`notif-tab tab-monthly ${selectedCategory === 'monthly' ? 'active' : ''}`}
+          onClick={() => setSelectedCategory('monthly')}
+        >
+          <AlertCircle size={14} />
+          <span>{lang === 'EN' ? 'Monthly Dues' : 'মাসিক বকেয়া বেতন'}</span>
+          {notifData.monthlyCount > 0 && (
+            <span className="notif-pill-count pill-monthly">{notifData.monthlyCount}</span>
+          )}
+        </button>
+      </div>
+
+      {/* Notifications List */}
       <div className="notifications-list">
-        {/* Pending Admissions Alert */}
-        {pendingAdmissions.map((admission) => (
-          <div key={admission.id} className="notification-card" style={{ borderLeft: '4px solid #0284c7' }}>
-            <div className="notif-icon">
-              <UserCheck size={24} color="#0284c7" />
-            </div>
-            <div className="notif-content">
-              <h4>{lang === 'EN' ? 'New Online Admission Application' : 'নতুন অনলাইন ভর্তি আবেদন'}</h4>
-              <p>
-                <strong>{admission.name}</strong> ({admission.phone}) {lang === 'EN' ? 'submitted an admission form for batch' : 'ভর্তি আবেদন করেছেন ব্যাচ'} <strong>{admission.preferredBatch}</strong>.
-              </p>
-              <span className="notif-time">{admission.date || (lang === 'EN' ? 'Recent application' : 'সাম্প্রতিক আবেদন')}</span>
-            </div>
-            <div className="notif-action">
-              <button 
-                className="btn-secondary" 
-                onClick={() => setActiveTab('online-admission')}
-              >
-                {lang === 'EN' ? 'Review Application' : 'আবেদন পর্যালোচনা'} <ArrowRight size={16} style={{ marginLeft: '4px' }} />
-              </button>
-            </div>
-          </div>
-        ))}
+        {displayedItems.length > 0 ? (
+          displayedItems.map((item) => {
+            // 1. ONLINE ADMISSION CARD
+            if (item.type === 'online_admission') {
+              return (
+                <div key={item.id} className="notification-card notif-card-admission">
+                  <div className="notif-icon icon-admission">
+                    <UserCheck size={24} />
+                  </div>
+                  <div className="notif-content">
+                    <div className="notif-header-line">
+                      <span className="notif-type-tag tag-admission">
+                        {lang === 'EN' ? 'Online Admission' : 'অনলাইন ভর্তি আবেদন'}
+                      </span>
+                      <span className="notif-time">{item.date}</span>
+                    </div>
 
-        {/* Payment Due Alerts */}
-        {dueStudents.map((notif) => (
-          <div key={notif.id} className="notification-card">
-            <div className="notif-icon">
-              <AlertCircle size={24} color="#ef4444" />
-            </div>
-            <div className="notif-content">
-              <h4>{lang === 'EN' ? 'Payment Due Alert' : 'বকেয়া ফি সতর্কতা'}</h4>
-              <p>
-                <strong>{notif.name}</strong> ({notif.batch}) {lang === 'EN' ? 'has an outstanding due of' : 'এর বকেয়া রয়েছে'} <strong>৳ {notif.dueAmount.toLocaleString()}</strong> ({notif.feeType === 'monthly' ? t.badgeMonthly : t.badgeCourse}).
-              </p>
-              <span className="notif-time">{lang === 'EN' ? 'Due for collection' : 'আদায়যোগ্য বকেয়া'}</span>
-            </div>
-            <div className="notif-action">
-              <button 
-                className="btn-secondary" 
-                onClick={() => setActiveTab('due-inbox')}
-              >
-                {t.reviewDues} <ArrowRight size={16} style={{ marginLeft: '4px' }} />
-              </button>
-            </div>
-          </div>
-        ))}
+                    <h4>{lang === 'EN' ? item.titleEn : item.titleBn}</h4>
 
-        {dueStudents.length === 0 && pendingAdmissions.length === 0 && (
+                    <div className="notif-details-grid">
+                      <div className="notif-detail-row">
+                        <span className="detail-label">{lang === 'EN' ? 'Student Name:' : 'শিক্ষার্থীর নাম:'}</span>
+                        <strong className="detail-value">{item.applicantName}</strong>
+                      </div>
+                      <div className="notif-detail-row">
+                        <span className="detail-label">{lang === 'EN' ? 'Batch:' : 'আবেদিত ব্যাচ:'}</span>
+                        <span className="badge-batch-pill">{item.batch}</span>
+                      </div>
+                      <div className="notif-detail-row">
+                        <span className="detail-label">{lang === 'EN' ? 'Student Phone:' : 'শিক্ষার্থীর মোবাইল:'}</span>
+                        <div className="phone-copy-wrap">
+                          <a href={`tel:${item.phone}`} className="phone-link">{item.phone}</a>
+                          <button
+                            type="button"
+                            className="btn-copy-mini"
+                            title="Copy number"
+                            onClick={() => handleCopy(item.phone, `stu-${item.id}`, 'শিক্ষার্থীর মোবাইল নম্বর')}
+                          >
+                            {copiedKey === `stu-${item.id}` ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                          </button>
+                        </div>
+                      </div>
+                      {item.guardianPhone && (
+                        <div className="notif-detail-row">
+                          <span className="detail-label">{lang === 'EN' ? 'Guardian Phone:' : 'অভিভাবকের নম্বর:'}</span>
+                          <div className="phone-copy-wrap">
+                            <a href={`tel:${item.guardianPhone}`} className="phone-link">{item.guardianPhone}</a>
+                            <button
+                              type="button"
+                              className="btn-copy-mini"
+                              title="Copy guardian number"
+                              onClick={() => handleCopy(item.guardianPhone, `g-${item.id}`, 'অভিভাবকের মোবাইল নম্বর')}
+                            >
+                              {copiedKey === `g-${item.id}` ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="notif-action-row">
+                      <button 
+                        type="button"
+                        className="btn-notif-action btn-primary-action" 
+                        onClick={() => setActiveTab('online-admission')}
+                      >
+                        {lang === 'EN' ? 'Review & Admit' : 'আবেদন দেখুন ও ভর্তি সম্পন্ন করুন'} 
+                        <ArrowRight size={15} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
+            // 2. COURSE INSTALLMENT (1-MONTH PASSED) CARD
+            if (item.type === 'course_installment') {
+              return (
+                <div key={item.id} className="notification-card notif-card-course">
+                  <div className="notif-icon icon-course">
+                    <Clock size={24} />
+                  </div>
+                  <div className="notif-content">
+                    <div className="notif-header-line">
+                      <span className="notif-type-tag tag-course">
+                        {lang === 'EN' ? 'Course Installment Due (1-Month Passed)' : 'কোর্স ফি পরবর্তী কিস্তি (১ মাস পূর্ণ)'}
+                      </span>
+                      <span className="notif-time-passed">
+                        {lang === 'EN' ? `${item.daysElapsed} days since payment` : `পূর্ববর্তী পেমেন্টের ${item.daysElapsed} দিন অতিক্রান্ত`}
+                      </span>
+                    </div>
+
+                    <h4>
+                      {lang === 'EN' ? item.titleEn : item.titleBn} — <strong>{item.studentName}</strong>
+                    </h4>
+
+                    <div className="notif-details-grid">
+                      <div className="notif-detail-row">
+                        <span className="detail-label">{lang === 'EN' ? 'Batch:' : 'ব্যাচ:'}</span>
+                        <span className="badge-batch-pill">{item.batch}</span>
+                      </div>
+                      <div className="notif-detail-row">
+                        <span className="detail-label">{lang === 'EN' ? 'Student Phone:' : 'মোবাইল নম্বর:'}</span>
+                        <div className="phone-copy-wrap">
+                          <a href={`tel:${item.phone}`} className="phone-link">{item.phone}</a>
+                          <button
+                            type="button"
+                            className="btn-copy-mini"
+                            title="Copy student number"
+                            onClick={() => handleCopy(item.phone, `stu-${item.id}`, 'শিক্ষার্থীর মোবাইল নম্বর')}
+                          >
+                            {copiedKey === `stu-${item.id}` ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                          </button>
+                        </div>
+                      </div>
+                      {item.guardianPhone && (
+                        <div className="notif-detail-row">
+                          <span className="detail-label">{lang === 'EN' ? 'Guardian Phone:' : 'অভিভাবকের নম্বর:'}</span>
+                          <div className="phone-copy-wrap">
+                            <a href={`tel:${item.guardianPhone}`} className="phone-link">{item.guardianPhone}</a>
+                            <button
+                              type="button"
+                              className="btn-copy-mini"
+                              title="Copy guardian number"
+                              onClick={() => handleCopy(item.guardianPhone, `g-${item.id}`, 'অভিভাবকের মোবাইল নম্বর')}
+                            >
+                              {copiedKey === `g-${item.id}` ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <div className="notif-detail-row">
+                        <span className="detail-label">{lang === 'EN' ? 'Last Payment:' : 'পূর্ববর্তী পেমেন্ট:'}</span>
+                        <span className="detail-value">{item.lastPaymentDate} {item.lastPaymentAmount ? `(৳ ${item.lastPaymentAmount.toLocaleString()})` : ''}</span>
+                      </div>
+                    </div>
+
+                    {/* Financial Summary Strip */}
+                    <div className="notif-kpi-strip strip-course">
+                      <div className="kpi-strip-item">
+                        <span className="kpi-strip-label">{lang === 'EN' ? 'Total Course Fee' : 'মোট কোর্স ফি'}</span>
+                        <span className="kpi-strip-val">৳ {item.totalFee.toLocaleString()}</span>
+                      </div>
+                      <div className="kpi-strip-item">
+                        <span className="kpi-strip-label">{lang === 'EN' ? 'Paid' : 'পরিশোধিত'}</span>
+                        <span className="kpi-strip-val val-success">৳ {item.paidAmount.toLocaleString()}</span>
+                      </div>
+                      <div className="kpi-strip-item">
+                        <span className="kpi-strip-label">{lang === 'EN' ? 'Total Due' : 'মোট বকেয়া'}</span>
+                        <span className="kpi-strip-val val-due">৳ {item.dueAmount.toLocaleString()}</span>
+                      </div>
+                      <div className="kpi-strip-item highlight-box">
+                        <span className="kpi-strip-label">{lang === 'EN' ? 'Next Installment' : 'পরবর্তী কিস্তি'}</span>
+                        <span className="kpi-strip-val val-next">৳ {item.installmentAmount.toLocaleString()}</span>
+                      </div>
+                    </div>
+
+                    <div className="notif-action-row">
+                      <button 
+                        type="button"
+                        className="btn-notif-action btn-primary-action btn-amber"
+                        onClick={() => handleOpenQuickCollect(item)}
+                      >
+                        <CreditCard size={15} />
+                        {lang === 'EN' ? 'Collect Installment' : 'কিস্তি গ্রহণ করুন'}
+                      </button>
+
+                      <button 
+                        type="button"
+                        className="btn-notif-action btn-secondary-action"
+                        onClick={() => handleCopySms(item, 'course')}
+                      >
+                        <Send size={14} />
+                        {lang === 'EN' ? 'Copy SMS Reminder' : 'এসএমএস রিমাইন্ডার কপি'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
+            // 3. MONTHLY TUITION DUE CARD
+            if (item.type === 'monthly_due') {
+              return (
+                <div key={item.id} className="notification-card notif-card-monthly">
+                  <div className="notif-icon icon-monthly">
+                    <AlertCircle size={24} />
+                  </div>
+                  <div className="notif-content">
+                    <div className="notif-header-line">
+                      <span className="notif-type-tag tag-monthly">
+                        {lang === 'EN' ? 'Monthly Tuition Due' : 'মাসিক বেতন বকেয়া'}
+                      </span>
+                      <span className="notif-badge-danger">
+                        ৳ {item.dueAmount.toLocaleString()} {lang === 'EN' ? 'Due' : 'বকেয়া'}
+                      </span>
+                    </div>
+
+                    <h4>
+                      {lang === 'EN' ? item.titleEn : item.titleBn} — <strong>{item.studentName}</strong>
+                    </h4>
+
+                    <div className="notif-details-grid">
+                      <div className="notif-detail-row">
+                        <span className="detail-label">{lang === 'EN' ? 'Batch:' : 'ব্যাচ:'}</span>
+                        <span className="badge-batch-pill">{item.batch}</span>
+                      </div>
+                      <div className="notif-detail-row">
+                        <span className="detail-label">{lang === 'EN' ? 'Student Phone:' : 'মোবাইল নম্বর:'}</span>
+                        <div className="phone-copy-wrap">
+                          <a href={`tel:${item.phone}`} className="phone-link">{item.phone}</a>
+                          <button
+                            type="button"
+                            className="btn-copy-mini"
+                            title="Copy number"
+                            onClick={() => handleCopy(item.phone, `stu-${item.id}`, 'শিক্ষার্থীর মোবাইল নম্বর')}
+                          >
+                            {copiedKey === `stu-${item.id}` ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                          </button>
+                        </div>
+                      </div>
+                      {item.guardianPhone && (
+                        <div className="notif-detail-row">
+                          <span className="detail-label">{lang === 'EN' ? 'Guardian Phone:' : 'অভিভাবকের নম্বর:'}</span>
+                          <div className="phone-copy-wrap">
+                            <a href={`tel:${item.guardianPhone}`} className="phone-link">{item.guardianPhone}</a>
+                            <button
+                              type="button"
+                              className="btn-copy-mini"
+                              title="Copy guardian number"
+                              onClick={() => handleCopy(item.guardianPhone, `g-${item.id}`, 'অভিভাবকের মোবাইল নম্বর')}
+                            >
+                              {copiedKey === `g-${item.id}` ? <Check size={12} color="#16a34a" /> : <Copy size={12} />}
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <div className="notif-detail-row">
+                        <span className="detail-label">{lang === 'EN' ? 'Monthly Fee:' : 'মাসিক ফি:'}</span>
+                        <strong className="detail-value">৳ {item.monthlyFee.toLocaleString()}</strong>
+                      </div>
+                    </div>
+
+                    <div className="notif-action-row">
+                      <button 
+                        type="button"
+                        className="btn-notif-action btn-primary-action btn-danger-action"
+                        onClick={() => handleOpenQuickCollect(item)}
+                      >
+                        <CreditCard size={15} />
+                        {lang === 'EN' ? 'Collect Monthly Fee' : 'বেতন গ্রহণ করুন'}
+                      </button>
+
+                      <button 
+                        type="button"
+                        className="btn-notif-action btn-secondary-action"
+                        onClick={() => handleCopySms(item, 'monthly')}
+                      >
+                        <Send size={14} />
+                        {lang === 'EN' ? 'Copy SMS Reminder' : 'এসএমএস রিমাইন্ডার কপি'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
+            return null;
+          })
+        ) : (
           <div className="empty-state-box">
             <Bell size={48} color="#cbd5e1" style={{ marginBottom: '1rem' }} />
-            <p>{lang === 'EN' ? "You're all caught up! No active alerts or pending items." : "সবকিছু হালনাগাদ রয়েছে! বর্তমানে কোনো বকেয়া বা অপেক্ষমাণ আবেদন নেই।"}</p>
+            <h3>{lang === 'EN' ? 'All caught up!' : 'সবকিছু হালনাগাদ রয়েছে!'}</h3>
+            <p>
+              {lang === 'EN' 
+                ? 'No pending online admission requests, 1-month course installments, or monthly dues right now.' 
+                : 'বর্তমানে কোনো নতুন ভর্তি আবেদন, কোর্স ফি কিস্তি বকেয়া বা মাসিক বেতন বকেয়া নেই।'}
+            </p>
           </div>
         )}
       </div>
+
+      {/* QUICK PAYMENT COLLECTION MODAL */}
+      {collectingStudent && (
+        <div className="notif-modal-overlay">
+          <div className="notif-modal-card">
+            <div className="notif-modal-header">
+              <div>
+                <h3>{lang === 'EN' ? 'Collect Payment' : 'পেমেন্ট গ্রহণ'}</h3>
+                <p>{collectingStudent.name} ({collectingStudent.batch})</p>
+              </div>
+              <button 
+                type="button" 
+                className="btn-close-modal" 
+                onClick={() => setCollectingStudent(null)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleConfirmQuickCollect} className="notif-modal-form">
+              <div className="form-group">
+                <label>{lang === 'EN' ? 'Collection Amount (৳)' : 'আদায়কৃত টাকা (৳)'}</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  value={payAmount}
+                  onChange={(e) => setPayAmount(e.target.value)}
+                  placeholder="e.g. 2000"
+                  required
+                  autoFocus
+                />
+              </div>
+
+              <div className="form-group">
+                <label>{lang === 'EN' ? 'Payment Method' : 'পেমেন্ট মাধ্যম'}</label>
+                <select
+                  className="form-control"
+                  value={payMethod}
+                  onChange={(e) => setPayMethod(e.target.value)}
+                >
+                  <option value="Cash">Cash (নগদ)</option>
+                  <option value="bKash">bKash (বিকাশ)</option>
+                  <option value="Nagad">Nagad (নগদ)</option>
+                  <option value="Rocket">Rocket (রকেট)</option>
+                  <option value="Bank">Bank Transfer</option>
+                </select>
+              </div>
+
+              <div className="notif-modal-actions">
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => setCollectingStudent(null)}
+                >
+                  {lang === 'EN' ? 'Cancel' : 'বাতিল'}
+                </button>
+                <button
+                  type="submit"
+                  className="btn-confirm-collect"
+                >
+                  <Check size={16} />
+                  <span>{lang === 'EN' ? 'Confirm Payment' : 'পেমেন্ট নিশ্চিত করুন'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

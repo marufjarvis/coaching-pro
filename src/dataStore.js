@@ -614,6 +614,152 @@ export const dataStore = {
     return { dueAmount, isDue };
   },
 
+  // Centralized Smart Notification Engine
+  getNotifications(refDate = new Date()) {
+    const students = this.getStudents().filter(s => s.status === 'Active');
+    const payments = this.getPayments();
+    const pendingAdmissions = this.getPendingAdmissions();
+    const now = refDate instanceof Date ? refDate : new Date();
+
+    // 1. ONLINE ADMISSION NOTIFICATIONS (নতুন অনলাইন এডমিশন রিকুয়েস্ট)
+    const onlineAdmissions = pendingAdmissions.map(adm => ({
+      id: `adm-${adm.id || Math.random().toString().slice(2, 7)}`,
+      type: 'online_admission',
+      titleEn: 'New Online Admission Request',
+      titleBn: 'নতুন অনলাইন ভর্তি আবেদন এসেছে',
+      applicantName: adm.name,
+      phone: adm.phone,
+      guardianPhone: adm.guardianPhone,
+      batch: adm.preferredBatch || adm.batch || 'Unassigned',
+      date: adm.date || new Date().toLocaleDateString('en-GB'),
+      status: adm.status || 'Pending',
+      raw: adm
+    }));
+
+    // 2. COURSE SYSTEM: 1 month after payment (or admission) next installment due
+    // (পেমেন্ট করা একমাস হয়ে গেলেই পরবর্তী পেমেন্ট নোটিফিকেশন আসবে কোর্স সিস্টেম এ যারা ভর্তি হবে তাদের)
+    const courseDues = [];
+
+    // 3. MONTHLY SYSTEM: Monthly fee dues
+    // (প্রতি মাসে যাদের বেতন ডিও আসবে তাদের মেনশন করে নোটিফিকেশন আসবে)
+    const monthlyDues = [];
+
+    students.forEach(student => {
+      const isCourse = student.feeType === 'course';
+      const totalFee = Number(student.feeAmount) || 0;
+      const paid = Number(student.paidAmount) || 0;
+      const dueAmount = Math.max(0, totalFee - paid);
+
+      if (isCourse) {
+        if (dueAmount > 0) {
+          // Find student payments sorted by date descending
+          const stuPayments = payments
+            .filter(p => p.studentId === student.id || p.studentName === student.name)
+            .sort((a, b) => {
+              const dA = parseDateString(a.date) || new Date(0);
+              const dB = parseDateString(b.date) || new Date(0);
+              return dB.getTime() - dA.getTime();
+            });
+
+          let referenceDateStr = null;
+          let lastPaymentAmount = null;
+
+          if (stuPayments.length > 0) {
+            referenceDateStr = stuPayments[0].date;
+            lastPaymentAmount = stuPayments[0].amount;
+          } else if (student.admissionDate) {
+            referenceDateStr = student.admissionDate;
+          }
+
+          const lastDateObj = parseDateString(referenceDateStr);
+          let daysElapsed = 0;
+          let isOneMonthElapsed = false;
+
+          if (lastDateObj) {
+            daysElapsed = Math.floor((now.getTime() - lastDateObj.getTime()) / (1000 * 60 * 60 * 24));
+            const oneMonthLater = new Date(lastDateObj.getTime());
+            oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+            if (now >= oneMonthLater || daysElapsed >= 30) {
+              isOneMonthElapsed = true;
+            }
+          } else {
+            isOneMonthElapsed = true;
+            daysElapsed = 30;
+          }
+
+          // Check if specific next installment date is provided and reached
+          if (student.nextInstallmentDate) {
+            const nextDate = parseDateString(student.nextInstallmentDate);
+            if (nextDate && now >= nextDate) {
+              isOneMonthElapsed = true;
+            }
+          }
+
+          if (isOneMonthElapsed) {
+            const totalInstallments = Number(student.installments) || 2;
+            const remainingInstallments = Math.max(1, totalInstallments - stuPayments.length);
+            const installmentAmount = Math.round(dueAmount / remainingInstallments);
+
+            courseDues.push({
+              id: `course-${student.id}`,
+              type: 'course_installment',
+              titleEn: 'Course Fee Next Installment Due (1 Month Passed)',
+              titleBn: 'কোর্স ফি পরবর্তী কিস্তি প্রদানের সময় হয়েছে (১ মাস পূর্ণ)',
+              studentId: student.id,
+              studentName: student.name,
+              batch: student.batch,
+              phone: student.phone,
+              guardianPhone: student.guardianPhone,
+              totalFee,
+              paidAmount: paid,
+              dueAmount,
+              installmentAmount,
+              lastPaymentDate: referenceDateStr || 'ভর্তির তারিখ',
+              lastPaymentAmount,
+              daysElapsed,
+              installmentsCount: totalInstallments,
+              installmentsPaid: stuPayments.length,
+              studentObj: student
+            });
+          }
+        }
+      } else {
+        // Monthly tuition fee
+        if (dueAmount > 0) {
+          monthlyDues.push({
+            id: `monthly-${student.id}`,
+            type: 'monthly_due',
+            titleEn: 'Monthly Tuition Fee Due Alert',
+            titleBn: 'মাসিক কোচিং ফি বকেয়া রয়েছে',
+            studentId: student.id,
+            studentName: student.name,
+            batch: student.batch,
+            phone: student.phone,
+            guardianPhone: student.guardianPhone,
+            monthlyFee: totalFee,
+            paidAmount: paid,
+            dueAmount,
+            admissionDate: student.admissionDate,
+            studentObj: student
+          });
+        }
+      }
+    });
+
+    const totalCount = onlineAdmissions.length + courseDues.length + monthlyDues.length;
+
+    return {
+      all: [...onlineAdmissions, ...courseDues, ...monthlyDues],
+      onlineAdmissions,
+      courseDues,
+      monthlyDues,
+      totalCount,
+      admissionCount: onlineAdmissions.length,
+      courseCount: courseDues.length,
+      monthlyCount: monthlyDues.length
+    };
+  },
+
   getStats() {
     const students = this.getStudents();
     const payments = this.getPayments();
@@ -651,11 +797,14 @@ export const dataStore = {
     // Total Expenses
     const totalExpenses = expenses.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
 
+    const notifs = this.getNotifications();
+
     return {
       activeStudentsCount: activeStudents.length,
       totalCollected,
       totalDues,
       dueCount,
+      notificationCount: notifs.totalCount,
       attendanceAvg,
       totalBatches: batches.length,
       totalExpenses,
@@ -663,6 +812,49 @@ export const dataStore = {
     };
   }
 };
+
+// Robust date string parsing helper (handles DD/MM/YYYY, YYYY-MM-DD, DD-MM-YYYY)
+export function parseDateString(dStr) {
+  if (!dStr) return null;
+  if (dStr instanceof Date) return dStr;
+  const str = String(dStr).trim();
+  
+  if (str.includes('/')) {
+    const parts = str.split('/');
+    if (parts.length === 3) {
+      const d = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10) - 1;
+      const y = parseInt(parts[2], 10);
+      if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
+        return new Date(y, m, d);
+      }
+    }
+  }
+  if (str.includes('-')) {
+    const parts = str.split('-');
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        // YYYY-MM-DD
+        const y = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10) - 1;
+        const d = parseInt(parts[2], 10);
+        if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
+          return new Date(y, m, d);
+        }
+      } else {
+        // DD-MM-YYYY
+        const d = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10) - 1;
+        const y = parseInt(parts[2], 10);
+        if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
+          return new Date(y, m, d);
+        }
+      }
+    }
+  }
+  const dt = new Date(str);
+  return isNaN(dt.getTime()) ? null : dt;
+}
 
 // Automatically sync with Laravel backend when loaded in browser
 if (typeof window !== 'undefined') {
