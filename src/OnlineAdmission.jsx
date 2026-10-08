@@ -124,19 +124,19 @@ function OnlineAdmission({ lang: propLang }) {
       paidAmount: 0
     });
 
-    // Remove from pending admissions list
+    // Remove from pending admissions list & sync with MySQL
+    dataStore.deletePendingAdmission(selectedApp.id);
     const updatedPending = pendingAdmissions.filter(app => app.id !== selectedApp.id);
     setPendingAdmissions(updatedPending);
-    localStorage.setItem('pendingAdmissions', JSON.stringify(updatedPending));
 
     setSelectedApp(null);
   };
 
   const handleReject = (id) => {
     if (window.confirm("Are you sure you want to reject this admission?")) {
+      dataStore.deletePendingAdmission(id);
       const updated = pendingAdmissions.filter(app => app.id !== id);
       setPendingAdmissions(updated);
-      localStorage.setItem('pendingAdmissions', JSON.stringify(updated));
     }
   };
 

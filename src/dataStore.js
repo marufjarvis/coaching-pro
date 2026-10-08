@@ -1,5 +1,8 @@
 // src/dataStore.js
 // Centralized reactive data store for Coaching Pro
+// Seamlessly backed by Laravel REST API + MySQL database with offline fallback
+
+import { api } from './api';
 
 const STORAGE_KEYS = {
   BATCHES: 'coachingBatches',
@@ -15,135 +18,78 @@ const STORAGE_KEYS = {
   DISMISSED_GUIDE: 'coachingDismissedGuide'
 };
 
-// Initial Seed Batches
-const DEFAULT_BATCHES = [
-  { id: 'BAT-01', name: 'Sat-6:45am' },
-  { id: 'BAT-02', name: 'Sat-7:45am' },
-  { id: 'BAT-03', name: 'Sat-9am' },
-  { id: 'BAT-04', name: 'Sat-10am' },
-  { id: 'BAT-05', name: 'Sat-2pm' },
-  { id: 'BAT-06', name: 'Sat-3pm' },
-  { id: 'BAT-07', name: 'Sat-4pm' },
-  { id: 'BAT-08', name: 'Sat-5pm' },
-  { id: 'BAT-09', name: 'Sun-6:45am' },
-  { id: 'BAT-10', name: 'Sun-8am' },
-  { id: 'BAT-11', name: 'Sun-9am' },
-  { id: 'BAT-12', name: 'Sun-10am' },
-];
-
-// Initial Seed Students
-const DEFAULT_STUDENTS = [
-  {
-    id: 'STU-66115',
-    name: 'Maruf Hossain',
-    initials: 'MH',
-    batch: 'Sat-6:45am',
-    status: 'Active',
-    phone: '01723619524',
-    guardianPhone: '01586232012',
-    feeType: 'monthly',
-    feeAmount: 500,
-    admissionFee: 200,
-    discount: 0,
-    installments: 1,
-    paidAmount: 500,
-    billingDate: '1st of every month',
-    admissionDate: '01/10/2026'
-  },
-  {
-    id: 'STU-45213',
-    name: 'Rakib Hasan',
-    initials: 'RH',
-    batch: 'Sat-6:45am',
-    status: 'Active',
-    phone: '01534343434',
-    guardianPhone: '01711122233',
-    feeType: 'course',
-    feeAmount: 4000,
-    discount: 0,
-    installments: 2,
-    paidAmount: 2000,
-    nextInstallmentDate: '01/11/2026',
-    admissionDate: '05/10/2026'
-  },
-  {
-    id: 'STU-10293',
-    name: 'Ayesha Siddiqua',
-    initials: 'AS',
-    batch: 'Sun-8am',
-    status: 'Active',
-    phone: '01912345678',
-    guardianPhone: '01811223344',
-    feeType: 'monthly',
-    feeAmount: 500,
-    admissionFee: 200,
-    discount: 0,
-    installments: 1,
-    paidAmount: 0,
-    billingDate: '1st of every month',
-    admissionDate: '15/09/2026'
-  }
-];
-
-// Initial Seed Payments
-const DEFAULT_PAYMENTS = [
-  {
-    id: 'TXN-1001',
-    studentId: 'STU-66115',
-    studentName: 'Maruf Hossain',
-    batch: 'Sat-6:45am',
-    amount: 500,
-    feeType: 'monthly',
-    method: 'bKash',
-    collectedBy: 'Admin',
-    date: '08/10/2026',
-    time: '10:30 AM',
-    note: 'October Monthly Fee'
-  },
-  {
-    id: 'TXN-1002',
-    studentId: 'STU-45213',
-    studentName: 'Rakib Hasan',
-    batch: 'Sat-6:45am',
-    amount: 2000,
-    feeType: 'course',
-    method: 'Cash',
-    collectedBy: 'Admin',
-    date: '05/10/2026',
-    time: '11:45 AM',
-    note: '1st Installment Admission Fee'
-  }
-];
-
-// Initial Seed Expenses
-const DEFAULT_EXPENSES = [
-  { id: 'EXP-101', title: 'Classroom Electricity Bill', amount: 850, category: 'Utilities', date: '2026-10-02' },
-  { id: 'EXP-102', title: 'Whiteboard Markers & Sheets', amount: 350, category: 'Materials', date: '2026-10-04' },
-  { id: 'EXP-103', title: 'Internet Wi-Fi Monthly Bill', amount: 600, category: 'Utilities', date: '2026-10-06' }
-];
-
-// Initial Seed Staff
-const DEFAULT_STAFF = [
-  { id: 1, name: 'Maruf Hossain', phone: '01723619524', role: 'Admin', status: 'Active' },
-  { id: 2, name: 'Sakib Ahmed', phone: '01822334455', role: 'Manager', status: 'Active' }
-];
-
-// Initial Seed Settings
-const DEFAULT_SETTINGS = {
-  coachingName: "Maruf's ICT Care",
-  phone: '01723619524',
-  address: 'Kushtia Govt. College Gate, Kushtia',
-  tagline: "Don't Memorise, Come To Learn",
-  currency: '৳',
-  adminPassword: 'admin'
-};
-
 // Dispatch Custom Event for Reactive State
 const notifyChange = () => {
-  window.dispatchEvent(new Event('coaching-data-change'));
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('coaching-data-change'));
+    window.dispatchEvent(new Event('storage'));
+  }
 };
 
 export const dataStore = {
+  // --- BACKEND SYNCHRONIZATION ---
+  async syncWithBackend() {
+    try {
+      const [
+        batches,
+        students,
+        payments,
+        attendance,
+        exams,
+        expenses,
+        staff,
+        settings,
+        onlineAdmissions
+      ] = await Promise.all([
+        api.getBatches().catch(() => null),
+        api.getStudents().catch(() => null),
+        api.getPayments().catch(() => null),
+        api.getAttendance().catch(() => null),
+        api.getExams().catch(() => null),
+        api.getExpenses().catch(() => null),
+        api.getStaff().catch(() => null),
+        api.getSettings().catch(() => null),
+        api.getOnlineAdmissions().catch(() => null),
+      ]);
+
+      if (batches && Array.isArray(batches)) {
+        localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(batches));
+      }
+      if (students && Array.isArray(students)) {
+        localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
+      }
+      if (payments && Array.isArray(payments)) {
+        localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(payments));
+      }
+      if (attendance && typeof attendance === 'object') {
+        localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(attendance));
+      }
+      if (exams && Array.isArray(exams)) {
+        localStorage.setItem(STORAGE_KEYS.EXAMS, JSON.stringify(exams));
+      }
+      if (expenses && Array.isArray(expenses)) {
+        localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(expenses));
+      }
+      if (staff && Array.isArray(staff)) {
+        localStorage.setItem(STORAGE_KEYS.STAFF, JSON.stringify(staff));
+      }
+      if (settings && typeof settings === 'object') {
+        localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+      }
+      if (onlineAdmissions && Array.isArray(onlineAdmissions)) {
+        localStorage.setItem(STORAGE_KEYS.PENDING_ADMISSIONS, JSON.stringify(onlineAdmissions));
+        localStorage.setItem('pendingStudents', JSON.stringify(onlineAdmissions));
+      }
+
+      notifyChange();
+      console.log('[DataStore] Successfully synced with Laravel backend (MySQL)');
+      return true;
+    } catch (err) {
+      console.warn('[DataStore] Backend sync failed, using offline cache:', err.message);
+      return false;
+    }
+  },
+
   // --- BATCHES ---
   getBatches() {
     try {
@@ -153,13 +99,12 @@ export const dataStore = {
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map(b => ({
             id: b.id || `BAT-${Math.random().toString().slice(2, 6)}`,
-            name: typeof b === 'string' ? b.trim() : b.name.trim()
+            name: typeof b === 'string' ? b.trim() : (b.name ? b.name.trim() : '')
           }));
         }
       }
     } catch (e) {}
-    localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(DEFAULT_BATCHES));
-    return DEFAULT_BATCHES;
+    return [];
   },
 
   saveBatches(batches) {
@@ -177,12 +122,25 @@ export const dataStore = {
       ? batchInput.trim() 
       : (batchInput && batchInput.name ? batchInput.name.trim() : '');
     if (!batchName) return null;
+
     const newBatch = {
       id: `BAT-${Date.now().toString().slice(-4)}`,
       name: batchName
     };
     const updated = [...batches, newBatch];
     this.saveBatches(updated);
+
+    // Sync to Laravel API in background
+    api.createBatch(batchName)
+      .then(res => {
+        if (res && res.id) {
+          const fresh = this.getBatches().map(b => b.name === batchName ? { ...b, id: res.id } : b);
+          localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(fresh));
+          notifyChange();
+        }
+      })
+      .catch(e => console.error('[API Batch Error]', e));
+
     return newBatch;
   },
 
@@ -193,12 +151,16 @@ export const dataStore = {
       : (updatedData && updatedData.name ? updatedData.name.trim() : '');
     const updated = batches.map(b => (b.id === id || b.name === id ? { ...b, name: newName || b.name } : b));
     this.saveBatches(updated);
+
+    api.updateBatch(id, newName).catch(e => console.error('[API Batch Update Error]', e));
   },
 
   deleteBatch(id) {
     const batches = this.getBatches();
     const updated = batches.filter(b => b.id !== id && b.name !== id);
     this.saveBatches(updated);
+
+    api.deleteBatch(id).catch(e => console.error('[API Batch Delete Error]', e));
   },
 
   // --- STUDENTS ---
@@ -210,8 +172,7 @@ export const dataStore = {
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch (e) {}
-    localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(DEFAULT_STUDENTS));
-    return DEFAULT_STUDENTS;
+    return [];
   },
 
   saveStudents(students) {
@@ -242,6 +203,24 @@ export const dataStore = {
     };
     const updated = [newStudent, ...students];
     this.saveStudents(updated);
+
+    // Sync to Laravel API
+    api.createStudent({
+      id: newStudent.id,
+      name: newStudent.name,
+      phone: newStudent.phone,
+      guardianPhone: newStudent.guardianPhone,
+      batch: newStudent.batch,
+      feeType: newStudent.feeType,
+      feeAmount: newStudent.feeAmount,
+      admissionFee: newStudent.admissionFee,
+      discount: newStudent.discount,
+      installments: newStudent.installments,
+      paidAmount: newStudent.paidAmount,
+      status: newStudent.status,
+      admissionDate: newStudent.admissionDate
+    }).catch(e => console.error('[API Add Student Error]', e));
+
     return newStudent;
   },
 
@@ -255,12 +234,16 @@ export const dataStore = {
       return s;
     });
     this.saveStudents(updated);
+
+    api.updateStudent(id, updatedData).catch(e => console.error('[API Update Student Error]', e));
   },
 
   deleteStudent(id) {
     const students = this.getStudents();
     const updated = students.filter(s => s.id !== id);
     this.saveStudents(updated);
+
+    api.deleteStudent(id).catch(e => console.error('[API Delete Student Error]', e));
   },
 
   // --- PAYMENTS ---
@@ -272,8 +255,7 @@ export const dataStore = {
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch (e) {}
-    localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(DEFAULT_PAYMENTS));
-    return DEFAULT_PAYMENTS;
+    return [];
   },
 
   savePayments(payments) {
@@ -320,6 +302,20 @@ export const dataStore = {
     const updatedPayments = [newTxn, ...payments];
     this.savePayments(updatedPayments);
 
+    // Sync to Laravel API
+    api.createPayment({
+      id: newTxn.id,
+      studentId: student.id,
+      studentName: student.name,
+      batch: student.batch,
+      amount: numericAmount,
+      method: newTxn.method,
+      collectedBy: newTxn.collectedBy,
+      date: newTxn.date,
+      time: newTxn.time,
+      note: newTxn.note
+    }).catch(e => console.error('[API Record Payment Error]', e));
+
     return newTxn;
   },
 
@@ -344,6 +340,9 @@ export const dataStore = {
     all[key] = records;
     localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(all));
     notifyChange();
+
+    // Sync to Laravel API
+    api.saveAttendance(date, batch, records).catch(e => console.error('[API Save Attendance Error]', e));
   },
 
   getStudentAttendanceStats(studentId) {
@@ -372,20 +371,7 @@ export const dataStore = {
         if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {}
-    const defaultExams = [
-      {
-        id: 'EXM-101',
-        name: 'Chapter 1 MCQ & Written Test',
-        batch: 'Sat-6:45am',
-        subject: 'ICT',
-        date: '2026-10-02',
-        totalMarks: 50,
-        passMarks: 40,
-        marks: { 'STU-66115': 46, 'STU-45213': 42 }
-      }
-    ];
-    localStorage.setItem(STORAGE_KEYS.EXAMS, JSON.stringify(defaultExams));
-    return defaultExams;
+    return [];
   },
 
   saveExams(exams) {
@@ -407,6 +393,21 @@ export const dataStore = {
     };
     const updated = [newExam, ...exams];
     this.saveExams(updated);
+
+    api.createExam({
+      name: newExam.name,
+      batch: newExam.batch,
+      subject: newExam.subject,
+      date: newExam.date,
+      totalMarks: newExam.totalMarks,
+      passMarks: newExam.passMarks
+    }).then(res => {
+      if (res && res.id) {
+        const fresh = this.getExams().map(e => e.id === newExam.id ? { ...e, id: res.id, db_id: res.db_id } : e);
+        this.saveExams(fresh);
+      }
+    }).catch(e => console.error('[API Create Exam Error]', e));
+
     return newExam;
   },
 
@@ -414,6 +415,16 @@ export const dataStore = {
     const exams = this.getExams();
     const updated = exams.map(e => e.id === examId ? { ...e, marks: { ...e.marks, ...marks } } : e);
     this.saveExams(updated);
+
+    api.saveExamMarks(examId, marks).catch(e => console.error('[API Save Exam Marks Error]', e));
+  },
+
+  deleteExam(id) {
+    const exams = this.getExams();
+    const updated = exams.filter(e => e.id !== id);
+    this.saveExams(updated);
+
+    api.deleteExam(id).catch(e => console.error('[API Delete Exam Error]', e));
   },
 
   // --- EXPENSES ---
@@ -425,8 +436,7 @@ export const dataStore = {
         if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {}
-    localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(DEFAULT_EXPENSES));
-    return DEFAULT_EXPENSES;
+    return [];
   },
 
   saveExpenses(expenses) {
@@ -445,6 +455,19 @@ export const dataStore = {
     };
     const updated = [newExp, ...expenses];
     this.saveExpenses(updated);
+
+    api.createExpense({
+      title: newExp.title,
+      amount: newExp.amount,
+      category: newExp.category,
+      date: newExp.date
+    }).then(res => {
+      if (res && res.id) {
+        const fresh = this.getExpenses().map(ex => ex.id === newExp.id ? { ...ex, id: res.id } : ex);
+        this.saveExpenses(fresh);
+      }
+    }).catch(e => console.error('[API Create Expense Error]', e));
+
     return newExp;
   },
 
@@ -452,6 +475,8 @@ export const dataStore = {
     const expenses = this.getExpenses();
     const updated = expenses.filter(e => e.id !== id);
     this.saveExpenses(updated);
+
+    api.deleteExpense(id).catch(e => console.error('[API Delete Expense Error]', e));
   },
 
   // --- STAFF ---
@@ -463,8 +488,7 @@ export const dataStore = {
         if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {}
-    localStorage.setItem(STORAGE_KEYS.STAFF, JSON.stringify(DEFAULT_STAFF));
-    return DEFAULT_STAFF;
+    return [];
   },
 
   saveStaff(staff) {
@@ -483,6 +507,14 @@ export const dataStore = {
     };
     const updated = [newMember, ...staff];
     this.saveStaff(updated);
+
+    api.createStaff({
+      name: newMember.name,
+      phone: newMember.phone,
+      role: newMember.role,
+      status: newMember.status
+    }).catch(e => console.error('[API Add Staff Error]', e));
+
     return newMember;
   },
 
@@ -490,19 +522,28 @@ export const dataStore = {
     const staff = this.getStaff();
     const updated = staff.filter(s => s.id !== id);
     this.saveStaff(updated);
+
+    api.deleteStaff(id).catch(e => console.error('[API Delete Staff Error]', e));
   },
 
   // --- SETTINGS ---
   getSettings() {
+    const defaultSettings = {
+      coachingName: "Maruf's ICT Care",
+      phone: '01723619524',
+      address: 'Kushtia Govt. College Gate, Kushtia',
+      tagline: "Don't Memorise, Come To Learn",
+      currency: '৳',
+      adminPassword: 'admin'
+    };
     try {
       const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (data) {
         const parsed = JSON.parse(data);
-        if (typeof parsed === 'object') return { ...DEFAULT_SETTINGS, ...parsed };
+        if (typeof parsed === 'object') return { ...defaultSettings, ...parsed };
       }
     } catch (e) {}
-    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
-    return DEFAULT_SETTINGS;
+    return defaultSettings;
   },
 
   saveSettings(settings) {
@@ -510,7 +551,43 @@ export const dataStore = {
     const updated = { ...current, ...settings };
     localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(updated));
     notifyChange();
+
+    api.updateSettings(updated).catch(e => console.error('[API Save Settings Error]', e));
     return updated;
+  },
+
+  // --- ONLINE ADMISSIONS ---
+  getPendingAdmissions() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.PENDING_ADMISSIONS);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    return [];
+  },
+
+  savePendingAdmissions(admissions) {
+    localStorage.setItem(STORAGE_KEYS.PENDING_ADMISSIONS, JSON.stringify(admissions));
+    localStorage.setItem('pendingStudents', JSON.stringify(admissions));
+    notifyChange();
+  },
+
+  addPendingAdmission(appData) {
+    const current = this.getPendingAdmissions();
+    const updated = [appData, ...current];
+    this.savePendingAdmissions(updated);
+
+    api.createOnlineAdmission(appData).catch(e => console.error('[API Online Admission Error]', e));
+  },
+
+  deletePendingAdmission(id) {
+    const current = this.getPendingAdmissions();
+    const updated = current.filter(a => a.id !== id);
+    this.savePendingAdmissions(updated);
+
+    api.deleteOnlineAdmission(id).catch(e => console.error('[API Delete Admission Error]', e));
   },
 
   // --- LANGUAGE MANAGEMENT ---
@@ -522,7 +599,9 @@ export const dataStore = {
     const selected = (lang === 'EN') ? 'EN' : 'BN';
     localStorage.setItem(STORAGE_KEYS.LANGUAGE, selected);
     notifyChange();
-    window.dispatchEvent(new CustomEvent('coaching-language-change', { detail: selected }));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('coaching-language-change', { detail: selected }));
+    }
     return selected;
   },
 
@@ -584,3 +663,13 @@ export const dataStore = {
     };
   }
 };
+
+// Automatically sync with Laravel backend when loaded in browser
+if (typeof window !== 'undefined') {
+  dataStore.syncWithBackend();
+
+  // Re-sync on tab refocus to get any updates made elsewhere
+  window.addEventListener('focus', () => {
+    dataStore.syncWithBackend();
+  });
+}

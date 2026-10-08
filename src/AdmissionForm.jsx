@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './admission.css';
+import { dataStore } from './dataStore';
 
 function AdmissionForm({ batch }) {
   const [formData, setFormData] = useState({
@@ -23,17 +24,8 @@ function AdmissionForm({ batch }) {
       date: new Date().toLocaleDateString('en-GB')
     };
 
-    // Save to pendingAdmissions for Online Admission review
-    const pendingAdmissions = JSON.parse(localStorage.getItem('pendingAdmissions') || '[]');
-    pendingAdmissions.unshift(appData);
-    localStorage.setItem('pendingAdmissions', JSON.stringify(pendingAdmissions));
-
-    // Also sync to pendingStudents
-    const pendingStudents = JSON.parse(localStorage.getItem('pendingStudents') || '[]');
-    pendingStudents.unshift(appData);
-    localStorage.setItem('pendingStudents', JSON.stringify(pendingStudents));
-
-    window.dispatchEvent(new Event('storage'));
+    // Save to dataStore (syncs to MySQL & localStorage)
+    dataStore.addPendingAdmission(appData);
     setSubmitted(true);
   };
 
