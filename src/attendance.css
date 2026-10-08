@@ -1,0 +1,263 @@
+.attendance-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.setup-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #00a1ff;
+  border-left: 4px solid #00a1ff;
+  box-shadow: 0 2px 4px rgba(0, 161, 255, 0.05);
+}
+
+.setup-card h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.setup-card p {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.setup-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 1rem;
+}
+
+.attendance-kpis {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.status-card {
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-card.present {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+.status-card.present .status-header {
+  color: #166534;
+}
+.status-card.present .status-value {
+  color: #15803d;
+}
+
+.status-card.absent {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+.status-card.absent .status-header {
+  color: #991b1b;
+}
+.status-card.absent .status-value {
+  color: #b91c1c;
+}
+
+.status-card.late {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+}
+.status-card.late .status-header {
+  color: #92400e;
+}
+.status-card.late .status-value {
+  color: #b45309;
+}
+
+.status-card.leave {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+.status-card.leave .status-header {
+  color: #475569;
+}
+.status-card.leave .status-value {
+  color: #1e293b;
+}
+
+.status-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.status-card.small {
+  padding: 0.75rem 1rem;
+}
+.status-card.small .status-value {
+  font-size: 1.25rem;
+}
+
+.attendance-table th, .attendance-table td {
+  vertical-align: middle;
+}
+
+.status-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.status-btn:hover {
+  background: #f1f5f9;
+}
+
+.status-btn.active-present {
+  background: #059669;
+  color: white;
+  border-color: #059669;
+}
+.status-btn.active-absent {
+  background: #dc2626;
+  color: white;
+  border-color: #dc2626;
+}
+.status-btn.active-late {
+  background: #d97706;
+  color: white;
+  border-color: #d97706;
+}
+.status-btn.active-leave {
+  background: #475569;
+  color: white;
+  border-color: #475569;
+}
+
+.alert-box {
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.alert-box.success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.alert-box.warning {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.phones-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.phone-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.phone-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: white;
+}
+
+.phone-icon.s-icon {
+  background: #6366f1;
+}
+
+.phone-icon.g-icon {
+  background: #334155;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-present {
+  background: #dcfce7;
+  color: #166534;
+}
+.badge-absent {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.badge-late {
+  background: #fef3c7;
+  color: #92400e;
+}
+.badge-leave {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.text-muted {
+  color: #94a3b8;
+}
+
+.phone-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 1rem;
+}
+
+.large-modal {
+  max-width: 800px;
+}

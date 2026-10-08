@@ -1,0 +1,68 @@
+.exams-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.exams-container .fee-followup-tag {
+  color: #7c3aed;
+}
+
+.exams-kpis {
+  grid-template-columns: 1.5fr 1fr 1fr;
+}
+
+.summary-card.highlight-purple {
+  background: #f5f3ff;
+  border-color: #ede9fe;
+}
+
+.summary-card.highlight-purple .summary-value {
+  color: #6d28d9;
+}
+
+.summary-card.highlight-purple .bg-icon {
+  color: #ede9fe;
+}
+
+.btn-purple {
+  background: #7c3aed;
+  color: white;
+  border: none;
+}
+
+.btn-purple:hover {
+  background: #6d28d9;
+}
+
+.empty-icon-circle.purple-icon {
+  background: #f5f3ff;
+  border-color: #ede9fe;
+}
+
+.empty-icon-circle.purple-icon .zero-icon {
+  color: #8b5cf6;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.text-danger {
+  color: #ef4444;
+}
+
+.text-danger:hover {
+  color: #dc2626;
+  background: #fef2f2;
+}
