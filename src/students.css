@@ -274,8 +274,9 @@
   text-transform: uppercase;
 }
 
-.form-group input,
-.filter-select.full-width {
+.modal-body .form-group input,
+.student-modal .form-group input,
+.student-modal .filter-select.full-width {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid #e2e8f0;
@@ -286,8 +287,9 @@
   box-sizing: border-box;
 }
 
-.form-group input:focus,
-.filter-select.full-width:focus {
+.modal-body .form-group input:focus,
+.student-modal .form-group input:focus,
+.student-modal .filter-select.full-width:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(0, 161, 255, 0.1);
 }

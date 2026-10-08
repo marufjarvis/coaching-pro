@@ -141,6 +141,7 @@ function Payments({ setActiveTab }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="filter-input" 
+              style={{ paddingLeft: '42px' }}
             />
           </div>
         </div>

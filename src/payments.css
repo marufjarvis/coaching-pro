@@ -40,11 +40,14 @@
   left: 14px;
   color: #94a3b8;
   pointer-events: none;
+  z-index: 2;
 }
 
-.filter-input {
+.filter-card .filter-input,
+.search-input-wrapper .filter-input,
+.search-input-wrapper input {
   width: 100%;
-  padding: 10px 16px 10px 42px;
+  padding: 10px 16px 10px 42px !important;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 0.95rem;
@@ -53,9 +56,12 @@
   background-color: white;
   outline: none;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
-.filter-input:focus {
+.filter-card .filter-input:focus,
+.search-input-wrapper .filter-input:focus,
+.search-input-wrapper input:focus {
   border-color: #00A1FF;
   box-shadow: 0 0 0 3px rgba(0, 161, 255, 0.12);
 }
