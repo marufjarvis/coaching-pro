@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { CalendarCheck, FileText, CheckCircle2, UserX, Clock, UserMinus, Copy, X } from 'lucide-react';
+import { CalendarCheck, FileText, CheckCircle2, UserX, Clock, UserMinus, Copy, Check, X } from 'lucide-react';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './attendance.css';
 
 function Attendance({ lang: propLang }) {
-  const { t } = useTranslation(propLang);
+  const { t, lang } = useTranslation(propLang);
   const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [allStudents, setAllStudents] = useState(() => dataStore.getStudents());
   const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
@@ -13,6 +13,8 @@ function Attendance({ lang: propLang }) {
   const [attendanceData, setAttendanceData] = useState({});
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [saveSuccessMsg, setSaveSuccessMsg] = useState('');
+  const [copiedPhoneKey, setCopiedPhoneKey] = useState(null);
+  const [copyToast, setCopyToast] = useState('');
 
   useEffect(() => {
     const handleSync = () => {
@@ -74,6 +76,15 @@ function Attendance({ lang: propLang }) {
     dataStore.saveAttendanceForDateAndBatch(date, selectedBatch, attendanceData);
     setSaveSuccessMsg(t.attendanceSavedSuccess);
     setTimeout(() => setSaveSuccessMsg(''), 3000);
+  };
+
+  const handleCopyPhone = (number, key, label) => {
+    if (!number || number === '—') return;
+    navigator.clipboard.writeText(number);
+    setCopiedPhoneKey(key);
+    setCopyToast(`${number} (${label}) ${lang === 'EN' ? 'copied!' : 'কপি হয়েছে!'}`);
+    setTimeout(() => setCopiedPhoneKey(null), 2000);
+    setTimeout(() => setCopyToast(''), 3000);
   };
 
   const counts = {
@@ -185,7 +196,7 @@ function Attendance({ lang: propLang }) {
                   <th>{t.thSerial}</th>
                   <th>{t.thStudentName}</th>
                   <th>{t.thStudentId}</th>
-                  <th>{t.thPhone}</th>
+                  <th>{t.thStudentPhone}</th>
                   <th>{t.thAttendanceStatus}</th>
                 </tr>
               </thead>
@@ -195,7 +206,23 @@ function Attendance({ lang: propLang }) {
                     <td>{index + 1}</td>
                     <td><strong>{student.name}</strong></td>
                     <td>{student.id}</td>
-                    <td>{student.phone || '—'}</td>
+                    <td>
+                      {student.phone ? (
+                        <div className="copy-phone-cell">
+                          <span className="phone-number-text">{student.phone}</span>
+                          <button
+                            type="button"
+                            className={`btn-copy-phone ${copiedPhoneKey === student.id ? 'copied' : ''}`}
+                            onClick={() => handleCopyPhone(student.phone, student.id, lang === 'EN' ? 'Phone' : 'মোবাইল')}
+                            title={copiedPhoneKey === student.id ? (lang === 'EN' ? 'Copied!' : 'কপি হয়েছে!') : (lang === 'EN' ? 'Click to copy' : 'কপি করতে ক্লিক করুন')}
+                          >
+                            {copiedPhoneKey === student.id ? <Check size={14} color="#16a34a" /> : <Copy size={14} />}
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
+                    </td>
                     <td>
                       <div className="status-buttons">
                         <button 
@@ -248,6 +275,13 @@ function Attendance({ lang: propLang }) {
               <button className="btn-close-modal" onClick={() => setIsReportOpen(false)}><X size={20} /></button>
             </div>
             <div className="modal-body">
+              {copyToast && (
+                <div className="copy-toast-badge">
+                  <Check size={14} color="#166534" />
+                  <span>{copyToast}</span>
+                </div>
+              )}
+
               <div className="summary-cards attendance-kpis mb-2">
                 <div className="summary-card status-card present small">
                   <div className="status-header"><CheckCircle2 size={14} /> {t.present.toUpperCase()}</div>
@@ -267,35 +301,84 @@ function Attendance({ lang: propLang }) {
                 </div>
               </div>
 
-              <table className="data-table mt-2">
-                <thead>
-                  <tr>
-                    <th>{t.thSerial}</th>
-                    <th>{t.thStudentName}</th>
-                    <th>{t.thStudentId} & {t.thBatch}</th>
-                    <th>{t.thPhone}</th>
-                    <th>{t.thStatus}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {batchStudents.map((student, index) => {
-                    const status = attendanceData[student.id] || 'Present';
-                    return (
-                      <tr key={student.id}>
-                        <td>{index + 1}</td>
-                        <td><strong>{student.name}</strong></td>
-                        <td>{student.id} • {student.batch}</td>
-                        <td>{student.phone || student.guardianPhone || '—'}</td>
-                        <td>
-                          <span className={`status-badge ${status === 'Present' ? 'badge-present' : status === 'Absent' ? 'badge-absent' : status === 'Late' ? 'badge-late' : 'badge-leave'}`}>
-                            {status === 'Present' ? t.present : status === 'Absent' ? t.absent : status === 'Late' ? t.late : t.leave}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <div className="table-responsive">
+                <table className="data-table mt-2">
+                  <thead>
+                    <tr>
+                      <th style={{ width: '40px' }}>{t.thSerial}</th>
+                      <th>{t.thStudentName}</th>
+                      <th>{t.thStudentId} & {t.thBatch}</th>
+                      <th>{t.thStudentPhone}</th>
+                      <th>{t.thGuardianPhone}</th>
+                      <th>{t.thStatus}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {batchStudents.map((student, index) => {
+                      const status = attendanceData[student.id] || 'Present';
+                      const studentPhoneKey = `${student.id}-stu`;
+                      const guardianPhoneKey = `${student.id}-guard`;
+                      return (
+                        <tr key={student.id}>
+                          <td>{index + 1}</td>
+                          <td><strong>{student.name}</strong></td>
+                          <td>
+                            <span style={{ fontWeight: 600 }}>{student.id}</span>
+                            <span className="text-muted" style={{ display: 'block', fontSize: '0.8rem' }}>{student.batch}</span>
+                          </td>
+                          <td>
+                            {student.phone ? (
+                              <div className="copy-phone-cell">
+                                <span className="phone-number-text">{student.phone}</span>
+                                <button
+                                  type="button"
+                                  className={`btn-copy-phone ${copiedPhoneKey === studentPhoneKey ? 'copied' : ''}`}
+                                  onClick={() => handleCopyPhone(student.phone, studentPhoneKey, lang === 'EN' ? 'Student' : 'শিক্ষার্থী')}
+                                  title={copiedPhoneKey === studentPhoneKey ? (lang === 'EN' ? 'Copied!' : 'কপি হয়েছে!') : (lang === 'EN' ? 'Click to copy student phone' : 'শিক্ষার্থীর মোবাইল নম্বর কপি করুন')}
+                                >
+                                  {copiedPhoneKey === studentPhoneKey ? (
+                                    <Check size={14} color="#16a34a" />
+                                  ) : (
+                                    <Copy size={14} />
+                                  )}
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-muted">—</span>
+                            )}
+                          </td>
+                          <td>
+                            {student.guardianPhone ? (
+                              <div className="copy-phone-cell">
+                                <span className="phone-number-text">{student.guardianPhone}</span>
+                                <button
+                                  type="button"
+                                  className={`btn-copy-phone ${copiedPhoneKey === guardianPhoneKey ? 'copied' : ''}`}
+                                  onClick={() => handleCopyPhone(student.guardianPhone, guardianPhoneKey, lang === 'EN' ? 'Guardian' : 'অভিভাবক')}
+                                  title={copiedPhoneKey === guardianPhoneKey ? (lang === 'EN' ? 'Copied!' : 'কপি হয়েছে!') : (lang === 'EN' ? 'Click to copy guardian phone' : 'অভিভাবকের মোবাইল নম্বর কপি করুন')}
+                                >
+                                  {copiedPhoneKey === guardianPhoneKey ? (
+                                    <Check size={14} color="#16a34a" />
+                                  ) : (
+                                    <Copy size={14} />
+                                  )}
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-muted">—</span>
+                            )}
+                          </td>
+                          <td>
+                            <span className={`status-badge ${status === 'Present' ? 'badge-present' : status === 'Absent' ? 'badge-absent' : status === 'Late' ? 'badge-late' : 'badge-leave'}`}>
+                              {status === 'Present' ? t.present : status === 'Absent' ? t.absent : status === 'Late' ? t.late : t.leave}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
             <div className="modal-footer">
               <button className="btn-primary" onClick={() => setIsReportOpen(false)}>{t.done}</button>

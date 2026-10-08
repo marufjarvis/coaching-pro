@@ -101,6 +101,8 @@ export const translations = {
     thPassMarks: "PASSING MARKS",
     thHighestScore: "HIGHEST SCORE",
     thLink: "LINK",
+    thStudentPhone: "STUDENT PHONE",
+    thGuardianPhone: "GUARDIAN PHONE",
 
     // Common Buttons & Labels
     save: "Save",
@@ -515,6 +517,8 @@ export const translations = {
     thPassMarks: "পাস নম্বর",
     thHighestScore: "সর্বোচ্চ নম্বর",
     thLink: "লিংক",
+    thStudentPhone: "শিক্ষার্থীর মোবাইল",
+    thGuardianPhone: "অভিভাবকের মোবাইল",
 
     // Common Buttons & Labels
     save: "সংরক্ষণ",
