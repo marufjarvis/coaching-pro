@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CalendarCheck, FileText, CheckCircle2, UserX, Clock, UserMinus, Copy, Check, X } from 'lucide-react';
+import { CalendarCheck, FileText, CheckCircle2, UserX, Clock, UserMinus, Copy, Check, X, AlertCircle } from 'lucide-react';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './attendance.css';
@@ -17,6 +17,11 @@ function Attendance({ lang: propLang }) {
   const [copyToast, setCopyToast] = useState('');
 
   useEffect(() => {
+    // Check and update overdue students before loading attendance
+    dataStore.checkAndUpdateOverdueStudents();
+    setBatches(dataStore.getBatches());
+    setAllStudents(dataStore.getStudents());
+
     const handleSync = () => {
       setBatches(dataStore.getBatches());
       setAllStudents(dataStore.getStudents());
@@ -36,8 +41,9 @@ function Attendance({ lang: propLang }) {
     }
   }, [batches, selectedBatch]);
 
-  // Students in selected batch
-  const batchStudents = allStudents.filter(s => s.batch === selectedBatch);
+  // Active Students in selected batch (Inactive students due to overdue fees are excluded from attendance)
+  const batchStudents = allStudents.filter(s => s.batch === selectedBatch && s.status === 'Active');
+  const inactiveBatchStudents = allStudents.filter(s => s.batch === selectedBatch && s.status === 'Inactive');
 
   // Load existing attendance for date + batch
   useEffect(() => {
@@ -171,6 +177,34 @@ function Attendance({ lang: propLang }) {
           <div className="status-value">{counts.Leave}</div>
         </div>
       </div>
+
+      {/* Auto-inactivated Students Notice (Overdue > 2 days) */}
+      {inactiveBatchStudents.length > 0 && (
+        <div className="att-inactive-banner">
+          <div className="att-inactive-icon">
+            <UserMinus size={18} />
+          </div>
+          <div className="att-inactive-text">
+            <strong>
+              {lang === 'EN' 
+                ? `${inactiveBatchStudents.length} student(s) auto-inactivated due to overdue fees (> 2 days) and excluded from attendance:`
+                : `বকেয়া ফি ২ দিনের বেশি অপরিশোধিত থাকায় এই ব্যাচে ${inactiveBatchStudents.length} জন শিক্ষার্থী অটো-নিষ্ক্রিয় (হাজিরা তালিকা থেকে বাদ):`}
+            </strong>
+            <div className="inactive-names-list">
+              {inactiveBatchStudents.map(s => (
+                <span key={s.id} className="inactive-student-tag">
+                  {s.name} ({s.feeType === 'course' ? (lang === 'EN' ? 'Course Due' : 'কোর্স বকেয়া') : (lang === 'EN' ? 'Monthly Due' : 'মাসিক বকেয়া')})
+                </span>
+              ))}
+            </div>
+            <span className="inactive-note">
+              {lang === 'EN' 
+                ? 'Payment clearance will automatically re-activate them.' 
+                : 'বকেয়া পেমেন্ট ক্লিয়ার করলেই সঙ্গে সঙ্গে অটোমেটিক একটিভ হয়ে যাবে।'}
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="balances-section">
         <div className="balances-header" style={{ alignItems: 'flex-end' }}>

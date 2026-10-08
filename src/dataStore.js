@@ -81,6 +81,9 @@ export const dataStore = {
         localStorage.setItem('pendingStudents', JSON.stringify(onlineAdmissions));
       }
 
+      // Automatically evaluate and update student statuses for overdue (> 2 days)
+      this.checkAndUpdateOverdueStudents();
+
       notifyChange();
       console.log('[DataStore] Successfully synced with Laravel backend (MySQL)');
       return true;
@@ -286,18 +289,29 @@ export const dataStore = {
       note: note || `${student.feeType === 'monthly' ? 'Monthly Fee' : 'Course Fee Installment'}`
     };
 
-    // Update student paid amount in students list
+    // Update student paid amount in students list & automatically re-activate student!
+    let activatedStudent = null;
     const updatedStudents = students.map(s => {
       if (s.id === studentId) {
-        return {
+        const newPaid = (Number(s.paidAmount) || 0) + numericAmount;
+        activatedStudent = {
           ...s,
-          paidAmount: (Number(s.paidAmount) || 0) + numericAmount
+          paidAmount: newPaid,
+          status: 'Active',
+          autoInactive: false,
+          inactiveReason: null
         };
+        return activatedStudent;
       }
       return s;
     });
 
     this.saveStudents(updatedStudents);
+
+    // Sync active status to Laravel API immediately
+    if (activatedStudent) {
+      api.updateStudent(studentId, { status: 'Active' }).catch(e => console.error('[API Auto-Activate Error]', e));
+    }
 
     const updatedPayments = [newTxn, ...payments];
     this.savePayments(updatedPayments);
@@ -810,6 +824,119 @@ export const dataStore = {
       totalExpenses,
       netProfit: totalCollected - totalExpenses
     };
+  },
+
+  // Automatically inactivate students if fee is due for > 2 days without payment,
+  // and automatically re-activate when payment is cleared/received
+  checkAndUpdateOverdueStudents(currentDate = new Date()) {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.STUDENTS);
+      if (!data) return [];
+      const students = JSON.parse(data);
+      if (!Array.isArray(students)) return [];
+
+      const pData = localStorage.getItem(STORAGE_KEYS.PAYMENTS);
+      const payments = pData ? JSON.parse(pData) : [];
+
+      let hasChanged = false;
+
+      const updated = students.map(student => {
+        const totalFee = Number(student.feeAmount) || 0;
+        const paid = Number(student.paidAmount) || 0;
+        const dueAmount = Math.max(0, totalFee - paid);
+
+        // 1. If due is cleared (0 due), and was auto-inactive, automatically re-activate!
+        if (dueAmount <= 0) {
+          if (student.status === 'Inactive' && student.autoInactive) {
+            hasChanged = true;
+            api.updateStudent(student.id, { status: 'Active' }).catch(() => {});
+            return {
+              ...student,
+              status: 'Active',
+              autoInactive: false,
+              inactiveReason: null
+            };
+          }
+          return student;
+        }
+
+        // 2. Student has due > 0. Check if more than 2 days have passed since due date!
+        let isOverdueByTwoDays = false;
+        let overdueReason = '';
+
+        if (student.feeType === 'course') {
+          // Course student: Due 1 month after previous payment date (or admission date)
+          const stuPayments = payments
+            .filter(p => p.studentId === student.id || p.studentName === student.name)
+            .sort((a, b) => {
+              const dA = parseDateString(a.date) || new Date(0);
+              const dB = parseDateString(b.date) || new Date(0);
+              return dB.getTime() - dA.getTime();
+            });
+
+          let refDateStr = stuPayments.length > 0 ? stuPayments[0].date : student.admissionDate;
+          const refDate = parseDateString(refDateStr);
+
+          if (refDate) {
+            // Due date is 1 month after refDate
+            let dueDate = new Date(refDate.getTime());
+            dueDate.setMonth(dueDate.getMonth() + 1);
+
+            if (student.nextInstallmentDate) {
+              const nDate = parseDateString(student.nextInstallmentDate);
+              if (nDate) dueDate = nDate;
+            }
+
+            // 2-day grace period
+            const graceCutoff = new Date(dueDate.getTime());
+            graceCutoff.setDate(graceCutoff.getDate() + 2);
+
+            if (currentDate > graceCutoff) {
+              isOverdueByTwoDays = true;
+              const daysOver = Math.floor((currentDate.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+              overdueReason = `কোর্স ফি পরবর্তী কিস্তি বকেয়া (${daysOver} দিন অতিক্রান্ত)`;
+            }
+          } else {
+            isOverdueByTwoDays = true;
+            overdueReason = 'কোর্স ফি কিস্তি বকেয়া (২+ দিন)';
+          }
+        } else {
+          // Monthly student: Due on 1st of each month; 2-day grace period (up to 3rd of month)
+          const currentMonthDue = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+          const monthlyGraceCutoff = new Date(currentMonthDue.getTime());
+          monthlyGraceCutoff.setDate(monthlyGraceCutoff.getDate() + 2); // 3rd of month
+
+          if (currentDate > monthlyGraceCutoff) {
+            isOverdueByTwoDays = true;
+            const daysOver = Math.floor((currentDate.getTime() - currentMonthDue.getTime()) / (1000 * 60 * 60 * 24));
+            overdueReason = `চলতি মাসের বেতন বকেয়া (${daysOver} দিন অতিক্রান্ত)`;
+          }
+        }
+
+        // If overdue by > 2 days and currently Active -> Auto-inactivate!
+        if (isOverdueByTwoDays && student.status === 'Active') {
+          hasChanged = true;
+          api.updateStudent(student.id, { status: 'Inactive' }).catch(() => {});
+          return {
+            ...student,
+            status: 'Inactive',
+            autoInactive: true,
+            inactiveReason: overdueReason
+          };
+        }
+
+        return student;
+      });
+
+      if (hasChanged) {
+        localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(updated));
+        notifyChange();
+      }
+
+      return updated;
+    } catch (e) {
+      return [];
+    }
   }
 };
 

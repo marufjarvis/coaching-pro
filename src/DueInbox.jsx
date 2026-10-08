@@ -33,9 +33,9 @@ function DueInbox({ lang: propLang }) {
     };
   }, []);
 
-  // Compute dues dynamically for all active students
+  // Compute dues dynamically for all students with dues (including auto-inactive students)
   const dueStudents = students
-    .filter(s => s.status === 'Active')
+    .filter(s => s.status === 'Active' || s.autoInactive || s.status === 'Inactive')
     .map(student => {
       const { dueAmount, isDue } = dataStore.calculateDue(student);
       const dueDateStr = student.feeType === 'course' 
@@ -173,7 +173,14 @@ function DueInbox({ lang: propLang }) {
                 <div className="due-student-info">
                   <div className="avatar">{student.initials || student.name.substring(0, 2).toUpperCase()}</div>
                   <div>
-                    <div className="student-name">{student.name}</div>
+                    <div className="student-name" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      {student.name}
+                      {student.status === 'Inactive' && (
+                        <span style={{ background: '#fee2e2', color: '#b91c1c', fontSize: '0.68rem', padding: '1px 6px', borderRadius: '4px', fontWeight: '700' }}>
+                          {lang === 'EN' ? 'Inactive (Attendance Suspended)' : 'অটো-নিষ্ক্রিয় (হাজিরা বন্ধ)'}
+                        </span>
+                      )}
+                    </div>
                     <div className="student-meta">{student.id} • {student.batch} • {student.phone || t.noPhone}</div>
                   </div>
                 </div>

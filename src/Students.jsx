@@ -325,10 +325,17 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
                                 {t.pending}
                               </span>
                             ) : (
-                              <span className={`status-badge ${(student.status || 'Active').toLowerCase()}`}>
-                                <span className="status-dot"></span>
-                                {student.status === 'Active' ? t.active : student.status === 'Inactive' ? t.inactive : student.status}
-                              </span>
+                              <>
+                                <span className={`status-badge ${(student.status || 'Active').toLowerCase()}`} title={student.inactiveReason || ''}>
+                                  <span className="status-dot"></span>
+                                  {student.status === 'Active' ? t.active : student.status === 'Inactive' ? t.inactive : student.status}
+                                </span>
+                                {student.status === 'Inactive' && student.autoInactive && (
+                                  <span style={{ display: 'block', fontSize: '0.68rem', color: '#dc2626', marginTop: '2px', fontWeight: 600 }}>
+                                    {lang === 'EN' ? 'Due > 2 days' : 'বকেয়া > ২ দিন'}
+                                  </span>
+                                )}
+                              </>
                             )}
                           </td>
                           <td style={{ textAlign: 'right' }}>
