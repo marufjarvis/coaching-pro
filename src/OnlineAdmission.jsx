@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { UserCheck, CheckCircle2, XCircle, Search, X } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './online-admission.css';
 
-function OnlineAdmission() {
+function OnlineAdmission({ lang: propLang }) {
+  const { t } = useTranslation(propLang);
   const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [pendingAdmissions, setPendingAdmissions] = useState(() => {
     const saved = localStorage.getItem('pendingAdmissions');
@@ -11,7 +13,6 @@ function OnlineAdmission() {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Remove legacy dummy school field if present in cache
           return parsed.map(({ school, ...rest }) => rest);
         }
       } catch (e) {}
@@ -53,7 +54,7 @@ function OnlineAdmission() {
     installments: '3'
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleStorageChange = () => {
       const saved = localStorage.getItem('pendingAdmissions');
       if (saved) {
@@ -144,18 +145,18 @@ function OnlineAdmission() {
       <div className="page-header">
         <div>
           <div className="fee-followup-tag" style={{ color: '#f59e0b', backgroundColor: '#fef3c7' }}>
-            <UserCheck size={14} /> PENDING REVIEW
+            <UserCheck size={14} /> {t.onlineAdmissionTag}
           </div>
-          <h1 className="page-title">Online Admission</h1>
-          <p className="page-desc">Review and approve student registrations from enrollment links.</p>
+          <h1 className="page-title">{t.onlineAdmissionTitle}</h1>
+          <p className="page-desc">{t.onlineAdmissionSubtitle}</p>
         </div>
       </div>
 
       <div className="balances-section">
         <div className="balances-header">
           <div>
-            <h2>Pending Applications</h2>
-            <p>{pendingAdmissions.length} students waiting for approval</p>
+            <h2>{t.pendingApplicationsTitle}</h2>
+            <p>{pendingAdmissions.length} {t.studentsDueNotice}</p>
           </div>
 
           <div className="admission-header-actions">
@@ -165,7 +166,7 @@ function OnlineAdmission() {
                 value={selectedBatchFilter}
                 onChange={(e) => setSelectedBatchFilter(e.target.value)}
               >
-                <option value="All">All Batches</option>
+                <option value="All">{t.allBatchesFilter}</option>
                 {batches.map(b => (
                   <option key={b.id || b.name} value={b.name}>{b.name}</option>
                 ))}
@@ -176,7 +177,7 @@ function OnlineAdmission() {
               <Search size={18} className="admission-search-icon" />
               <input 
                 type="text" 
-                placeholder="Search applications..." 
+                placeholder={t.searchStudentsPlaceholder} 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -198,11 +199,11 @@ function OnlineAdmission() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>APPLICATION ID</th>
-                <th>STUDENT INFO</th>
-                <th>PREFERRED BATCH</th>
-                <th>SUBMISSION DATE</th>
-                <th>ACTIONS</th>
+                <th>{t.thId}</th>
+                <th>{t.thStudentName}</th>
+                <th>{t.preferredBatchLabel}</th>
+                <th>{t.applicationDateLabel}</th>
+                <th>{t.thActions}</th>
               </tr>
             </thead>
             <tbody>
@@ -212,7 +213,7 @@ function OnlineAdmission() {
                     <td><strong>{app.id}</strong></td>
                     <td>
                       <strong>{app.name}</strong><br/>
-                      <span className="text-muted">{app.phone}{app.guardianPhone ? ` • Guardian: ${app.guardianPhone}` : ''}</span>
+                      <span className="text-muted">{app.phone}{app.guardianPhone ? ` • ${t.guardianPhoneLabel}: ${app.guardianPhone}` : ''}</span>
                     </td>
                     <td>{app.preferredBatch}</td>
                     <td>{app.date}</td>
@@ -222,14 +223,14 @@ function OnlineAdmission() {
                         style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem', marginRight: '0.5rem' }}
                         onClick={() => handleOpenApproveModal(app)}
                       >
-                        <CheckCircle2 size={14} style={{ marginRight: '4px' }} /> Approve
+                        <CheckCircle2 size={14} style={{ marginRight: '4px' }} /> {t.btnApprove}
                       </button>
                       <button 
                         className="btn-cancel" 
                         style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }}
                         onClick={() => handleReject(app.id)}
                       >
-                        Reject
+                        {t.btnRejectApplication}
                       </button>
                     </td>
                   </tr>
@@ -238,7 +239,7 @@ function OnlineAdmission() {
                 <tr>
                   <td colSpan="5" className="empty-state">
                     <UserCheck size={24} style={{ margin: '0 auto 1rem', color: '#cbd5e1' }} />
-                    <p>No pending applications at the moment.</p>
+                    <p>{t.noPendingApplications}</p>
                   </td>
                 </tr>
               )}
@@ -252,8 +253,8 @@ function OnlineAdmission() {
           <div className="modal-content student-modal">
             <div className="modal-header">
               <div>
-                <h2>শিক্ষার্থী যোগ</h2>
-                <p>Create a profile with monthly or course/installment billing.</p>
+                <h2>{t.approveAdmissionModalTitle}</h2>
+                <p>{t.approveAdmissionModalDesc}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setSelectedApp(null)}>
                 <X size={20} />
@@ -262,37 +263,34 @@ function OnlineAdmission() {
             
             <div className="modal-body">
               <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                <label>STUDENT ID <span className="text-danger">*</span></label>
+                <label>{t.studentIdLabel} <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
                   className="form-control"
-                  placeholder="e.g. STU-101" 
+                  placeholder={t.studentIdPlaceholder} 
                   value={editForm.idNumber} 
                   onChange={(e) => setEditForm({...editForm, idNumber: e.target.value})} 
                   required
                 />
-                <small className="text-muted" style={{display: 'block', marginTop: '4px'}}>
-                  Required. This will be the student's unique verification ID.
-                </small>
               </div>
 
               <div className="form-row">
                 <div className="form-group half">
-                  <label>নাম</label>
+                  <label>{t.studentNameLabel}</label>
                   <input 
                     type="text" 
                     className="form-control" 
-                    placeholder="Student full name" 
+                    placeholder={t.studentNamePlaceholder} 
                     value={editForm.name} 
                     onChange={(e) => setEditForm({...editForm, name: e.target.value})} 
                   />
                 </div>
                 <div className="form-group half">
-                  <label>ফোন</label>
+                  <label>{t.phoneMobileLabel}</label>
                   <input 
                     type="text" 
                     className="form-control" 
-                    placeholder="01XXXXXXXXX" 
+                    placeholder={t.phonePlaceholder} 
                     value={editForm.phone} 
                     onChange={(e) => setEditForm({...editForm, phone: e.target.value})} 
                   />
@@ -301,23 +299,23 @@ function OnlineAdmission() {
 
               <div className="form-row">
                 <div className="form-group half">
-                  <label>GUARDIAN PHONE</label>
+                  <label>{t.guardianPhoneLabel}</label>
                   <input 
                     type="text" 
                     className="form-control" 
-                    placeholder="Optional" 
+                    placeholder={t.phonePlaceholder} 
                     value={editForm.guardianPhone} 
                     onChange={(e) => setEditForm({...editForm, guardianPhone: e.target.value})} 
                   />
                 </div>
                 <div className="form-group half">
-                  <label>ব্যাচ</label>
+                  <label>{t.batchSelectLabel}</label>
                   <select 
                     className="filter-select full-width" 
                     value={editForm.batch} 
                     onChange={(e) => setEditForm({...editForm, batch: e.target.value})}
                   >
-                    <option value="">Select Batch</option>
+                    <option value="">{t.selectBatchPlaceholder}</option>
                     {batches.map(b => (
                       <option key={b.id || b.name} value={b.name}>{b.name}</option>
                     ))}
@@ -325,63 +323,51 @@ function OnlineAdmission() {
                 </div>
               </div>
 
-              <div className="billing-section">
-                <div className="billing-title">BILLING</div>
+              <div className="billing-section" style={{ marginTop: '1.5rem' }}>
+                <div className="billing-title">{t.billingSettingsTitle}</div>
                 
                 <div className="form-row">
                   <div className="form-group half">
-                    <label>FEE TYPE</label>
+                    <label>{t.billingFeeTypeLabel}</label>
                     <select 
                       className="filter-select full-width"
                       value={editForm.feeType}
                       onChange={(e) => setEditForm({...editForm, feeType: e.target.value})}
                     >
-                      <option value="monthly">Monthly fee</option>
-                      <option value="course">Course fee (installments)</option>
+                      <option value="monthly">{t.monthlyFeeOptionText}</option>
+                      <option value="course">{t.courseFeeOptionText}</option>
                     </select>
                   </div>
                   
-                  {editForm.feeType === 'monthly' ? (
-                    <div className="form-group half">
-                      <label>MONTHLY FEE</label>
-                      <input 
-                        type="text" 
-                        className="form-control" 
-                        placeholder="৳" 
-                        value={editForm.feeAmount} 
-                        onChange={(e) => setEditForm({...editForm, feeAmount: e.target.value})} 
-                      />
-                    </div>
-                  ) : (
-                    <div className="form-group half">
-                      <label>TOTAL COURSE FEE (৳)</label>
-                      <input 
-                        type="text" 
-                        className="form-control" 
-                        placeholder="e.g. 12000" 
-                        value={editForm.feeAmount} 
-                        onChange={(e) => setEditForm({...editForm, feeAmount: e.target.value})} 
-                      />
-                    </div>
-                  )}
+                  <div className="form-group half">
+                    <label>{editForm.feeType === 'monthly' ? t.monthlyFeeLabel : t.totalCourseFeeLabel} <span className="text-danger">*</span></label>
+                    <input 
+                      type="number" 
+                      className="form-control" 
+                      placeholder="e.g. 500" 
+                      value={editForm.feeAmount} 
+                      onChange={(e) => setEditForm({...editForm, feeAmount: e.target.value})} 
+                      required
+                    />
+                  </div>
                 </div>
 
                 {editForm.feeType === 'monthly' ? (
                   <div className="form-row">
                     <div className="form-group half">
-                      <label>ADMISSION FEE (1ST MONTH)</label>
+                      <label>{t.admissionFeeLabel}</label>
                       <input 
-                        type="text" 
+                        type="number" 
                         className="form-control" 
-                        placeholder="e.g. 500" 
+                        placeholder="e.g. 200" 
                         value={editForm.admissionFee} 
                         onChange={(e) => setEditForm({...editForm, admissionFee: e.target.value})} 
                       />
                     </div>
                     <div className="form-group half">
-                      <label>DISCOUNT</label>
+                      <label>{t.discountLabel}</label>
                       <input 
-                        type="text" 
+                        type="number" 
                         className="form-control" 
                         placeholder="0" 
                         value={editForm.discount} 
@@ -392,20 +378,20 @@ function OnlineAdmission() {
                 ) : (
                   <div className="form-row">
                     <div className="form-group half">
-                      <label>INSTALLMENTS</label>
+                      <label>{t.installmentsLabel}</label>
                       <input 
-                        type="text" 
-                        className="form-control"
+                        type="number" 
+                        className="form-control" 
                         placeholder="3" 
                         value={editForm.installments} 
                         onChange={(e) => setEditForm({...editForm, installments: e.target.value})} 
                       />
                     </div>
                     <div className="form-group half">
-                      <label>DISCOUNT</label>
+                      <label>{t.discountLabel}</label>
                       <input 
-                        type="text" 
-                        className="form-control"
+                        type="number" 
+                        className="form-control" 
                         placeholder="0" 
                         value={editForm.discount} 
                         onChange={(e) => setEditForm({...editForm, discount: e.target.value})} 
@@ -417,8 +403,8 @@ function OnlineAdmission() {
             </div>
 
             <div className="modal-footer">
-              <button className="btn-cancel" onClick={() => setSelectedApp(null)}>Cancel</button>
-              <button className="btn-save" onClick={handleApprove}>সেভ</button>
+              <button className="btn-cancel" onClick={() => setSelectedApp(null)}>{t.cancel}</button>
+              <button className="btn-primary" onClick={handleApprove}>{t.btnApproveAndEnroll}</button>
             </div>
           </div>
         </div>

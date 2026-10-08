@@ -18,6 +18,7 @@ import Staff from './Staff';
 import Settings from './Settings';
 import OnlineAdmission from './OnlineAdmission';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './dashboard.css';
 
 function Dashboard({ onLogout }) {
@@ -33,7 +34,7 @@ function Dashboard({ onLogout }) {
     return localStorage.getItem('coachingDismissedGuide') !== 'true';
   });
 
-  const [lang, setLang] = useState(() => localStorage.getItem('coachingLanguage') || 'BN');
+  const { t, lang, setLang } = useTranslation();
   const [headerSearch, setHeaderSearch] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
 
@@ -44,7 +45,6 @@ function Dashboard({ onLogout }) {
       setStudents(dataStore.getStudents());
       setPayments(dataStore.getPayments());
       setSettings(dataStore.getSettings());
-      setLang(localStorage.getItem('coachingLanguage') || 'BN');
     };
     window.addEventListener('coaching-data-change', handleSync);
     window.addEventListener('storage', handleSync);
@@ -61,7 +61,6 @@ function Dashboard({ onLogout }) {
 
   const handleLangToggle = (selected) => {
     setLang(selected);
-    localStorage.setItem('coachingLanguage', selected);
   };
 
   // Header quick search matches
@@ -96,60 +95,60 @@ function Dashboard({ onLogout }) {
           </div>
           <div>
             <div className="sidebar-brand">{settings.coachingName}</div>
-            <div className="sidebar-subtitle">WORKSPACE</div>
+            <div className="sidebar-subtitle">{t.workspace}</div>
           </div>
         </div>
 
         <div className="sidebar-nav">
           <div className="nav-section">
-            <div className="nav-label">OVERVIEW</div>
+            <div className="nav-label">{t.overview}</div>
             <a href="#" className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('dashboard'); setIsSidebarOpen(false); }}>
-              <LayoutDashboard size={20} /> Dashboard
+              <LayoutDashboard size={20} /> {t.dashboard}
             </a>
           </div>
 
           <div className="nav-section">
-            <div className="nav-label">ACADEMIC</div>
+            <div className="nav-label">{t.academic}</div>
             <a href="#" className={`nav-item ${activeTab === 'batches' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('batches'); setIsSidebarOpen(false); }}>
-              <BookOpen size={20} /> Batches
+              <BookOpen size={20} /> {t.batches}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('students'); setIsSidebarOpen(false); }}>
-              <Users size={20} /> Students
+              <Users size={20} /> {t.students}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'online-admission' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('online-admission'); setIsSidebarOpen(false); }}>
-              <UserCheck size={20} /> Online Admission
+              <UserCheck size={20} /> {t.onlineAdmission}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'enrollment' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('enrollment'); setIsSidebarOpen(false); }}>
-              <Link size={20} /> Enrollment Links
+              <Link size={20} /> {t.enrollmentLinks}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('attendance'); setIsSidebarOpen(false); }}>
-              <CalendarCheck size={20} /> Attendance
+              <CalendarCheck size={20} /> {t.attendance}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'exams' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('exams'); setIsSidebarOpen(false); }}>
-              <FileText size={20} /> Exams
+              <FileText size={20} /> {t.exams}
             </a>
           </div>
 
           <div className="nav-section">
-            <div className="nav-label">COLLECTIONS</div>
+            <div className="nav-label">{t.collections}</div>
             <a href="#" className={`nav-item ${activeTab === 'payments' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('payments'); setIsSidebarOpen(false); }}>
-              <CreditCard size={20} /> Payments
+              <CreditCard size={20} /> {t.payments}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'due-inbox' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('due-inbox'); setIsSidebarOpen(false); }}>
-              <Inbox size={20} /> Due Inbox
+              <Inbox size={20} /> {t.dueInbox}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'expenses' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('expenses'); setIsSidebarOpen(false); }}>
-              <Receipt size={20} /> Expenses
+              <Receipt size={20} /> {t.expenses}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('reports'); setIsSidebarOpen(false); }}>
-              <BarChart3 size={20} /> Reports
+              <BarChart3 size={20} /> {t.reports}
             </a>
           </div>
 
           <div className="nav-section">
-            <div className="nav-label">ACCOUNT</div>
+            <div className="nav-label">{t.account}</div>
             <a href="#" className={`nav-item ${activeTab === 'notifications' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('notifications'); setIsSidebarOpen(false); }}>
-              <Bell size={20} /> Notifications
+              <Bell size={20} /> {t.notifications}
               {stats.dueCount > 0 && (
                 <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '10px' }}>
                   {stats.dueCount}
@@ -157,10 +156,10 @@ function Dashboard({ onLogout }) {
               )}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'staff' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('staff'); setIsSidebarOpen(false); }}>
-              <UserPlus size={20} /> Staff
+              <UserPlus size={20} /> {t.staff}
             </a>
             <a href="#" className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('settings'); setIsSidebarOpen(false); }}>
-              <SettingsIcon size={20} /> Settings
+              <SettingsIcon size={20} /> {t.settings}
             </a>
           </div>
         </div>
@@ -170,16 +169,16 @@ function Dashboard({ onLogout }) {
             <div className="profile-avatar">MH</div>
             <div className="profile-info">
               <div className="profile-name">Maruf Hossain</div>
-              <div className="profile-role">Coaching Admin</div>
+              <div className="profile-role">{t.coachingAdmin}</div>
             </div>
             <button 
               className="logout-btn" 
               onClick={() => {
-                if (window.confirm("Are you sure you want to log out?")) {
+                if (window.confirm(t.logoutConfirm)) {
                   if (onLogout) onLogout();
                 }
               }}
-              title="Logout"
+              title={t.logout}
             >
               <LogOut size={18} />
             </button>
@@ -200,7 +199,7 @@ function Dashboard({ onLogout }) {
             </div>
             <div className="header-title">
               <strong>{settings.coachingName}</strong>
-              <span>Coaching Admin • {activeTab.toUpperCase()}</span>
+              <span>{t.coachingAdmin} • {(t[activeTab] || activeTab).toUpperCase()}</span>
             </div>
           </div>
           
@@ -208,7 +207,7 @@ function Dashboard({ onLogout }) {
             <Search size={18} className="search-icon" />
             <input 
               type="text" 
-              placeholder="Search students, batches, payments..." 
+              placeholder={t.searchHeaderPlaceholder} 
               value={headerSearch}
               onChange={(e) => setHeaderSearch(e.target.value)}
               onFocus={() => setSearchFocused(true)}
@@ -241,7 +240,7 @@ function Dashboard({ onLogout }) {
               <span className={`lang ${lang === 'EN' ? 'active' : ''}`} onClick={() => handleLangToggle('EN')}>EN</span>
               <span className={`lang ${lang === 'BN' ? 'active' : ''}`} onClick={() => handleLangToggle('BN')}>BN</span>
             </div>
-            <button className="icon-btn" onClick={() => setActiveTab('notifications')} title="Notifications" style={{ position: 'relative' }}>
+            <button className="icon-btn" onClick={() => setActiveTab('notifications')} title={t.notifications} style={{ position: 'relative' }}>
               <Bell size={20} />
               {stats.dueCount > 0 && (
                 <span style={{ position: 'absolute', top: '2px', right: '2px', width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }}></span>
@@ -256,53 +255,53 @@ function Dashboard({ onLogout }) {
           <div className="dashboard-content">
           <div className="page-header">
             <div>
-              <div className="page-subtitle"><LayoutDashboard size={14} /> YOUR DAILY OVERVIEW</div>
-              <h1 className="page-title">Coaching overview</h1>
-              <p className="page-desc">Today's snapshot of students, collections and attendance.</p>
+              <div className="page-subtitle"><LayoutDashboard size={14} /> {t.dailyOverview}</div>
+              <h1 className="page-title">{t.dashboardTitle}</h1>
+              <p className="page-desc">{t.dashboardSubtitle}</p>
             </div>
             <div className="header-actions">
               <button className="btn-outline">
-                October 2026 <Calendar size={16} />
+                {lang === 'EN' ? 'October 2026' : 'অক্টোবর ২০২৬'} <Calendar size={16} />
               </button>
               <button className="btn-outline" onClick={() => window.print()}>
-                <Printer size={16} /> Print Overview
+                <Printer size={16} /> {lang === 'EN' ? 'Print Overview' : 'প্রিন্ট ওভারভিউ'}
               </button>
             </div>
           </div>
 
           <div className="kpi-grid">
             <div className="kpi-card" onClick={() => setActiveTab('students')} style={{ cursor: 'pointer' }}>
-              <div className="kpi-label">Active students</div>
+              <div className="kpi-label">{t.activeStudents}</div>
               <div className="kpi-value">{stats.activeStudentsCount}</div>
-              <div className="kpi-trend positive">Enrolled & registered</div>
+              <div className="kpi-trend positive">{t.enrolledRegistered}</div>
               <Users className="kpi-bg-icon" size={80} />
             </div>
             <div className="kpi-card" onClick={() => setActiveTab('payments')} style={{ cursor: 'pointer' }}>
-              <div className="kpi-label">Collected this month</div>
+              <div className="kpi-label">{t.collectedThisMonth}</div>
               <div className="kpi-value">৳ {stats.totalCollected.toLocaleString()}</div>
-              <div className="kpi-trend positive">Total received revenue</div>
+              <div className="kpi-trend positive">{t.totalRevenueReceived}</div>
               <Wallet className="kpi-bg-icon" size={80} />
             </div>
             <div className="kpi-card" onClick={() => setActiveTab('due-inbox')} style={{ cursor: 'pointer' }}>
-              <div className="kpi-label">Outstanding dues</div>
+              <div className="kpi-label">{t.outstandingDues}</div>
               <div className="kpi-value">৳ {stats.totalDues.toLocaleString()}</div>
-              <div className={`kpi-trend ${stats.dueCount > 0 ? 'warning' : 'neutral'}`}>{stats.dueCount} students due</div>
+              <div className={`kpi-trend ${stats.dueCount > 0 ? 'warning' : 'neutral'}`}>{stats.dueCount} {t.studentsDue}</div>
               <AlertCircle className="kpi-bg-icon" size={80} />
             </div>
             <div className="kpi-card" onClick={() => setActiveTab('attendance')} style={{ cursor: 'pointer' }}>
-              <div className="kpi-label">Attendance avg</div>
+              <div className="kpi-label">{t.attendanceAvg}</div>
               <div className="kpi-value">{stats.attendanceAvg}</div>
-              <div className="kpi-trend neutral">Across active batches</div>
+              <div className="kpi-trend neutral">{t.acrossActiveBatches}</div>
               <CalendarCheck className="kpi-bg-icon" size={80} />
             </div>
           </div>
 
           <div className="action-row">
-            <button className="btn-action" onClick={() => setActiveTab('payments')}><Wallet size={16} /> Collect fees</button>
-            <button className="btn-action" onClick={() => setActiveTab('students')}><UserPlus size={16} /> Add student</button>
-            <button className="btn-action" onClick={() => setActiveTab('attendance')}><CalendarCheck size={16} /> Attendance</button>
-            <button className="btn-action" onClick={() => setActiveTab('exams')}><FileText size={16} /> Exams</button>
-            <button className="btn-action" onClick={() => setActiveTab('online-admission')}><UserCheck size={16} /> Online admission</button>
+            <button className="btn-action" onClick={() => setActiveTab('payments')}><Wallet size={16} /> {t.collectFees}</button>
+            <button className="btn-action" onClick={() => setActiveTab('students')}><UserPlus size={16} /> {t.addStudent}</button>
+            <button className="btn-action" onClick={() => setActiveTab('attendance')}><CalendarCheck size={16} /> {t.attendance}</button>
+            <button className="btn-action" onClick={() => setActiveTab('exams')}><FileText size={16} /> {t.exams}</button>
+            <button className="btn-action" onClick={() => setActiveTab('online-admission')}><UserCheck size={16} /> {t.onlineAdmission}</button>
           </div>
 
           {isGuideVisible && (
@@ -312,45 +311,45 @@ function Dashboard({ onLogout }) {
                   <Crown size={20} className="guide-icon" />
                 </div>
                 <div>
-                  <div className="guide-subtitle">সহজ গাইড</div>
-                  <div className="guide-title">পাঁচ ধাপে কোচিং চালান</div>
+                  <div className="guide-subtitle">{t.quickGuide}</div>
+                  <div className="guide-title">{t.guideTitle}</div>
                 </div>
-                <button className="btn-close" onClick={handleDismissGuide}><X size={18} /> লুকান</button>
+                <button className="btn-close" onClick={handleDismissGuide}><X size={18} /> {t.dismiss}</button>
               </div>
               
               <div className="guide-steps">
                 <div className="step active" onClick={() => setActiveTab('batches')} style={{ cursor: 'pointer' }}>
                   <div className="step-circle"><BookOpen size={20} /></div>
                   <div className="step-num">01</div>
-                  <div className="step-text">ব্যাচ</div>
+                  <div className="step-text">{t.stepBatches}</div>
                 </div>
                 <div className="step" onClick={() => setActiveTab('students')} style={{ cursor: 'pointer' }}>
                   <div className="step-circle"><UserCheck size={20} /></div>
                   <div className="step-num">02</div>
-                  <div className="step-text">শিক্ষার্থী</div>
+                  <div className="step-text">{t.stepStudents}</div>
                 </div>
                 <div className="step" onClick={() => setActiveTab('attendance')} style={{ cursor: 'pointer' }}>
                   <div className="step-circle"><CalendarCheck size={20} /></div>
                   <div className="step-num">03</div>
-                  <div className="step-text">হাজিরা</div>
+                  <div className="step-text">{t.stepAttendance}</div>
                 </div>
                 <div className="step" onClick={() => setActiveTab('payments')} style={{ cursor: 'pointer' }}>
                   <div className="step-circle"><CreditCard size={20} /></div>
                   <div className="step-num">04</div>
-                  <div className="step-text">ফি আদায়</div>
+                  <div className="step-text">{t.stepFees}</div>
                 </div>
                 <div className="step" onClick={() => setActiveTab('reports')} style={{ cursor: 'pointer' }}>
                   <div className="step-circle"><FileText size={20} /></div>
                   <div className="step-num">05</div>
-                  <div className="step-text">রিপোর্ট</div>
+                  <div className="step-text">{t.stepReports}</div>
                 </div>
               </div>
 
               <div className="guide-footer">
                 <div className="guide-desc">
-                  Batches <ArrowRight size={14} /> Add batch <ArrowRight size={14} /> ব্যাচের নাম দিয়ে ব্যাচ তৈরি করুন।
+                  {t.guideDesc}
                 </div>
-                <button className="btn-primary" onClick={() => setActiveTab('batches')}>Batches খুলুন <ArrowRight size={16} /></button>
+                <button className="btn-primary" onClick={() => setActiveTab('batches')}>{t.openBatches} <ArrowRight size={16} /></button>
               </div>
             </div>
           )}
@@ -359,24 +358,24 @@ function Dashboard({ onLogout }) {
             <div className="chart-card large">
               <div className="card-top">
                 <div>
-                  <h3 className="card-title">Collection overview</h3>
-                  <p className="card-subtitle">Collected vs billed - October 2026</p>
+                  <h3 className="card-title">{t.financialOverview}</h3>
+                  <p className="card-subtitle">{t.incomeVsExpense}</p>
                 </div>
                 <button className="link-action" onClick={() => setActiveTab('reports')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                  Financial report →
+                  {t.reports} →
                 </button>
               </div>
               <div style={{ padding: '1.5rem', display: 'flex', gap: '2rem', alignItems: 'center' }}>
                 <div style={{ flex: 1, background: '#f8fafc', padding: '1rem', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#64748b' }}>COLLECTED REVENUE</div>
+                  <div style={{ fontSize: '0.85rem', color: '#64748b' }}>{t.totalCollections.toUpperCase()}</div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#16a34a' }}>৳ {stats.totalCollected.toLocaleString()}</div>
                 </div>
                 <div style={{ flex: 1, background: '#fef2f2', padding: '1rem', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#991b1b' }}>OUTSTANDING DUES</div>
+                  <div style={{ fontSize: '0.85rem', color: '#991b1b' }}>{t.outstandingDues.toUpperCase()}</div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ef4444' }}>৳ {stats.totalDues.toLocaleString()}</div>
                 </div>
                 <div style={{ flex: 1, background: '#eff6ff', padding: '1rem', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.85rem', color: '#1e40af' }}>NET BALANCE (PROFIT)</div>
+                  <div style={{ fontSize: '0.85rem', color: '#1e40af' }}>{t.netProfit.toUpperCase()}</div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 800, color: stats.netProfit >= 0 ? '#2563eb' : '#dc2626' }}>৳ {stats.netProfit.toLocaleString()}</div>
                 </div>
               </div>
@@ -384,8 +383,8 @@ function Dashboard({ onLogout }) {
 
             <div className="chart-card">
               <div className="card-top">
-                <h3 className="card-title">Batches overview</h3>
-                <span className="card-date">{batches.length} active</span>
+                <h3 className="card-title">{t.batchesOverview}</h3>
+                <span className="card-date">{batches.length} {t.activeBatchesCount}</span>
               </div>
               <div className="batch-list">
                 {displayBatches.map(b => {
@@ -394,14 +393,14 @@ function Dashboard({ onLogout }) {
                     <div key={b.id || b.name} className="batch-item">
                       <div>
                         <div className="batch-name">{b.name}</div>
-                        <div className="batch-info">{enrolled} {enrolled === 1 ? 'student' : 'students'}</div>
+                        <div className="batch-info">{enrolled} {enrolled === 1 ? t.studentSingle : t.studentPlural}</div>
                       </div>
                       <button 
                         className="link-action" 
                         onClick={() => setActiveTab('attendance')}
                         style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                       >
-                        Attendance
+                        {t.attendance}
                       </button>
                     </div>
                   );
@@ -411,24 +410,24 @@ function Dashboard({ onLogout }) {
 
             <div className="chart-card large">
               <div className="card-top">
-                <h3 className="card-title">Recent payments</h3>
+                <h3 className="card-title">{t.recentPayments}</h3>
                 <button 
                   className="link-action" 
                   onClick={() => setActiveTab('payments')}
                   style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                 >
-                  View all →
+                  {t.viewAll}
                 </button>
               </div>
             <div className="table-responsive">
               <table className="data-table">
                 <thead>
                   <tr>
-                    <th>STUDENT</th>
-                    <th>BATCH</th>
-                    <th>AMOUNT</th>
-                    <th>METHOD</th>
-                    <th>DATE</th>
+                    <th>{t.thStudent}</th>
+                    <th>{t.thBatch}</th>
+                    <th>{t.thAmount}</th>
+                    <th>{t.thMethod}</th>
+                    <th>{t.thDate}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -444,7 +443,7 @@ function Dashboard({ onLogout }) {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="empty-state">No payments this month yet</td>
+                      <td colSpan="5" className="empty-state">{t.noPaymentsFound}</td>
                     </tr>
                   )}
                 </tbody>
@@ -454,28 +453,28 @@ function Dashboard({ onLogout }) {
 
             <div className="chart-card">
               <div className="card-top">
-                <h3 className="card-title">Needs attention <span className="badge">{stats.dueCount}</span></h3>
+                <h3 className="card-title">{t.thingsToDo} <span className="badge">{stats.dueCount}</span></h3>
               </div>
               <div className="task-list">
                 <div className="task-item">
                   <div className="task-icon warning"><Wallet size={16} /></div>
-                  <div className="task-text">{stats.dueCount} unpaid students</div>
+                  <div className="task-text">{stats.dueCount} {t.studentsDueNotice}</div>
                   <a href="#" className="task-link" onClick={(e) => { e.preventDefault(); setActiveTab('due-inbox'); }}>
-                    Due inbox <ArrowRight size={14} />
+                    {t.reviewDues} <ArrowRight size={14} />
                   </a>
                 </div>
                 <div className="task-item">
                   <div className="task-icon primary"><CalendarCheck size={16} /></div>
-                  <div className="task-text">Mark today's attendance</div>
+                  <div className="task-text">{t.takeAttendanceFor}</div>
                   <a href="#" className="task-link" onClick={(e) => { e.preventDefault(); setActiveTab('attendance'); }}>
-                    Attendance <ArrowRight size={14} />
+                    {t.attendance} <ArrowRight size={14} />
                   </a>
                 </div>
                 <div className="task-item">
                   <div className="task-icon warning-outline"><BookOpen size={16} /></div>
-                  <div className="task-text">{batches.length} batches active</div>
+                  <div className="task-text">{batches.length} {t.batchesActiveCount}</div>
                   <a href="#" className="task-link" onClick={(e) => { e.preventDefault(); setActiveTab('batches'); }}>
-                    Batches <ArrowRight size={14} />
+                    {t.batches} <ArrowRight size={14} />
                   </a>
                 </div>
               </div>
@@ -485,31 +484,31 @@ function Dashboard({ onLogout }) {
         ) : (
           <div className="page-content">
             {activeTab === 'batches' ? (
-              <Batches />
+              <Batches lang={lang} />
             ) : activeTab === 'students' ? (
-              <Students setActiveTab={setActiveTab} />
+              <Students setActiveTab={setActiveTab} lang={lang} />
             ) : activeTab === 'online-admission' ? (
-              <OnlineAdmission />
+              <OnlineAdmission lang={lang} />
             ) : activeTab === 'enrollment' ? (
-              <EnrollmentLinks />
+              <EnrollmentLinks lang={lang} />
             ) : activeTab === 'payments' ? (
-              <Payments setActiveTab={setActiveTab} />
+              <Payments setActiveTab={setActiveTab} lang={lang} />
             ) : activeTab === 'due-inbox' ? (
-              <DueInbox />
+              <DueInbox lang={lang} />
             ) : activeTab === 'expenses' ? (
-              <Expenses />
+              <Expenses lang={lang} />
             ) : activeTab === 'attendance' ? (
-              <Attendance />
+              <Attendance lang={lang} />
             ) : activeTab === 'exams' ? (
-              <Exams />
+              <Exams lang={lang} />
             ) : activeTab === 'reports' ? (
-              <Reports />
+              <Reports lang={lang} />
             ) : activeTab === 'notifications' ? (
-              <Notifications setActiveTab={setActiveTab} />
+              <Notifications setActiveTab={setActiveTab} lang={lang} />
             ) : activeTab === 'staff' ? (
-              <Staff />
+              <Staff lang={lang} />
             ) : activeTab === 'settings' ? (
-              <Settings />
+              <Settings lang={lang} />
             ) : null}
           </div>
         )}

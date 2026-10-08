@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Wallet, DollarSign, Calendar, FileText, Copy, Award, AlertCircle, Edit, Trash2, Printer, CheckCircle2, X } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './student-profile.css';
 
-function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
+function StudentProfile({ student, onBack, onEdit, lang: propLang }) {
+  const { t } = useTranslation(propLang);
   const [payments, setPayments] = useState(() => {
     return dataStore.getPayments().filter(p => p.studentId === student.id);
   });
@@ -52,7 +54,7 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
       amount: num,
       method: payMethod,
       collectedBy: 'Admin',
-      note: `${student.feeType === 'monthly' ? 'Monthly Fee' : 'Course Fee'}`
+      note: `${student.feeType === 'monthly' ? (t.monthlyFee) : (t.courseFee)}`
     });
 
     setIsCollectModalOpen(false);
@@ -60,7 +62,8 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to permanently delete ${student.name}?`)) {
+    const confirmMsg = t.deleteStudentConfirm.replace('{name}', student.name);
+    if (window.confirm(confirmMsg)) {
       dataStore.deleteStudent(student.id);
       onBack();
     }
@@ -85,7 +88,7 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
     <div className="student-profile-page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <button className="btn-back" onClick={onBack}>
-          <ArrowLeft size={16} /> Back to students
+          <ArrowLeft size={16} /> {t.backToStudents}
         </button>
         {copySuccess && (
           <span style={{ background: '#dcfce7', color: '#166534', padding: '4px 12px', borderRadius: '16px', fontSize: '0.85rem' }}>
@@ -102,7 +105,8 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
             <div className="profile-name-row">
               <h1>{student.name}</h1>
               <span className={`status-badge ${student.status.toLowerCase()}`}>
-                <span className="status-dot"></span>{student.status}
+                <span className="status-dot"></span>
+                {student.status === 'Active' ? t.active : student.status === 'Inactive' ? t.inactive : student.status}
               </span>
             </div>
             <div className="profile-badges">
@@ -116,12 +120,12 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
             setPayAmount(totalDue > 0 ? totalDue.toString() : '');
             setIsCollectModalOpen(true);
           }}>
-            <Wallet size={16} /> Collect fee
+            <Wallet size={16} /> {t.collectFees}
           </button>
           <button className="btn-secondary" onClick={onEdit}>
-            <Edit size={16} /> Edit profile
+            <Edit size={16} /> {t.edit}
           </button>
-          <button className="btn-secondary text-danger" onClick={handleDelete} title="Delete Student">
+          <button className="btn-secondary text-danger" onClick={handleDelete} title={t.delete}>
             <Trash2 size={16} />
           </button>
         </div>
@@ -131,28 +135,28 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
       <div className="profile-kpi-grid">
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-title">{student.feeType === 'course' ? 'COURSE FEE' : 'MONTHLY FEE'}</span>
+            <span className="kpi-title">{student.feeType === 'course' ? t.courseFee : t.monthlyFee}</span>
             <div className="kpi-icon blue"><Wallet size={18} /></div>
           </div>
-          <div className="kpi-value">৳ {totalFee}</div>
+          <div className="kpi-value">৳ {totalFee.toLocaleString()}</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-title">TOTAL PAID</span>
+            <span className="kpi-title">{t.totalPaidLabel}</span>
             <div className="kpi-icon cyan"><DollarSign size={18} /></div>
           </div>
-          <div className="kpi-value">৳ {totalPaid}</div>
+          <div className="kpi-value">৳ {totalPaid.toLocaleString()}</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-title">TOTAL DUE</span>
+            <span className="kpi-title">{t.totalDueLabel}</span>
             <div className="kpi-icon yellow"><AlertCircle size={18} /></div>
           </div>
-          <div className={`kpi-value ${totalDue > 0 ? 'text-danger' : ''}`}>৳ {totalDue}</div>
+          <div className={`kpi-value ${totalDue > 0 ? 'text-danger' : ''}`}>৳ {totalDue.toLocaleString()}</div>
         </div>
         <div className="kpi-card">
           <div className="kpi-header">
-            <span className="kpi-title">ATTENDANCE</span>
+            <span className="kpi-title">{t.attendance}</span>
             <div className="kpi-icon green"><Calendar size={18} /></div>
           </div>
           <div className="kpi-value">{attendanceStats.percentage}%</div>
@@ -166,24 +170,24 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
         <div className="main-col-left">
           <div className="profile-section-card">
             <div className="section-header-flex">
-              <h2 className="section-title">Profile information</h2>
+              <h2 className="section-title">{t.studentDirectoryTitle}</h2>
             </div>
             
             <div className="info-list">
               <div className="info-row">
-                <div className="info-label">Name</div>
+                <div className="info-label">{t.studentNameLabel}</div>
                 <div className="info-value">{student.name}</div>
               </div>
               <div className="info-row">
-                <div className="info-label">Student ID</div>
+                <div className="info-label">{t.studentIdLabel}</div>
                 <div className="info-value">{student.id}</div>
               </div>
               <div className="info-row">
-                <div className="info-label">Batch</div>
+                <div className="info-label">{t.batchSelectLabel}</div>
                 <div className="info-value">{student.batch}</div>
               </div>
               <div className="info-row">
-                <div className="info-label">Phone</div>
+                <div className="info-label">{t.phoneMobileLabel}</div>
                 <div className="info-value flex-align">
                   {student.phone || '—'} 
                   {student.phone && (
@@ -194,7 +198,7 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
                 </div>
               </div>
               <div className="info-row">
-                <div className="info-label">Guardian Phone</div>
+                <div className="info-label">{t.guardianPhoneLabel}</div>
                 <div className="info-value flex-align">
                   {student.guardianPhone || '—'}
                   {student.guardianPhone && (
@@ -205,18 +209,20 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
                 </div>
               </div>
               <div className="info-row">
-                <div className="info-label">Admission Date</div>
+                <div className="info-label">{t.applicationDateLabel}</div>
                 <div className="info-value">{student.admissionDate || 'N/A'}</div>
               </div>
               <div className="info-row">
-                <div className="info-label">Fee Billing Model</div>
-                <div className="info-value" style={{ textTransform: 'capitalize' }}>{student.feeType}</div>
+                <div className="info-label">{t.billingFeeTypeLabel}</div>
+                <div className="info-value" style={{ textTransform: 'capitalize' }}>
+                  {student.feeType === 'monthly' ? t.badgeMonthly : t.badgeCourse}
+                </div>
               </div>
             </div>
 
             <div className="profile-actions-grid" style={{ marginTop: '1.5rem' }}>
               <button className="btn-secondary outline full-width" onClick={handlePrintReport}>
-                <Printer size={16} /> Print / Save Fee Statement (PDF)
+                <Printer size={16} /> {t.printReportBtn}
               </button>
             </div>
           </div>
@@ -226,21 +232,21 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
         <div className="main-col-right">
           <div className="profile-section-card min-h">
             <div className="section-header-flex">
-              <h2 className="section-title flex-align"><Award size={18} /> Performance Overview</h2>
+              <h2 className="section-title flex-align"><Award size={18} /> {t.examResultsTitle}</h2>
             </div>
             
             <div className="performance-kpi-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div className="kpi-card" style={{ background: '#f5f3ff', border: '1px solid #ede9fe' }}>
                 <div className="kpi-header">
-                  <span className="kpi-title" style={{ color: '#6d28d9' }}>AVERAGE EXAM SCORE</span>
+                  <span className="kpi-title" style={{ color: '#6d28d9' }}>{t.avgExamScoreLabel}</span>
                 </div>
                 <div className="kpi-value" style={{ color: '#6d28d9' }}>{avgScore > 0 ? `${avgScore} / 50` : '—'}</div>
               </div>
               <div className="kpi-card" style={{ background: '#fffbeb', border: '1px solid #fde68a' }}>
                 <div className="kpi-header">
-                  <span className="kpi-title" style={{ color: '#92400e' }}>EXAMS TAKEN</span>
+                  <span className="kpi-title" style={{ color: '#92400e' }}>{t.totalExamsStat}</span>
                 </div>
-                <div className="kpi-value" style={{ color: '#b45309' }}>{studentExams.length} <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>Tests</span></div>
+                <div className="kpi-value" style={{ color: '#b45309' }}>{studentExams.length}</div>
               </div>
             </div>
 
@@ -248,10 +254,10 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
               <table className="data-table" style={{ fontSize: '0.875rem', marginTop: '1rem' }}>
                 <thead>
                   <tr>
-                    <th>DATE</th>
-                    <th>EXAM</th>
-                    <th>SCORE</th>
-                    <th>STATUS</th>
+                    <th>{t.thDate}</th>
+                    <th>{t.examsTitle}</th>
+                    <th>{t.marksColumn}</th>
+                    <th>{t.statusColumn}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -265,7 +271,7 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
                         <td>{score} / {ex.totalMarks}</td>
                         <td>
                           <span className={`status-badge ${isPassed ? 'badge-present' : 'status-danger'}`}>
-                            {isPassed ? 'Passed' : 'Needs improvement'}
+                            {isPassed ? t.passed : t.failed}
                           </span>
                         </td>
                       </tr>
@@ -274,23 +280,23 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
                 </tbody>
               </table>
             ) : (
-              <p className="text-muted" style={{ fontSize: '0.9rem', margin: '0.5rem 0' }}>No exam marks recorded yet.</p>
+              <p className="text-muted" style={{ fontSize: '0.9rem', margin: '0.5rem 0' }}>{t.notGraded}</p>
             )}
           </div>
 
           <div className="profile-section-card min-h">
             <div className="section-header-flex">
-              <h2 className="section-title flex-align"><Wallet size={18} /> Payment history</h2>
+              <h2 className="section-title flex-align"><Wallet size={18} /> {t.paymentHistoryTitle}</h2>
             </div>
             {payments.length > 0 ? (
               <table className="data-table" style={{ fontSize: '0.875rem' }}>
                 <thead>
                   <tr>
-                    <th>RECEIPT #</th>
-                    <th>DATE</th>
-                    <th>METHOD</th>
-                    <th>NOTE</th>
-                    <th style={{ textAlign: 'right' }}>AMOUNT</th>
+                    <th>{t.thReceipt}</th>
+                    <th>{t.thDate}</th>
+                    <th>{t.thMethod}</th>
+                    <th>{t.thFeeType}</th>
+                    <th style={{ textAlign: 'right' }}>{t.thAmount}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -299,17 +305,15 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
                       <td><strong>{p.id}</strong></td>
                       <td>{p.date}</td>
                       <td><span className="status-badge active">{p.method}</span></td>
-                      <td>{p.note || 'Coaching Fee'}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 600, color: '#16a34a' }}>৳ {p.amount}</td>
+                      <td>{p.note || (t.monthlyFee)}</td>
+                      <td style={{ textAlign: 'right', fontWeight: 600, color: '#16a34a' }}>৳ {Number(p.amount).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             ) : (
               <div className="empty-state-full">
-                <h3>No payments yet</h3>
-                <p>Recorded payments will appear here.</p>
-                <button className="btn-primary mt-3" onClick={() => setIsCollectModalOpen(true)}>Collect first payment</button>
+                <h3>{t.noPaymentsFound}</h3>
               </div>
             )}
           </div>
@@ -322,8 +326,8 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
           <div className="modal-content">
             <div className="modal-header">
               <div>
-                <h2>Collect Fee: {student.name}</h2>
-                <p>{student.batch} • Total Due: ৳ {totalDue}</p>
+                <h2>{t.collectFeeModalTitle}: {student.name}</h2>
+                <p>{student.batch} • {t.totalDueLabel}: ৳ {totalDue.toLocaleString()}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setIsCollectModalOpen(false)}>
                 <X size={20} />
@@ -331,7 +335,7 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
             </div>
             <div className="modal-body">
               <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label>AMOUNT (৳)</label>
+                <label>{t.amountToCollect} (৳)</label>
                 <input 
                   type="number" 
                   className="form-control" 
@@ -342,9 +346,9 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
                 />
               </div>
               <div className="form-group">
-                <label>PAYMENT METHOD</label>
+                <label>{t.thMethod}</label>
                 <select className="form-control" value={payMethod} onChange={(e) => setPayMethod(e.target.value)}>
-                  <option value="Cash">Cash (নগদ)</option>
+                  <option value="Cash">Cash</option>
                   <option value="bKash">bKash</option>
                   <option value="Nagad">Nagad</option>
                   <option value="Rocket">Rocket</option>
@@ -353,8 +357,8 @@ function StudentProfile({ student, onBack, onEdit, onCollectFee }) {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn-cancel" onClick={() => setIsCollectModalOpen(false)}>Cancel</button>
-              <button className="btn-save" onClick={handleRecordPayment}>Confirm Payment</button>
+              <button className="btn-cancel" onClick={() => setIsCollectModalOpen(false)}>{t.cancel}</button>
+              <button className="btn-save" onClick={handleRecordPayment}>{t.confirm}</button>
             </div>
           </div>
         </div>

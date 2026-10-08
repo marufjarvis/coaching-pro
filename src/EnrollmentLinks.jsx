@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link as LinkIcon, Copy, ExternalLink, Trash2, Plus, Check } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './enrollment.css';
 
-function EnrollmentLinks() {
+function EnrollmentLinks({ lang: propLang }) {
+  const { t } = useTranslation(propLang);
   const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [links, setLinks] = useState(() => {
     try {
@@ -56,21 +58,21 @@ function EnrollmentLinks() {
     <div className="enrollment-page">
       <div className="page-header">
         <div>
-          <div className="page-subtitle"><LinkIcon size={16} /> ADMISSIONS</div>
-          <h1 className="page-title">Enrollment Links</h1>
-          <p className="page-desc">Share a batch link so students can apply online.</p>
+          <div className="page-subtitle"><LinkIcon size={16} /> {t.enrollmentLinksTag}</div>
+          <h1 className="page-title">{t.enrollmentLinksTitle}</h1>
+          <p className="page-desc">{t.enrollmentLinksSubtitle}</p>
         </div>
       </div>
 
       <div className="create-link-card">
-        <label className="create-link-label">SELECT BATCH</label>
+        <label className="create-link-label">{t.selectBatchCardLabel}</label>
         <div className="create-link-controls">
           <select 
             className="create-link-select" 
             value={selectedBatch} 
             onChange={(e) => setSelectedBatch(e.target.value)}
           >
-            <option value="">Select a batch</option>
+            <option value="">{t.selectBatchPrompt}</option>
             {batches.map(b => (
               <option key={b.id || b.name} value={b.name}>{b.name}</option>
             ))}
@@ -81,7 +83,7 @@ function EnrollmentLinks() {
             onClick={handleCreateLink}
             disabled={!selectedBatch}
           >
-            <Plus size={16} /> Create link
+            <Plus size={16} /> {t.createLinkBtn}
           </button>
         </div>
       </div>
@@ -90,49 +92,57 @@ function EnrollmentLinks() {
         <table className="links-table">
           <thead>
             <tr>
-              <th style={{ width: '25%' }}>BATCH</th>
-              <th style={{ width: '55%' }}>LINK</th>
-              <th style={{ width: '20%', textAlign: 'right' }}>ACTIONS</th>
+              <th style={{ width: '25%' }}>{t.thBatch}</th>
+              <th style={{ width: '55%' }}>{t.thLink}</th>
+              <th style={{ width: '20%', textAlign: 'right' }}>{t.thActions}</th>
             </tr>
           </thead>
           <tbody>
-            {links.map((link) => (
-              <tr key={link.id}>
-                <td style={{ fontWeight: '600' }}>{link.batch}</td>
-                <td>
-                  <a href={link.url} target="_blank" rel="noreferrer" className="link-url">
-                    {link.url}
-                  </a>
-                </td>
-                <td style={{ textAlign: 'right' }}>
-                  <div className="link-actions">
-                    <button 
-                      className="btn-icon" 
-                      onClick={() => handleCopy(link.id, link.url)}
-                      title={copiedId === link.id ? "Copied!" : "Copy Link"}
-                    >
-                      {copiedId === link.id ? <Check size={16} color="#16a34a" /> : <Copy size={16} />}
-                    </button>
-                    <a 
-                      href={link.url} 
-                      target="_blank" 
-                      rel="noreferrer" 
-                      className="btn-icon"
-                      title="Open Link"
-                    >
-                      <ExternalLink size={16} />
+            {links.length > 0 ? (
+              links.map((link) => (
+                <tr key={link.id}>
+                  <td style={{ fontWeight: '600' }}>{link.batch}</td>
+                  <td>
+                    <a href={link.url} target="_blank" rel="noreferrer" className="link-url">
+                      {link.url}
                     </a>
-                    <button 
-                      className="btn-icon btn-danger-icon" 
-                      onClick={() => handleDelete(link.id)}
-                      title="Delete Link"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div className="link-actions">
+                      <button 
+                        className="btn-icon" 
+                        onClick={() => handleCopy(link.id, link.url)}
+                        title={copiedId === link.id ? t.copiedLinkBtn : t.copyLinkBtn}
+                      >
+                        {copiedId === link.id ? <Check size={16} color="#16a34a" /> : <Copy size={16} />}
+                      </button>
+                      <a 
+                        href={link.url} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="btn-icon"
+                        title={t.openLinkBtn}
+                      >
+                        <ExternalLink size={16} />
+                      </a>
+                      <button 
+                        className="btn-icon btn-danger-icon" 
+                        onClick={() => handleDelete(link.id)}
+                        title={t.delete}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                  {t.noEnrollmentLinks}
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

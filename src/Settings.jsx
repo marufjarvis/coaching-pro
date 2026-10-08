@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Building, Shield, Image as ImageIcon, Globe, Upload, CheckCircle2 } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './settings.css';
 
-function Settings() {
+function Settings({ lang: propLang }) {
+  const { t, lang, setLang } = useTranslation(propLang);
   const [settings, setSettings] = useState(() => dataStore.getSettings());
   const [profileForm, setProfileForm] = useState({
     coachingName: settings.coachingName || "Maruf's ICT Care",
@@ -15,7 +17,6 @@ function Settings() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [toastMsg, setToastMsg] = useState('');
-  const [selectedLang, setSelectedLang] = useState(() => localStorage.getItem('coachingLanguage') || 'BN');
 
   useEffect(() => {
     const handleSync = () => {
@@ -38,7 +39,7 @@ function Settings() {
       return;
     }
     dataStore.saveSettings(profileForm);
-    showToast("Coaching profile updated successfully!");
+    showToast(t.profileUpdatedToast);
   };
 
   const handleUpdatePassword = (e) => {
@@ -50,7 +51,7 @@ function Settings() {
     dataStore.saveSettings({ adminPassword: newPassword });
     setCurrentPassword('');
     setNewPassword('');
-    showToast("Password updated successfully!");
+    showToast(t.passwordUpdatedToast);
   };
 
   const handleLogoUpload = (e) => {
@@ -59,16 +60,16 @@ function Settings() {
       const reader = new FileReader();
       reader.onloadend = () => {
         dataStore.saveSettings({ logoUrl: reader.result });
-        showToast("Branding logo updated!");
+        showToast(t.logoUpdatedToast);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSelectLang = (lang) => {
-    setSelectedLang(lang);
-    localStorage.setItem('coachingLanguage', lang);
-    showToast(`Language set to ${lang === 'BN' ? 'বাংলা' : 'English'}`);
+  const handleSelectLang = (newLang) => {
+    setLang(newLang);
+    dataStore.setLanguage(newLang);
+    showToast(t.languageSetToast.replace('{lang}', newLang === 'BN' ? 'বাংলা' : 'English'));
   };
 
   return (
@@ -87,13 +88,13 @@ function Settings() {
             <div className="settings-card-header">
               <div className="settings-icon-box"><Building size={20} /></div>
               <div>
-                <h3>Coaching profile</h3>
-                <p>Shown on receipts, reports, and guardian-facing documents.</p>
+                <h3>{t.coachingProfileTitle}</h3>
+                <p>{t.coachingProfileDesc}</p>
               </div>
             </div>
             <form onSubmit={handleSaveProfile} className="settings-card-body">
               <div className="form-group">
-                <label>কোচিংয়ের নাম (Coaching Name)</label>
+                <label>{t.coachingNameInputLabel}</label>
                 <input 
                   type="text" 
                   className="form-control" 
@@ -103,7 +104,7 @@ function Settings() {
               </div>
               <div className="form-row">
                 <div className="form-group half">
-                  <label>ফোন (Phone)</label>
+                  <label>{t.phoneInputLabel}</label>
                   <input 
                     type="text" 
                     className="form-control" 
@@ -112,7 +113,7 @@ function Settings() {
                   />
                 </div>
                 <div className="form-group half">
-                  <label>ঠিকানা (Address)</label>
+                  <label>{t.addressInputLabel}</label>
                   <input 
                     type="text" 
                     className="form-control" 
@@ -122,7 +123,7 @@ function Settings() {
                 </div>
               </div>
               <div className="form-group" style={{ marginTop: '1rem' }}>
-                <label>স্লোগান / ট্যাগলাইন (Tagline)</label>
+                <label>{t.taglineInputLabel}</label>
                 <input 
                   type="text" 
                   className="form-control" 
@@ -131,7 +132,7 @@ function Settings() {
                 />
               </div>
               <div className="mt-3">
-                <button type="submit" className="btn-primary">Save profile</button>
+                <button type="submit" className="btn-primary">{t.saveProfileBtn}</button>
               </div>
             </form>
           </div>
@@ -141,14 +142,14 @@ function Settings() {
             <div className="settings-card-header">
               <div className="settings-icon-box"><Shield size={20} /></div>
               <div>
-                <h3>Account security</h3>
-                <p>Update the password used to sign in to CoachingPro.</p>
+                <h3>{t.accountSecurityTitle}</h3>
+                <p>{t.accountSecurityDesc}</p>
               </div>
             </div>
             <form onSubmit={handleUpdatePassword} className="settings-card-body">
               <div className="form-row">
                 <div className="form-group half">
-                  <label>CURRENT PASSWORD</label>
+                  <label>{t.currentPasswordLabel}</label>
                   <input 
                     type="password" 
                     className="form-control" 
@@ -158,7 +159,7 @@ function Settings() {
                   />
                 </div>
                 <div className="form-group half">
-                  <label>নতুন পাসওয়ার্ড</label>
+                  <label>{t.newPasswordLabel}</label>
                   <input 
                     type="password" 
                     className="form-control" 
@@ -169,8 +170,8 @@ function Settings() {
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
-                <button type="submit" className="btn-primary">Update password</button>
-                <span className="text-muted" style={{ fontSize: '0.85rem' }}>Minimum 6 characters</span>
+                <button type="submit" className="btn-primary">{t.updatePasswordBtn}</button>
+                <span className="text-muted" style={{ fontSize: '0.85rem' }}>{t.minCharactersDesc}</span>
               </div>
             </form>
           </div>
@@ -183,8 +184,8 @@ function Settings() {
             <div className="settings-card-header">
               <div className="settings-icon-box"><ImageIcon size={20} /></div>
               <div>
-                <h3>Branding logo</h3>
-                <p>Used on printed receipts, ledgers, and progress reports.</p>
+                <h3>{t.brandingLogoTitle}</h3>
+                <p>{t.brandingLogoDesc}</p>
               </div>
             </div>
             <div className="settings-card-body">
@@ -202,8 +203,8 @@ function Settings() {
                 <label className="upload-box" style={{ cursor: 'pointer' }}>
                   <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
                   <Upload size={24} color="#64748b" style={{ marginBottom: '0.5rem' }} />
-                  <strong>Upload logo</strong>
-                  <p>PNG, JPG or WebP - click to select file</p>
+                  <strong>{t.uploadLogoTitle}</strong>
+                  <p>{t.uploadLogoDesc}</p>
                 </label>
               </div>
             </div>
@@ -214,27 +215,27 @@ function Settings() {
             <div className="settings-card-header">
               <div className="settings-icon-box"><Globe size={20} /></div>
               <div>
-                <h3>ভাষা (Workspace Language)</h3>
-                <p>Choose the language for the CoachingPro workspace.</p>
+                <h3>{t.workspaceLanguageTitle}</h3>
+                <p>{t.workspaceLanguageDesc}</p>
               </div>
             </div>
             <div className="settings-card-body">
               <div className="language-options">
                 <div 
-                  className={`lang-box ${selectedLang === 'EN' ? 'active' : ''}`}
+                  className={`lang-box ${lang === 'EN' ? 'active' : ''}`}
                   onClick={() => handleSelectLang('EN')}
                   style={{ cursor: 'pointer' }}
                 >
                   <strong>English</strong>
-                  <span>English</span>
+                  <span>{lang === 'EN' ? `(${t.active})` : 'English'}</span>
                 </div>
                 <div 
-                  className={`lang-box ${selectedLang === 'BN' ? 'active' : ''}`}
+                  className={`lang-box ${lang === 'BN' ? 'active' : ''}`}
                   onClick={() => handleSelectLang('BN')}
                   style={{ cursor: 'pointer' }}
                 >
                   <strong>বাংলা</strong>
-                  <span>Bangla</span>
+                  <span>{lang === 'BN' ? `(${t.active})` : 'Bangla'}</span>
                 </div>
               </div>
             </div>

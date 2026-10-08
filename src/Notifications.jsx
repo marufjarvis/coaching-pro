@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, AlertCircle, UserCheck, ArrowRight } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './notifications.css';
 
-function Notifications({ setActiveTab }) {
+function Notifications({ setActiveTab, lang: propLang }) {
+  const { t, lang } = useTranslation(propLang);
   const [students, setStudents] = useState(() => dataStore.getStudents());
   const [pendingAdmissions, setPendingAdmissions] = useState(() => {
     try {
@@ -39,10 +41,10 @@ function Notifications({ setActiveTab }) {
       <div className="page-header">
         <div>
           <div className="fee-followup-tag">
-            <Bell size={14} /> UPDATES & ALERTS
+            <Bell size={14} /> {lang === 'EN' ? 'UPDATES & ALERTS' : 'আপডেট ও সতর্কতা'}
           </div>
-          <h1>Notifications</h1>
-          <p className="subtitle">Stay updated on due payments and pending online admissions.</p>
+          <h1>{t.notifications}</h1>
+          <p className="subtitle">{lang === 'EN' ? 'Stay updated on due payments and pending online admissions.' : 'বকেয়া পেমেন্ট এবং অনলাইন ভর্তি আবেদনের সর্বশেষ তথ্য।'}</p>
         </div>
       </div>
 
@@ -54,18 +56,18 @@ function Notifications({ setActiveTab }) {
               <UserCheck size={24} color="#0284c7" />
             </div>
             <div className="notif-content">
-              <h4>New Online Admission Application</h4>
+              <h4>{lang === 'EN' ? 'New Online Admission Application' : 'নতুন অনলাইন ভর্তি আবেদন'}</h4>
               <p>
-                <strong>{admission.name}</strong> ({admission.phone}) submitted an admission form for batch <strong>{admission.preferredBatch}</strong>.
+                <strong>{admission.name}</strong> ({admission.phone}) {lang === 'EN' ? 'submitted an admission form for batch' : 'ভর্তি আবেদন করেছেন ব্যাচ'} <strong>{admission.preferredBatch}</strong>.
               </p>
-              <span className="notif-time">{admission.date || 'Recent application'}</span>
+              <span className="notif-time">{admission.date || (lang === 'EN' ? 'Recent application' : 'সাম্প্রতিক আবেদন')}</span>
             </div>
             <div className="notif-action">
               <button 
                 className="btn-secondary" 
                 onClick={() => setActiveTab('online-admission')}
               >
-                Review Application <ArrowRight size={16} style={{ marginLeft: '4px' }} />
+                {lang === 'EN' ? 'Review Application' : 'আবেদন পর্যালোচনা'} <ArrowRight size={16} style={{ marginLeft: '4px' }} />
               </button>
             </div>
           </div>
@@ -78,18 +80,18 @@ function Notifications({ setActiveTab }) {
               <AlertCircle size={24} color="#ef4444" />
             </div>
             <div className="notif-content">
-              <h4>Payment Due Alert</h4>
+              <h4>{lang === 'EN' ? 'Payment Due Alert' : 'বকেয়া ফি সতর্কতা'}</h4>
               <p>
-                <strong>{notif.name}</strong> ({notif.batch}) has an outstanding due of <strong>৳ {notif.dueAmount.toLocaleString()}</strong> for their {notif.feeType} fee.
+                <strong>{notif.name}</strong> ({notif.batch}) {lang === 'EN' ? 'has an outstanding due of' : 'এর বকেয়া রয়েছে'} <strong>৳ {notif.dueAmount.toLocaleString()}</strong> ({notif.feeType === 'monthly' ? t.badgeMonthly : t.badgeCourse}).
               </p>
-              <span className="notif-time">Due for collection</span>
+              <span className="notif-time">{lang === 'EN' ? 'Due for collection' : 'আদায়যোগ্য বকেয়া'}</span>
             </div>
             <div className="notif-action">
               <button 
                 className="btn-secondary" 
                 onClick={() => setActiveTab('due-inbox')}
               >
-                View in Due Inbox <ArrowRight size={16} style={{ marginLeft: '4px' }} />
+                {t.reviewDues} <ArrowRight size={16} style={{ marginLeft: '4px' }} />
               </button>
             </div>
           </div>
@@ -98,7 +100,7 @@ function Notifications({ setActiveTab }) {
         {dueStudents.length === 0 && pendingAdmissions.length === 0 && (
           <div className="empty-state-box">
             <Bell size={48} color="#cbd5e1" style={{ marginBottom: '1rem' }} />
-            <p>You're all caught up! No active alerts or pending items.</p>
+            <p>{lang === 'EN' ? "You're all caught up! No active alerts or pending items." : "সবকিছু হালনাগাদ রয়েছে! বর্তমানে কোনো বকেয়া বা অপেক্ষমাণ আবেদন নেই।"}</p>
           </div>
         )}
       </div>

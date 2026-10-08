@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { UserPlus, Shield, X, Trash2 } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './staff.css';
 
-function Staff() {
+function Staff({ lang: propLang }) {
+  const { t } = useTranslation(propLang);
   const [staffList, setStaffList] = useState(() => dataStore.getStaff());
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newStaff, setNewStaff] = useState({ name: '', phone: '', role: 'Manager' });
@@ -31,7 +33,7 @@ function Staff() {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to remove this staff member?')) {
+    if (window.confirm(t.confirmDeleteStaff)) {
       dataStore.deleteStaff(id);
     }
   };
@@ -41,14 +43,14 @@ function Staff() {
       <div className="page-header">
         <div>
           <div className="fee-followup-tag">
-            <Shield size={14} /> USER MANAGEMENT
+            <Shield size={14} /> {t.userManagementTag}
           </div>
-          <h1>Staff & Roles</h1>
-          <p className="subtitle">Manage admin and manager access for your workspace.</p>
+          <h1>{t.staffTitle}</h1>
+          <p className="subtitle">{t.staffSubtitle}</p>
         </div>
         <div className="header-actions">
           <button className="btn-primary" onClick={() => setIsAddModalOpen(true)}>
-            <UserPlus size={16} style={{ marginRight: '4px' }} /> Add Staff
+            <UserPlus size={16} style={{ marginRight: '4px' }} /> {t.addStaffBtn}
           </button>
         </div>
       </div>
@@ -56,19 +58,19 @@ function Staff() {
       <div className="balances-section">
         <div className="balances-header">
           <div>
-            <h2>Staff Directory</h2>
-            <p>{staffList.length} active team members</p>
+            <h2>{t.staffDirectorySectionTitle}</h2>
+            <p>{staffList.length} {t.activeTeamMembers}</p>
           </div>
         </div>
 
         <table className="data-table">
           <thead>
             <tr>
-              <th>NAME</th>
-              <th>MOBILE NUMBER</th>
-              <th>ROLE</th>
-              <th>STATUS</th>
-              <th style={{ textAlign: 'right' }}>ACTIONS</th>
+              <th>{t.staffNameLabel}</th>
+              <th>{t.mobileNumberLabel}</th>
+              <th>{t.roleLabel}</th>
+              <th>{t.thStatus}</th>
+              <th style={{ textAlign: 'right' }}>{t.thActions}</th>
             </tr>
           </thead>
           <tbody>
@@ -78,14 +80,14 @@ function Staff() {
                 <td>{staff.phone}</td>
                 <td>
                   <span className={`role-badge ${staff.role.toLowerCase()}`}>
-                    {staff.role}
+                    {staff.role === 'Admin' ? t.roleAdmin : staff.role === 'Teacher' ? t.roleTeacher : t.roleManager}
                   </span>
                 </td>
                 <td>
-                  <span className="status-badge active"><span className="status-dot"></span>{staff.status}</span>
+                  <span className="status-badge active"><span className="status-dot"></span>{t.active}</span>
                 </td>
                 <td style={{ textAlign: 'right' }}>
-                  <button className="btn-icon text-danger" onClick={() => handleDelete(staff.id)} title="Remove Staff">
+                  <button className="btn-icon text-danger" onClick={() => handleDelete(staff.id)} title={t.delete}>
                     <Trash2 size={16} />
                   </button>
                 </td>
@@ -100,8 +102,8 @@ function Staff() {
           <div className="modal-content">
             <div className="modal-header">
               <div>
-                <h2>Add Staff Member</h2>
-                <p>Assign admin or manager roles.</p>
+                <h2>{t.addStaffModalTitle}</h2>
+                <p>{t.addStaffModalDesc}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setIsAddModalOpen(false)}>
                 <X size={20} />
@@ -109,7 +111,7 @@ function Staff() {
             </div>
             <div className="modal-body">
               <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label>Name <span className="text-danger">*</span></label>
+                <label>{t.staffNameLabel} <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
                   className="form-control" 
@@ -121,7 +123,7 @@ function Staff() {
               </div>
               <div className="form-row">
                 <div className="form-group half">
-                  <label>Mobile Number <span className="text-danger">*</span></label>
+                  <label>{t.mobileNumberLabel} <span className="text-danger">*</span></label>
                   <input 
                     type="text" 
                     className="form-control" 
@@ -131,28 +133,21 @@ function Staff() {
                   />
                 </div>
                 <div className="form-group half">
-                  <label>Role</label>
+                  <label>{t.roleLabel}</label>
                   <select 
                     className="form-control"
                     value={newStaff.role}
                     onChange={(e) => setNewStaff({...newStaff, role: e.target.value})}
                   >
-                    <option value="Admin">Admin</option>
-                    <option value="Manager">Manager</option>
+                    <option value="Admin">{t.roleAdmin}</option>
+                    <option value="Manager">{t.roleManager}</option>
                   </select>
                 </div>
               </div>
-              <div className="role-description" style={{ marginTop: '1rem' }}>
-                {newStaff.role === 'Admin' ? (
-                  <p className="text-muted"><Shield size={14} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }}/> <strong>Admin:</strong> Has full access to delete data, view reports, and manage all settings.</p>
-                ) : (
-                  <p className="text-muted"><UserPlus size={14} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }}/> <strong>Manager:</strong> Can add students, collect payments, and manage daily operations.</p>
-                )}
-              </div>
             </div>
             <div className="modal-footer">
-              <button className="btn-cancel" onClick={() => setIsAddModalOpen(false)}>Cancel</button>
-              <button className="btn-primary" onClick={handleAddStaff}>Add Member</button>
+              <button className="btn-cancel" onClick={() => setIsAddModalOpen(false)}>{t.cancel}</button>
+              <button className="btn-primary" onClick={handleAddStaff}>{t.save}</button>
             </div>
           </div>
         </div>

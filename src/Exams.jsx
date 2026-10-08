@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Plus, X, Trash2, ListChecks, Printer, CheckCircle2 } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './exams.css';
 
-function Exams() {
+function Exams({ lang: propLang }) {
+  const { t } = useTranslation(propLang);
   const [exams, setExams] = useState(() => dataStore.getExams());
   const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [allStudents, setAllStudents] = useState(() => dataStore.getStudents());
@@ -55,7 +57,7 @@ function Exams() {
   };
 
   const handleDeleteExam = (examId) => {
-    if (window.confirm("Are you sure you want to delete this exam?")) {
+    if (window.confirm(t.deleteExamConfirm)) {
       const updated = exams.filter(e => e.id !== examId);
       dataStore.saveExams(updated);
     }
@@ -76,7 +78,7 @@ function Exams() {
   const handleSaveMarks = () => {
     if (!selectedExamForMarks) return;
     dataStore.saveExamMarks(selectedExamForMarks.id, marksState);
-    setSuccessToast(`Marks saved for ${selectedExamForMarks.name}!`);
+    setSuccessToast(t.marksSavedSuccess);
     setTimeout(() => setSuccessToast(''), 3000);
     setSelectedExamForMarks(null);
   };
@@ -89,14 +91,14 @@ function Exams() {
       <div className="page-header">
         <div>
           <div className="fee-followup-tag">
-            <FileText size={14} /> ASSESSMENT WORKSPACE
+            <FileText size={14} /> {t.assessmentTag}
           </div>
-          <h1>পরীক্ষা</h1>
-          <p className="subtitle">Create exams, enter marks, and track student assessments.</p>
+          <h1>{t.examsTitle}</h1>
+          <p className="subtitle">{t.examsSubtitle}</p>
         </div>
         <div className="header-actions">
           <button className="btn-primary" onClick={() => setIsAddModalOpen(true)}>
-            <Plus size={16} /> নতুন পরীক্ষা
+            <Plus size={16} /> {t.newExamBtn}
           </button>
         </div>
       </div>
@@ -110,24 +112,24 @@ function Exams() {
       <div className="summary-cards exams-kpis">
         <div className="summary-card highlight-purple">
           <div>
-            <div className="summary-label">Assessments</div>
+            <div className="summary-label">{t.totalExamsStat}</div>
             <div className="summary-value">{exams.length}</div>
-            <div className="summary-date">In your exam register</div>
+            <div className="summary-date">{t.examsTitle}</div>
           </div>
           <FileText size={48} className="bg-icon" />
         </div>
         <div className="summary-card count">
           <div>
-            <div className="summary-label">Batches assessed</div>
+            <div className="summary-label">{t.batchesCoveredStat}</div>
             <div className="summary-value">{uniqueBatches}</div>
-            <div className="summary-date">Across recorded exams</div>
+            <div className="summary-date">{t.batches}</div>
           </div>
         </div>
         <div className="summary-card count">
           <div>
-            <div className="summary-label">Subjects</div>
+            <div className="summary-label">{t.activeSubjectsStat}</div>
             <div className="summary-value">{uniqueSubjects}</div>
-            <div className="summary-date">Included in assessments</div>
+            <div className="summary-date">{t.thSubject}</div>
           </div>
         </div>
       </div>
@@ -135,8 +137,8 @@ function Exams() {
       <div className="balances-section">
         <div className="balances-header">
           <div>
-            <h2>Exam register</h2>
-            <p>Open an assessment to enter marks and evaluate student performance.</p>
+            <h2>{t.allExamsSectionTitle}</h2>
+            <p>{t.allExamsSectionDesc}</p>
           </div>
         </div>
 
@@ -144,12 +146,12 @@ function Exams() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>DATE</th>
-                <th>EXAM NAME</th>
-                <th>BATCH & SUBJECT</th>
-                <th>MARKS (PASS / TOTAL)</th>
-                <th>ENTRIES</th>
-                <th style={{ textAlign: 'right' }}>ACTIONS</th>
+                <th>{t.thDate}</th>
+                <th>{t.examNameInputLabel}</th>
+                <th>{t.thBatch} & {t.thSubject}</th>
+                <th>{t.totalMarksInputLabel}</th>
+                <th>{t.marksColumn}</th>
+                <th style={{ textAlign: 'right' }}>{t.thActions}</th>
               </tr>
             </thead>
             <tbody>
@@ -165,13 +167,13 @@ function Exams() {
                     </td>
                     <td>{exam.passMarks} / {exam.totalMarks}</td>
                     <td>
-                      <span className="badge-gray">{markCount} marked</span>
+                      <span className="badge-gray">{markCount} {t.done}</span>
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <button className="btn-icon" onClick={() => handleOpenMarksModal(exam)} title="Enter Marks">
+                      <button className="btn-icon" onClick={() => handleOpenMarksModal(exam)} title={t.enterMarksBtn}>
                         <ListChecks size={18} color="#0284c7" />
                       </button>
-                      <button className="btn-icon text-danger" onClick={() => handleDeleteExam(exam.id)} title="Delete Exam">
+                      <button className="btn-icon text-danger" onClick={() => handleDeleteExam(exam.id)} title={t.delete}>
                         <Trash2 size={18} />
                       </button>
                     </td>
@@ -185,7 +187,7 @@ function Exams() {
             <div className="empty-icon-circle purple-icon">
               <span className="zero-icon">∅</span>
             </div>
-            <p>No exams yet — create one to start entering marks.</p>
+            <p>{t.allExamsSectionDesc}</p>
           </div>
         )}
       </div>
@@ -196,8 +198,8 @@ function Exams() {
           <div className="modal-content">
             <div className="modal-header">
               <div>
-                <h2>পরীক্ষা যোগ করুন</h2>
-                <p>Create a new assessment register.</p>
+                <h2>{t.createExamModalTitle}</h2>
+                <p>{t.createExamModalDesc}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setIsAddModalOpen(false)}>
                 <X size={20} />
@@ -205,11 +207,11 @@ function Exams() {
             </div>
             <div className="modal-body">
               <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label>পরীক্ষার নাম (Exam Name) <span className="text-danger">*</span></label>
+                <label>{t.examNameInputLabel} <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
                   className="form-control" 
-                  placeholder="e.g. Chapter 2 Quiz"
+                  placeholder={t.examNamePlaceholder}
                   value={newExam.name}
                   onChange={(e) => setNewExam({...newExam, name: e.target.value})}
                   autoFocus
@@ -217,20 +219,20 @@ function Exams() {
               </div>
               <div className="form-row">
                 <div className="form-group half">
-                  <label>ব্যাচ (Batch)</label>
+                  <label>{t.batchSelectLabel}</label>
                   <select 
                     className="form-control"
                     value={newExam.batch}
                     onChange={(e) => setNewExam({...newExam, batch: e.target.value})}
                   >
-                    <option value="All Batches">All Batches (সবার জন্য)</option>
+                    <option value="All Batches">{t.allBatchesFilter}</option>
                     {batches.map(b => (
                       <option key={b.id || b.name} value={b.name}>{b.name}</option>
                     ))}
                   </select>
                 </div>
                 <div className="form-group half">
-                  <label>বিষয় (Subject)</label>
+                  <label>{t.subjectInputLabel}</label>
                   <input 
                     type="text" 
                     className="form-control" 
@@ -242,7 +244,7 @@ function Exams() {
               </div>
               <div className="form-row">
                 <div className="form-group half">
-                  <label>তারিখ (Date)</label>
+                  <label>{t.dateInputLabelExam}</label>
                   <input 
                     type="date" 
                     className="form-control" 
@@ -251,7 +253,7 @@ function Exams() {
                   />
                 </div>
                 <div className="form-group half">
-                  <label>মোট নম্বর (Total Marks)</label>
+                  <label>{t.totalMarksInputLabel}</label>
                   <input 
                     type="number" 
                     className="form-control" 
@@ -261,7 +263,7 @@ function Exams() {
                 </div>
               </div>
               <div className="form-group">
-                <label>পাস নম্বর (Pass Marks)</label>
+                <label>{t.passMarksInputLabel}</label>
                 <input 
                   type="number" 
                   className="form-control" 
@@ -271,8 +273,8 @@ function Exams() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn-cancel" onClick={() => setIsAddModalOpen(false)}>Cancel</button>
-              <button className="btn-save" onClick={handleAddExam}>সেভ</button>
+              <button className="btn-cancel" onClick={() => setIsAddModalOpen(false)}>{t.cancel}</button>
+              <button className="btn-save" onClick={handleAddExam}>{t.save}</button>
             </div>
           </div>
         </div>
@@ -284,7 +286,7 @@ function Exams() {
           <div className="modal-content large-modal">
             <div className="modal-header">
               <div>
-                <h2>{selectedExamForMarks.name} - নম্বর এন্ট্রি</h2>
+                <h2>{selectedExamForMarks.name} - {t.enterMarksModalTitle}</h2>
                 <p>{selectedExamForMarks.batch} • {selectedExamForMarks.subject} • Pass: {selectedExamForMarks.passMarks} / {selectedExamForMarks.totalMarks}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setSelectedExamForMarks(null)}><X size={20} /></button>
@@ -296,12 +298,12 @@ function Exams() {
                 <table className="data-table">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>NAME</th>
-                      <th>STUDENT ID</th>
-                      <th>BATCH</th>
-                      <th style={{ width: '160px' }}>MARKS OBTAINED</th>
-                      <th>STATUS</th>
+                      <th>{t.thSerial}</th>
+                      <th>{t.thStudentName}</th>
+                      <th>{t.thStudentId}</th>
+                      <th>{t.thBatch}</th>
+                      <th style={{ width: '160px' }}>{t.marksColumn}</th>
+                      <th>{t.statusColumn}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -322,14 +324,14 @@ function Exams() {
                               <input 
                                 type="number" 
                                 className="form-control" 
-                                placeholder="Marks"
+                                placeholder={t.marksColumn}
                                 value={score}
                                 onChange={(e) => handleMarkChange(student.id, e.target.value)}
                               />
                             </td>
                             <td>
-                              {isPassed && <span className="status-badge badge-present">Passed</span>}
-                              {isFailed && <span className="status-badge badge-absent">Failed</span>}
+                              {isPassed && <span className="status-badge badge-present">{t.passed}</span>}
+                              {isFailed && <span className="status-badge badge-absent">{t.failed}</span>}
                               {score === '' && <span className="text-muted">-</span>}
                             </td>
                           </tr>
@@ -339,13 +341,13 @@ function Exams() {
                 </table>
               ) : (
                 <p style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                  No students enrolled in batch {selectedExamForMarks.batch}.
+                  {t.noStudentsInBatchMsg}
                 </p>
               )}
             </div>
             <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setSelectedExamForMarks(null)}>Cancel</button>
-              <button className="btn-primary" onClick={handleSaveMarks}>Save Marks</button>
+              <button className="btn-secondary" onClick={() => setSelectedExamForMarks(null)}>{t.cancel}</button>
+              <button className="btn-primary" onClick={handleSaveMarks}>{t.save}</button>
             </div>
           </div>
         </div>

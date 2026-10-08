@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { CreditCard, Calendar, Filter, Plus, FileText, Search, ChevronLeft, ChevronRight, Inbox, Wallet, X, Printer, CheckCircle2 } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './payments.css';
 
-function Payments({ setActiveTab }) {
+function Payments({ setActiveTab, lang: propLang }) {
+  const { t, lang } = useTranslation(propLang);
   const [payments, setPayments] = useState(() => dataStore.getPayments());
   const [students, setStudents] = useState(() => dataStore.getStudents());
   const [batches, setBatches] = useState(() => dataStore.getBatches());
@@ -114,30 +116,30 @@ function Payments({ setActiveTab }) {
     <div className="payments-page">
       <div className="page-header">
         <div>
-          <div className="page-subtitle"><CreditCard size={16} /> COLLECTION DESK</div>
-          <h1 className="page-title">পেমেন্ট</h1>
-          <p className="page-desc">Collect student fees, review transactions, and issue receipts.</p>
+          <div className="page-subtitle"><CreditCard size={16} /> {t.collectionDesk}</div>
+          <h1 className="page-title">{t.paymentsTitle}</h1>
+          <p className="page-desc">{t.paymentsSubtitle}</p>
         </div>
         <div className="header-actions">
           {setActiveTab && (
             <button className="btn-secondary" onClick={() => setActiveTab('due-inbox')}>
-              <Inbox size={18} /> Due inbox
+              <Inbox size={18} /> {t.dueInbox}
             </button>
           )}
           <button className="btn-primary" onClick={() => setIsCollectModalOpen(true)}>
-            <Wallet size={18} /> Collect fee
+            <Wallet size={18} /> {t.collectFees}
           </button>
         </div>
       </div>
 
       <div className="filter-card" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         <div className="form-group" style={{ flex: 1, minWidth: '200px' }}>
-          <label>Search payment</label>
+          <label>{t.searchPaymentLabel}</label>
           <div className="search-input-wrapper">
             <Search size={18} className="search-icon" />
             <input 
               type="text" 
-              placeholder="Search by student name, ID or receipt #..." 
+              placeholder={t.searchPaymentPlaceholder} 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="filter-input" 
@@ -146,60 +148,60 @@ function Payments({ setActiveTab }) {
           </div>
         </div>
         <div className="form-group" style={{ width: '180px' }}>
-          <label>Fee type</label>
+          <label>{t.feeTypeLabel}</label>
           <select 
             className="filter-select"
             value={selectedFeeType}
             onChange={(e) => setSelectedFeeType(e.target.value)}
           >
-            <option value="All types">All types</option>
-            <option value="monthly">Monthly fee</option>
-            <option value="course">Course fee</option>
+            <option value="All types">{t.allTypes}</option>
+            <option value="monthly">{t.monthlyFee}</option>
+            <option value="course">{t.courseFee}</option>
           </select>
         </div>
       </div>
 
       <div className="kpi-grid">
         <div className="kpi-card highlight">
-          <div className="kpi-label">আজকের কালেকশন</div>
+          <div className="kpi-label">{t.todaysCollection}</div>
           <div className="kpi-value">৳ {todaysCollection.toLocaleString()}</div>
-          <div className="kpi-desc">Today's collection ({today})</div>
+          <div className="kpi-desc">{lang === 'EN' ? "Today's collection" : 'আজকের কালেকশন'} ({today})</div>
         </div>
         
         <div className="kpi-card">
-          <div className="kpi-label">এই মাসের কালেকশন</div>
+          <div className="kpi-label">{t.thisMonthsCollection}</div>
           <div className="kpi-value">৳ {thisMonthsCollection.toLocaleString()}</div>
           <div className="kpi-desc">{selectedMonth}</div>
         </div>
 
         <div className="kpi-card">
-          <div className="kpi-label">সর্বমোট ট্রানজেকশন</div>
+          <div className="kpi-label">{t.totalTransactions}</div>
           <div className="kpi-value">{payments.length}</div>
-          <div className="kpi-desc">Recorded payments</div>
+          <div className="kpi-desc">{t.recordedPayments}</div>
         </div>
       </div>
 
       <div className="ledger-section">
         <div className="ledger-header">
           <h2 className="section-title">
-            Transaction ledger <span className="count-badge">{filteredPayments.length}</span>
+            {t.transactionLedger} <span className="count-badge">{filteredPayments.length}</span>
           </h2>
-          <p className="section-desc">Review payments or click to view and print official receipt.</p>
+          <p className="section-desc">{t.transactionLedgerDesc}</p>
         </div>
 
         <div className="table-container">
           <table className="payments-table">
             <thead>
               <tr>
-                <th>TRANSACTION ID</th>
-                <th>STUDENT</th>
-                <th>BATCH</th>
-                <th>FEE TYPE</th>
-                <th>METHOD</th>
-                <th>COLLECTED BY</th>
-                <th>DATE & TIME</th>
-                <th style={{ textAlign: 'right' }}>AMOUNT</th>
-                <th style={{ textAlign: 'center' }}>RECEIPT</th>
+                <th>{t.thTransactionId}</th>
+                <th>{t.thStudent}</th>
+                <th>{t.thBatch}</th>
+                <th>{t.thFeeType}</th>
+                <th>{t.thMethod}</th>
+                <th>{t.thCollectedBy}</th>
+                <th>{t.thDateAndTime}</th>
+                <th style={{ textAlign: 'right' }}>{t.thAmount}</th>
+                <th style={{ textAlign: 'center' }}>{t.thReceipt}</th>
               </tr>
             </thead>
             <tbody>
@@ -216,7 +218,7 @@ function Payments({ setActiveTab }) {
                     <td>{payment.batch || '—'}</td>
                     <td>
                       <span className={`fee-type-badge ${(payment.feeType || 'monthly').toLowerCase()}`}>
-                        {payment.feeType === 'monthly' ? 'বেতন' : 'কোর্স'}
+                        {payment.feeType === 'monthly' ? t.badgeMonthly : t.badgeCourse}
                       </span>
                     </td>
                     <td><span className="status-badge active">{payment.method}</span></td>
@@ -249,7 +251,7 @@ function Payments({ setActiveTab }) {
                 <tr>
                   <td colSpan="9" className="empty-state">
                     <div className="empty-icon"><CreditCard size={24} /></div>
-                    <p>No payments recorded yet</p>
+                    <p>{t.noPaymentsFound}</p>
                   </td>
                 </tr>
               )}

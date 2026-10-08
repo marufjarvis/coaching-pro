@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { CalendarCheck, FileText, CheckCircle2, UserX, Clock, UserMinus, Copy, X } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './attendance.css';
 
-function Attendance() {
+function Attendance({ lang: propLang }) {
+  const { t } = useTranslation(propLang);
   const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [allStudents, setAllStudents] = useState(() => dataStore.getStudents());
   const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
@@ -70,7 +72,7 @@ function Attendance() {
   const handleSaveAttendance = () => {
     if (!selectedBatch) return;
     dataStore.saveAttendanceForDateAndBatch(date, selectedBatch, attendanceData);
-    setSaveSuccessMsg(`Attendance for ${selectedBatch} on ${date} saved successfully!`);
+    setSaveSuccessMsg(t.attendanceSavedSuccess);
     setTimeout(() => setSaveSuccessMsg(''), 3000);
   };
 
@@ -93,16 +95,16 @@ function Attendance() {
       <div className="page-header">
         <div>
           <div className="fee-followup-tag">
-            <CalendarCheck size={14} /> DAILY ATTENDANCE REGISTER
+            <CalendarCheck size={14} /> {t.dailyAttendanceTag}
           </div>
-          <h1>হাজিরা</h1>
-          <p className="subtitle">Mark present, absent, late, or leave for a date and batch.</p>
+          <h1>{t.attendanceTitle}</h1>
+          <p className="subtitle">{t.attendanceSubtitle}</p>
         </div>
         <div className="header-actions">
           <button className="btn-secondary" onClick={() => setIsReportOpen(true)}>
-            <FileText size={16} /> View report
+            <FileText size={16} /> {t.viewReportBtn}
           </button>
-          <button className="btn-primary" onClick={handleSaveAttendance}>সেভ</button>
+          <button className="btn-primary" onClick={handleSaveAttendance}>{t.saveAttendanceBtn}</button>
         </div>
       </div>
 
@@ -113,11 +115,11 @@ function Attendance() {
       )}
 
       <div className="setup-card">
-        <h3>Set up your register</h3>
-        <p>Choose a date and batch to begin recording attendance.</p>
+        <h3>{t.setupRegisterTitle}</h3>
+        <p>{t.setupRegisterSubtitle}</p>
         <div className="setup-filters">
           <div className="form-group">
-            <label>তারিখ (Date)</label>
+            <label>{t.dateInputLabel}</label>
             <input 
               type="date" 
               className="form-control" 
@@ -126,7 +128,7 @@ function Attendance() {
             />
           </div>
           <div className="form-group">
-            <label>ব্যাচ (Batch)</label>
+            <label>{t.batchInputLabel}</label>
             <select 
               className="form-control" 
               value={selectedBatch} 
@@ -142,19 +144,19 @@ function Attendance() {
 
       <div className="summary-cards attendance-kpis">
         <div className="summary-card status-card present">
-          <div className="status-header"><CheckCircle2 size={16} /> Present</div>
+          <div className="status-header"><CheckCircle2 size={16} /> {t.present}</div>
           <div className="status-value">{counts.Present}</div>
         </div>
         <div className="summary-card status-card absent">
-          <div className="status-header"><UserX size={16} /> Absent</div>
+          <div className="status-header"><UserX size={16} /> {t.absent}</div>
           <div className="status-value">{counts.Absent}</div>
         </div>
         <div className="summary-card status-card late">
-          <div className="status-header"><Clock size={16} /> Late</div>
+          <div className="status-header"><Clock size={16} /> {t.late}</div>
           <div className="status-value">{counts.Late}</div>
         </div>
         <div className="summary-card status-card leave">
-          <div className="status-header"><UserMinus size={16} /> Leave</div>
+          <div className="status-header"><UserMinus size={16} /> {t.leave}</div>
           <div className="status-value">{counts.Leave}</div>
         </div>
       </div>
@@ -163,14 +165,14 @@ function Attendance() {
         <div className="balances-header" style={{ alignItems: 'flex-end' }}>
           <div>
             <h2>{selectedBatch}</h2>
-            <p>{batchStudents.length} students enrolled in this batch • {date}</p>
+            <p>{batchStudents.length} {t.enrolledInBatch} • {date}</p>
           </div>
           <div className="header-actions">
             <button className="btn-secondary" onClick={() => markAll('Present')}>
-              Mark all present
+              {t.markAllPresent}
             </button>
             <button className="btn-secondary" onClick={() => markAll('Absent')}>
-              Mark all absent
+              {t.markAllAbsent}
             </button>
           </div>
         </div>
@@ -180,11 +182,11 @@ function Attendance() {
             <table className="data-table attendance-table">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>নাম</th>
-                  <th>STUDENT ID</th>
-                  <th>PHONE</th>
-                  <th>হাজিরা স্ট্যাটাস</th>
+                  <th>{t.thSerial}</th>
+                  <th>{t.thStudentName}</th>
+                  <th>{t.thStudentId}</th>
+                  <th>{t.thPhone}</th>
+                  <th>{t.thAttendanceStatus}</th>
                 </tr>
               </thead>
               <tbody>
@@ -200,25 +202,25 @@ function Attendance() {
                           className={`status-btn ${attendanceData[student.id] === 'Present' ? 'active-present' : ''}`}
                           onClick={() => handleStatusChange(student.id, 'Present')}
                         >
-                          <CheckCircle2 size={14} /> Present
+                          <CheckCircle2 size={14} /> {t.present}
                         </button>
                         <button 
                           className={`status-btn ${attendanceData[student.id] === 'Absent' ? 'active-absent' : ''}`}
                           onClick={() => handleStatusChange(student.id, 'Absent')}
                         >
-                          <UserX size={14} /> Absent
+                          <UserX size={14} /> {t.absent}
                         </button>
                         <button 
                           className={`status-btn ${attendanceData[student.id] === 'Late' ? 'active-late' : ''}`}
                           onClick={() => handleStatusChange(student.id, 'Late')}
                         >
-                          <Clock size={14} /> Late
+                          <Clock size={14} /> {t.late}
                         </button>
                         <button 
                           className={`status-btn ${attendanceData[student.id] === 'Leave' ? 'active-leave' : ''}`}
                           onClick={() => handleStatusChange(student.id, 'Leave')}
                         >
-                          <UserMinus size={14} /> Leave
+                          <UserMinus size={14} /> {t.leave}
                         </button>
                       </div>
                     </td>
@@ -229,8 +231,8 @@ function Attendance() {
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
-            <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>No students enrolled in batch <strong>{selectedBatch}</strong> yet.</p>
-            <p style={{ fontSize: '0.9rem' }}>Go to Students tab and assign students to this batch to take attendance.</p>
+            <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>{t.noStudentsInBatchMsg}</p>
+            <p style={{ fontSize: '0.9rem' }}>{t.noStudentsInBatchSub}</p>
           </div>
         )}
       </div>
@@ -240,27 +242,27 @@ function Attendance() {
           <div className="modal-content large-modal">
             <div className="modal-header">
               <div>
-                <h2>Attendance Register Summary</h2>
-                <p>{date} • {selectedBatch} • {batchStudents.length} student{batchStudents.length !== 1 ? 's' : ''}</p>
+                <h2>{t.attendanceSummaryTitle}</h2>
+                <p>{date} • {selectedBatch} • {batchStudents.length} {batchStudents.length === 1 ? t.studentSingle : t.studentPlural}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setIsReportOpen(false)}><X size={20} /></button>
             </div>
             <div className="modal-body">
               <div className="summary-cards attendance-kpis mb-2">
                 <div className="summary-card status-card present small">
-                  <div className="status-header"><CheckCircle2 size={14} /> PRESENT</div>
+                  <div className="status-header"><CheckCircle2 size={14} /> {t.present.toUpperCase()}</div>
                   <div className="status-value">{counts.Present}</div>
                 </div>
                 <div className="summary-card status-card absent small">
-                  <div className="status-header"><UserX size={14} /> ABSENT</div>
+                  <div className="status-header"><UserX size={14} /> {t.absent.toUpperCase()}</div>
                   <div className="status-value">{counts.Absent}</div>
                 </div>
                 <div className="summary-card status-card late small">
-                  <div className="status-header"><Clock size={14} /> LATE</div>
+                  <div className="status-header"><Clock size={14} /> {t.late.toUpperCase()}</div>
                   <div className="status-value">{counts.Late}</div>
                 </div>
                 <div className="summary-card status-card leave small">
-                  <div className="status-header"><UserMinus size={14} /> LEAVE</div>
+                  <div className="status-header"><UserMinus size={14} /> {t.leave.toUpperCase()}</div>
                   <div className="status-value">{counts.Leave}</div>
                 </div>
               </div>
@@ -268,11 +270,11 @@ function Attendance() {
               <table className="data-table mt-2">
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>NAME</th>
-                    <th>ID & BATCH</th>
-                    <th>PHONE</th>
-                    <th>STATUS</th>
+                    <th>{t.thSerial}</th>
+                    <th>{t.thStudentName}</th>
+                    <th>{t.thStudentId} & {t.thBatch}</th>
+                    <th>{t.thPhone}</th>
+                    <th>{t.thStatus}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -286,7 +288,7 @@ function Attendance() {
                         <td>{student.phone || student.guardianPhone || '—'}</td>
                         <td>
                           <span className={`status-badge ${status === 'Present' ? 'badge-present' : status === 'Absent' ? 'badge-absent' : status === 'Late' ? 'badge-late' : 'badge-leave'}`}>
-                            {status}
+                            {status === 'Present' ? t.present : status === 'Absent' ? t.absent : status === 'Late' ? t.late : t.leave}
                           </span>
                         </td>
                       </tr>
@@ -296,7 +298,7 @@ function Attendance() {
               </table>
             </div>
             <div className="modal-footer">
-              <button className="btn-primary" onClick={() => setIsReportOpen(false)}>Done</button>
+              <button className="btn-primary" onClick={() => setIsReportOpen(false)}>{t.done}</button>
             </div>
           </div>
         </div>

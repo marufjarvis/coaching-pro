@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Receipt, Plus, X, Trash2 } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './expenses.css';
 
-function Expenses() {
+function Expenses({ lang: propLang }) {
+  const { t } = useTranslation(propLang);
   const [expenses, setExpenses] = useState(() => dataStore.getExpenses());
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newExpense, setNewExpense] = useState({
@@ -42,7 +44,7 @@ function Expenses() {
   };
 
   const handleDeleteExpense = (id) => {
-    if (window.confirm("Are you sure you want to delete this expense record?")) {
+    if (window.confirm(t.confirmDeleteExpense)) {
       dataStore.deleteExpense(id);
     }
   };
@@ -58,37 +60,37 @@ function Expenses() {
       <div className="page-header">
         <div>
           <div className="fee-followup-tag">
-            <Receipt size={14} /> EXPENSE LEDGER
+            <Receipt size={14} /> {t.expenseLedgerTag}
           </div>
-          <h1>খরচ</h1>
-          <p className="subtitle">Track coaching expenses, utilities, and bills.</p>
+          <h1>{t.expensesTitle}</h1>
+          <p className="subtitle">{t.expensesSubtitle}</p>
         </div>
         <button className="btn-primary" onClick={() => setIsAddModalOpen(true)}>
-          <Plus size={16} /> খরচ যোগ
+          <Plus size={16} /> {t.addExpenseBtn}
         </button>
       </div>
 
       <div className="summary-cards expenses-kpis">
         <div className="summary-card outstanding">
           <div>
-            <div className="summary-label">Total expenses</div>
+            <div className="summary-label">{t.totalExpensesStat}</div>
             <div className="summary-value">৳ {totalExpenses.toLocaleString()}</div>
-            <div className="summary-date">Recorded in ledger</div>
+            <div className="summary-date">{t.recordedInLedger}</div>
           </div>
           <Receipt size={48} className="bg-icon" />
         </div>
         <div className="summary-card count">
           <div>
-            <div className="summary-label">Entries</div>
+            <div className="summary-label">{t.entriesStat}</div>
             <div className="summary-value">{expenses.length}</div>
-            <div className="summary-date">Recorded expenses</div>
+            <div className="summary-date">{t.recordedExpensesDesc}</div>
           </div>
         </div>
         <div className="summary-card count">
           <div>
-            <div className="summary-label">Today's expenses (আজকের খরচ)</div>
+            <div className="summary-label">{t.todaysExpensesStat}</div>
             <div className="summary-value">৳ {todaysExpenses.toLocaleString()}</div>
-            <div className="summary-date">For {todaysDate}</div>
+            <div className="summary-date">{todaysDate}</div>
           </div>
         </div>
       </div>
@@ -96,8 +98,8 @@ function Expenses() {
       <div className="balances-section">
         <div className="balances-header">
           <div>
-            <h2>Expense ledger</h2>
-            <p>Track where your money goes, one entry at a time.</p>
+            <h2>{t.expenseLedgerSectionTitle}</h2>
+            <p>{t.expenseLedgerSectionDesc}</p>
           </div>
         </div>
 
@@ -105,11 +107,11 @@ function Expenses() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>DATE</th>
-                <th>DESCRIPTION</th>
-                <th>CATEGORY</th>
-                <th>AMOUNT</th>
-                <th style={{ textAlign: 'right' }}>ACTION</th>
+                <th>{t.thDate}</th>
+                <th>{t.expenseDescriptionLabel}</th>
+                <th>{t.expenseCategoryInputLabel}</th>
+                <th>{t.thAmount}</th>
+                <th style={{ textAlign: 'right' }}>{t.thActions}</th>
               </tr>
             </thead>
             <tbody>
@@ -125,7 +127,7 @@ function Expenses() {
                     <button 
                       className="btn-icon text-danger" 
                       onClick={() => handleDeleteExpense(exp.id)}
-                      title="Delete Expense"
+                      title={t.delete}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -139,7 +141,7 @@ function Expenses() {
             <div className="empty-icon-circle">
               <span className="zero-icon">∅</span>
             </div>
-            <p>No expenses recorded yet</p>
+            <p>{t.recordedExpensesDesc}</p>
           </div>
         )}
       </div>
@@ -149,8 +151,8 @@ function Expenses() {
           <div className="modal-content">
             <div className="modal-header">
               <div>
-                <h2>খরচ যোগ করুন</h2>
-                <p>Record a new coaching expenditure.</p>
+                <h2>{t.recordExpenseModalTitle}</h2>
+                <p>{t.recordExpenseModalDesc}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setIsAddModalOpen(false)}>
                 <X size={20} />
@@ -158,11 +160,11 @@ function Expenses() {
             </div>
             <div className="modal-body">
               <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label>বিবরণ (Description) <span className="text-danger">*</span></label>
+                <label>{t.expenseDescriptionLabel} <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
                   className="form-control" 
-                  placeholder="e.g. Marker, Duster, Electricity bill"
+                  placeholder={t.expenseDescriptionPlaceholder}
                   value={newExpense.title}
                   onChange={(e) => setNewExpense({...newExpense, title: e.target.value})}
                   autoFocus
@@ -170,7 +172,7 @@ function Expenses() {
               </div>
               <div className="form-row">
                 <div className="form-group half">
-                  <label>পরিমাণ (৳) <span className="text-danger">*</span></label>
+                  <label>{t.expenseAmountInputLabel} <span className="text-danger">*</span></label>
                   <input 
                     type="number" 
                     className="form-control" 
@@ -180,34 +182,33 @@ function Expenses() {
                   />
                 </div>
                 <div className="form-group half">
-                  <label>ক্যাটাগরি (Category)</label>
+                  <label>{t.expenseCategoryInputLabel}</label>
                   <select 
                     className="form-control"
                     value={newExpense.category}
                     onChange={(e) => setNewExpense({...newExpense, category: e.target.value})}
                   >
-                    <option value="Utilities">Utilities (বিদ্যুৎ, ইন্টারনেট)</option>
-                    <option value="Materials">Materials (মার্কার, শিট)</option>
-                    <option value="Rent">Rent (ভাড়া)</option>
-                    <option value="Refreshments">Refreshments (নাস্তা)</option>
-                    <option value="Salary">Salary (সম্মানী)</option>
-                    <option value="Other">Other (অন্যান্য)</option>
+                    <option value="Utilities">{t.categoryRent}</option>
+                    <option value="Materials">{t.categoryMaterials}</option>
+                    <option value="Rent">{t.categoryRent}</option>
+                    <option value="Salary">{t.categorySalaries}</option>
+                    <option value="Other">{t.categoryOther}</option>
                   </select>
                 </div>
               </div>
               <div className="form-group" style={{ marginTop: '1rem' }}>
-                <label>তারিখ (Date)</label>
+                <label>{t.thDate}</label>
                 <input 
                   type="date" 
-                  className="form-control"
+                  className="form-control" 
                   value={newExpense.date}
                   onChange={(e) => setNewExpense({...newExpense, date: e.target.value})}
                 />
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn-cancel" onClick={() => setIsAddModalOpen(false)}>Cancel</button>
-              <button className="btn-save" onClick={handleAddExpense}>সেভ</button>
+              <button className="btn-cancel" onClick={() => setIsAddModalOpen(false)}>{t.cancel}</button>
+              <button className="btn-save" onClick={handleAddExpense}>{t.save}</button>
             </div>
           </div>
         </div>

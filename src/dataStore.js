@@ -513,6 +513,19 @@ export const dataStore = {
     return updated;
   },
 
+  // --- LANGUAGE MANAGEMENT ---
+  getLanguage() {
+    return localStorage.getItem(STORAGE_KEYS.LANGUAGE) || 'BN';
+  },
+
+  setLanguage(lang) {
+    const selected = (lang === 'EN') ? 'EN' : 'BN';
+    localStorage.setItem(STORAGE_KEYS.LANGUAGE, selected);
+    notifyChange();
+    window.dispatchEvent(new CustomEvent('coaching-language-change', { detail: selected }));
+    return selected;
+  },
+
   // --- CALCULATIONS & STATS ---
   calculateDue(student) {
     const totalFee = Number(student.feeAmount) || 0;

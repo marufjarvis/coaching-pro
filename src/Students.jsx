@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Users, Link, Plus, Search, ChevronLeft, ChevronRight, X, Edit, Trash2 } from 'lucide-react';
 import StudentProfile from './StudentProfile';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './students.css';
 
-function Students({ setActiveTab: setParentTab }) {
+function Students({ setActiveTab: setParentTab, lang: propLang }) {
+  const { t, lang } = useTranslation(propLang);
   const [activeTab, setActiveTab] = useState('All students');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -136,7 +138,6 @@ function Students({ setActiveTab: setParentTab }) {
         status: studentForm.status || 'Active'
       });
 
-      // If it was a pending admission being approved
       if (studentForm.isPending) {
         const updated = pendingStudents.filter(p => p.id !== studentForm.pendingId);
         localStorage.setItem('pendingAdmissions', JSON.stringify(updated));
@@ -149,24 +150,20 @@ function Students({ setActiveTab: setParentTab }) {
 
   // Filter students
   const filteredStudents = (activeTab === 'Pending Approvals' ? pendingStudents : students).filter(student => {
-    // Search query
     const q = searchQuery.toLowerCase().trim();
     const matchesSearch = !q || 
       student.name.toLowerCase().includes(q) || 
       student.id.toLowerCase().includes(q) || 
       (student.phone && student.phone.includes(q));
 
-    // Tab filter
     let matchesTab = true;
     if (activeTab === 'Active') matchesTab = student.status === 'Active';
     else if (activeTab === 'Inactive') matchesTab = student.status === 'Inactive';
 
-    // Batch filter
     const matchesBatch = selectedBatchFilter === 'All batches' || 
       student.batch === selectedBatchFilter || 
       student.preferredBatch === selectedBatchFilter;
 
-    // Status filter
     const matchesStatus = selectedStatusFilter === 'All status' || 
       student.status === selectedStatusFilter;
 
@@ -176,6 +173,13 @@ function Students({ setActiveTab: setParentTab }) {
   const courseStudentsCount = students.filter(s => s.feeType === 'course').length;
   const monthlyStudentsCount = students.filter(s => s.feeType === 'monthly').length;
 
+  const tabOptions = [
+    { key: 'All students', label: t.tabAllStudents },
+    { key: 'Active', label: t.tabActive },
+    { key: 'Inactive', label: t.tabInactive },
+    { key: 'Pending Approvals', label: t.tabPendingApprovals }
+  ];
+
   return (
     <>
       {selectedStudent ? (
@@ -183,23 +187,24 @@ function Students({ setActiveTab: setParentTab }) {
           student={selectedStudent} 
           onBack={() => setSelectedStudent(null)}
           onEdit={() => openEditModal(selectedStudent)}
+          lang={lang}
         />
       ) : (
         <div className="students-page">
           <div className="page-header">
             <div>
-              <div className="page-subtitle"><Users size={16} /> STUDENT DIRECTORY</div>
-              <h1 className="page-title">শিক্ষার্থী</h1>
-              <p className="page-desc">Manage students, batches, and enrollments.</p>
+              <div className="page-subtitle"><Users size={16} /> {t.studentDirectoryTag}</div>
+              <h1 className="page-title">{t.studentsTitle}</h1>
+              <p className="page-desc">{t.studentsSubtitle}</p>
             </div>
             <div className="header-actions">
               {setParentTab && (
                 <button className="btn-secondary" onClick={() => setParentTab('enrollment')}>
-                  <Link size={16} /> Enrollment links
+                  <Link size={16} /> {t.enrollmentLinksBtn}
                 </button>
               )}
               <button className="btn-primary" onClick={openAddModal}>
-                <Plus size={18} /> Add student
+                <Plus size={18} /> {t.addStudentBtn}
               </button>
             </div>
           </div>
@@ -207,40 +212,40 @@ function Students({ setActiveTab: setParentTab }) {
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-info">
-                <div className="stat-label">কোর্স সিস্টেম</div>
+                <div className="stat-label">{t.courseSystemStat}</div>
                 <div className="stat-value blue-text">{courseStudentsCount}</div>
-                <div className="stat-desc">Course based students</div>
+                <div className="stat-desc">{t.courseSystemDesc}</div>
               </div>
             </div>
             <div className="stat-card">
               <div className="stat-info">
-                <div className="stat-label">বেতন সিস্টেম</div>
+                <div className="stat-label">{t.monthlySystemStat}</div>
                 <div className="stat-value">{monthlyStudentsCount}</div>
-                <div className="stat-desc">Monthly fee students</div>
+                <div className="stat-desc">{t.monthlySystemDesc}</div>
               </div>
             </div>
             <div className="stat-card">
               <div className="stat-info">
-                <div className="stat-label">মোট শিক্ষার্থী</div>
+                <div className="stat-label">{t.totalStudentsStat}</div>
                 <div className="stat-value">{students.length}</div>
-                <div className="stat-desc">Total active & registered</div>
+                <div className="stat-desc">{t.totalStudentsDesc}</div>
               </div>
             </div>
           </div>
 
           <div className="directory-section">
-            <h2 className="section-title">Student directory</h2>
-            <p className="section-desc">Search by name or ID, then filter by batch or status.</p>
+            <h2 className="section-title">{t.studentDirectoryTitle}</h2>
+            <p className="section-desc">{t.studentDirectorySubtitle}</p>
 
             <div className="tabs-container">
-              {['All students', 'Active', 'Inactive', 'Pending Approvals'].map(tab => (
+              {tabOptions.map(tab => (
                 <button 
-                  key={tab} 
-                  className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab)}
+                  key={tab.key} 
+                  className={`tab-btn ${activeTab === tab.key ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab.key)}
                 >
-                  {tab}
-                  {tab === 'Pending Approvals' && pendingStudents.length > 0 && (
+                  {tab.label}
+                  {tab.key === 'Pending Approvals' && pendingStudents.length > 0 && (
                     <span style={{ background: '#ef4444', color: 'white', borderRadius: '10px', padding: '2px 6px', fontSize: '10px', marginLeft: '6px' }}>
                       {pendingStudents.length}
                     </span>
@@ -255,7 +260,7 @@ function Students({ setActiveTab: setParentTab }) {
                   <Search size={18} className="search-icon" />
                   <input 
                     type="text" 
-                    placeholder="Search by name, ID or phone..." 
+                    placeholder={t.searchStudentsPlaceholder} 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -265,7 +270,7 @@ function Students({ setActiveTab: setParentTab }) {
                   value={selectedBatchFilter}
                   onChange={(e) => setSelectedBatchFilter(e.target.value)}
                 >
-                  <option value="All batches">All batches</option>
+                  <option value="All batches">{t.allBatchesFilter}</option>
                   {batches.map(b => (
                     <option key={b.id || b.name} value={b.name}>{b.name}</option>
                   ))}
@@ -275,9 +280,9 @@ function Students({ setActiveTab: setParentTab }) {
                   value={selectedStatusFilter}
                   onChange={(e) => setSelectedStatusFilter(e.target.value)}
                 >
-                  <option value="All status">All status</option>
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
+                  <option value="All status">{t.allStatusFilter}</option>
+                  <option value="Active">{t.active}</option>
+                  <option value="Inactive">{t.inactive}</option>
                 </select>
               </div>
 
@@ -285,12 +290,12 @@ function Students({ setActiveTab: setParentTab }) {
                 <table className="student-table">
                   <thead>
                     <tr>
-                      <th>STUDENT NAME</th>
-                      <th>STUDENT ID</th>
-                      <th>BATCH</th>
-                      <th>PHONE</th>
-                      <th>STATUS</th>
-                      <th style={{ textAlign: 'right' }}>ACTIONS</th>
+                      <th>{t.thStudentName}</th>
+                      <th>{t.thStudentId}</th>
+                      <th>{t.thBatch}</th>
+                      <th>{t.thPhone}</th>
+                      <th>{t.thStatus}</th>
+                      <th style={{ textAlign: 'right' }}>{t.thActions}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -304,25 +309,25 @@ function Students({ setActiveTab: setParentTab }) {
                                 <span className="student-name">{student.name}</span>
                                 {student.feeType && (
                                   <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>
-                                    {student.feeType === 'monthly' ? 'Monthly' : 'Course'}
+                                    {student.feeType === 'monthly' ? t.badgeMonthly : t.badgeCourse}
                                   </span>
                                 )}
                               </div>
                             </div>
                           </td>
                           <td><strong>{student.id}</strong></td>
-                          <td>{student.batch || student.preferredBatch || 'Unassigned'}</td>
+                          <td>{student.batch || student.preferredBatch || t.unassigned}</td>
                           <td>{student.phone || '—'}</td>
                           <td>
                             {activeTab === 'Pending Approvals' ? (
                               <span className="status-badge" style={{ backgroundColor: '#fef3c7', color: '#d97706' }}>
                                 <span className="status-dot" style={{ backgroundColor: '#d97706' }}></span>
-                                Pending
+                                {t.pending}
                               </span>
                             ) : (
                               <span className={`status-badge ${(student.status || 'Active').toLowerCase()}`}>
                                 <span className="status-dot"></span>
-                                {student.status || 'Active'}
+                                {student.status === 'Active' ? t.active : student.status === 'Inactive' ? t.inactive : student.status}
                               </span>
                             )}
                           </td>
@@ -350,14 +355,14 @@ function Students({ setActiveTab: setParentTab }) {
                                   setIsAddModalOpen(true);
                                 }}
                               >
-                                Approve
+                                {t.btnApprove}
                               </button>
                             ) : (
                               <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                                 <button className="btn-secondary" onClick={() => setSelectedStudent(student)}>
-                                  Profile
+                                  {t.btnProfile}
                                 </button>
-                                <button className="btn-icon" onClick={() => openEditModal(student)} title="Edit">
+                                <button className="btn-icon" onClick={() => openEditModal(student)} title={t.edit}>
                                   <Edit size={15} />
                                 </button>
                               </div>
@@ -368,7 +373,7 @@ function Students({ setActiveTab: setParentTab }) {
                     ) : (
                       <tr>
                         <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                          No students found matching your search.
+                          {t.noStudentsFound}
                         </td>
                       </tr>
                     )}
@@ -377,7 +382,7 @@ function Students({ setActiveTab: setParentTab }) {
               </div>
 
               <div className="table-pagination">
-                <span>Showing {filteredStudents.length} of {students.length} students</span>
+                <span>{t.showingStudents.replace('{n}', filteredStudents.length).replace('{total}', students.length)}</span>
               </div>
             </div>
           </div>
@@ -390,8 +395,8 @@ function Students({ setActiveTab: setParentTab }) {
           <div className="modal-content student-modal">
             <div className="modal-header">
               <div>
-                <h2>{isEditMode ? 'শিক্ষার্থী তথ্য আপডেট' : 'শিক্ষার্থী যোগ'}</h2>
-                <p>Configure student personal details and billing fee structure.</p>
+                <h2>{isEditMode ? t.editStudentModalTitle : t.addStudentModalTitle}</h2>
+                <p>{t.studentModalSubtitle}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setIsAddModalOpen(false)}>
                 <X size={20} />
@@ -400,11 +405,11 @@ function Students({ setActiveTab: setParentTab }) {
             
             <div className="modal-body">
               <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                <label>STUDENT ID <span className="text-danger">*</span></label>
+                <label>{t.studentIdLabel} <span className="text-danger">*</span></label>
                 <input 
                   type="text" 
                   className="form-control"
-                  placeholder="e.g. STU-101" 
+                  placeholder={t.studentIdPlaceholder} 
                   value={studentForm.idNumber} 
                   onChange={(e) => setStudentForm({...studentForm, idNumber: e.target.value})} 
                   disabled={isEditMode}
@@ -414,21 +419,21 @@ function Students({ setActiveTab: setParentTab }) {
 
               <div className="form-row">
                 <div className="form-group half">
-                  <label>নাম (Student Name) <span className="text-danger">*</span></label>
+                  <label>{t.studentNameLabel} <span className="text-danger">*</span></label>
                   <input 
                     type="text" 
                     className="form-control" 
-                    placeholder="Full Name" 
+                    placeholder={t.studentNamePlaceholder} 
                     value={studentForm.name} 
                     onChange={(e) => setStudentForm({...studentForm, name: e.target.value})} 
                   />
                 </div>
                 <div className="form-group half">
-                  <label>ফোন নম্বর (Mobile)</label>
+                  <label>{t.phoneMobileLabel}</label>
                   <input 
                     type="text" 
                     className="form-control" 
-                    placeholder="01XXXXXXXXX" 
+                    placeholder={t.phonePlaceholder} 
                     value={studentForm.phone} 
                     onChange={(e) => setStudentForm({...studentForm, phone: e.target.value})} 
                   />
@@ -437,23 +442,23 @@ function Students({ setActiveTab: setParentTab }) {
 
               <div className="form-row">
                 <div className="form-group half">
-                  <label>GUARDIAN PHONE</label>
+                  <label>{t.guardianPhoneLabel}</label>
                   <input 
                     type="text" 
                     className="form-control" 
-                    placeholder="01XXXXXXXXX" 
+                    placeholder={t.phonePlaceholder} 
                     value={studentForm.guardianPhone} 
                     onChange={(e) => setStudentForm({...studentForm, guardianPhone: e.target.value})} 
                   />
                 </div>
                 <div className="form-group half">
-                  <label>ব্যাচ (Batch)</label>
+                  <label>{t.batchSelectLabel}</label>
                   <select 
                     className="form-control" 
                     value={studentForm.batch} 
                     onChange={(e) => setStudentForm({...studentForm, batch: e.target.value})}
                   >
-                    <option value="">Select Batch</option>
+                    <option value="">{t.selectBatchPlaceholder}</option>
                     {batches.map(b => (
                       <option key={b.id || b.name} value={b.name}>{b.name}</option>
                     ))}
@@ -463,36 +468,36 @@ function Students({ setActiveTab: setParentTab }) {
 
               {isEditMode && (
                 <div className="form-group" style={{ marginBottom: '1rem' }}>
-                  <label>STATUS</label>
+                  <label>{t.statusLabel}</label>
                   <select 
                     className="form-control" 
                     value={studentForm.status} 
                     onChange={(e) => setStudentForm({...studentForm, status: e.target.value})}
                   >
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="Active">{t.active}</option>
+                    <option value="Inactive">{t.inactive}</option>
                   </select>
                 </div>
               )}
 
               <div className="billing-section">
-                <div className="billing-title">BILLING SETTINGS</div>
+                <div className="billing-title">{t.billingSettingsTitle}</div>
                 
                 <div className="form-row">
                   <div className="form-group half">
-                    <label>FEE TYPE</label>
+                    <label>{t.billingFeeTypeLabel}</label>
                     <select 
                       className="form-control"
                       value={feeType}
                       onChange={(e) => setFeeType(e.target.value)}
                     >
-                      <option value="monthly">Monthly fee (মাসিক বেতন)</option>
-                      <option value="course">Course fee (কোর্স ফি)</option>
+                      <option value="monthly">{t.monthlyFeeOptionText}</option>
+                      <option value="course">{t.courseFeeOptionText}</option>
                     </select>
                   </div>
                   
                   <div className="form-group half">
-                    <label>{feeType === 'monthly' ? 'MONTHLY FEE (৳)' : 'TOTAL COURSE FEE (৳)'}</label>
+                    <label>{feeType === 'monthly' ? t.monthlyFeeLabel : t.totalCourseFeeLabel}</label>
                     <input 
                       type="number" 
                       className="form-control" 
@@ -506,7 +511,7 @@ function Students({ setActiveTab: setParentTab }) {
                 {feeType === 'monthly' ? (
                   <div className="form-row">
                     <div className="form-group half">
-                      <label>ADMISSION FEE (৳)</label>
+                      <label>{t.admissionFeeLabel}</label>
                       <input 
                         type="number" 
                         className="form-control" 
@@ -516,7 +521,7 @@ function Students({ setActiveTab: setParentTab }) {
                       />
                     </div>
                     <div className="form-group half">
-                      <label>DISCOUNT (৳)</label>
+                      <label>{t.discountLabel}</label>
                       <input 
                         type="number" 
                         className="form-control" 
@@ -529,20 +534,20 @@ function Students({ setActiveTab: setParentTab }) {
                 ) : (
                   <div className="form-row">
                     <div className="form-group half">
-                      <label>INSTALLMENTS (কিস্তি সংখ্যা)</label>
+                      <label>{t.installmentsLabel}</label>
                       <input 
                         type="number" 
-                        className="form-control"
+                        className="form-control" 
                         placeholder="2" 
                         value={studentForm.installments} 
                         onChange={(e) => setStudentForm({...studentForm, installments: e.target.value})} 
                       />
                     </div>
                     <div className="form-group half">
-                      <label>DISCOUNT (৳)</label>
+                      <label>{t.discountLabel}</label>
                       <input 
                         type="number" 
-                        className="form-control"
+                        className="form-control" 
                         placeholder="0" 
                         value={studentForm.discount} 
                         onChange={(e) => setStudentForm({...studentForm, discount: e.target.value})} 
@@ -554,8 +559,8 @@ function Students({ setActiveTab: setParentTab }) {
             </div>
 
             <div className="modal-footer">
-              <button className="btn-cancel" onClick={() => setIsAddModalOpen(false)}>Cancel</button>
-              <button className="btn-save" onClick={handleSaveStudent}>সেভ</button>
+              <button className="btn-cancel" onClick={() => setIsAddModalOpen(false)}>{t.cancel}</button>
+              <button className="btn-save" onClick={handleSaveStudent}>{t.save}</button>
             </div>
           </div>
         </div>

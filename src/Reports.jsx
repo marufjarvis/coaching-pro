@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart2, Receipt, Ban, Wallet, ClipboardCheck, Users, FileQuestion, ChevronRight, X, Printer } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './reports.css';
 
-function Reports() {
+function Reports({ lang: propLang }) {
+  const { t } = useTranslation(propLang);
   const [activeReport, setActiveReport] = useState(null);
   const [payments, setPayments] = useState(() => dataStore.getPayments());
   const [students, setStudents] = useState(() => dataStore.getStudents());
@@ -50,23 +52,23 @@ function Reports() {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', background: '#f8fafc', padding: '12px 16px', borderRadius: '8px' }}>
               <div>
-                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>TOTAL TRANSACTIONS</span>
+                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{t.totalTransactions}</span>
                 <div style={{ fontSize: '1.25rem', fontWeight: 700 }}>{payments.length}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>TOTAL COLLECTED REVENUE</span>
+                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{t.totalCollections}</span>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#16a34a' }}>৳ {totalCollected.toLocaleString()}</div>
               </div>
             </div>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>DATE</th>
-                  <th>RECEIPT #</th>
-                  <th>STUDENT</th>
-                  <th>BATCH</th>
-                  <th>METHOD</th>
-                  <th style={{ textAlign: 'right' }}>AMOUNT</th>
+                  <th>{t.thDate}</th>
+                  <th>{t.thReceipt}</th>
+                  <th>{t.thStudent}</th>
+                  <th>{t.thBatch}</th>
+                  <th>{t.thMethod}</th>
+                  <th style={{ textAlign: 'right' }}>{t.thAmount}</th>
                 </tr>
               </thead>
               <tbody>
@@ -90,23 +92,23 @@ function Reports() {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', background: '#fef2f2', padding: '12px 16px', borderRadius: '8px' }}>
               <div>
-                <span style={{ fontSize: '0.85rem', color: '#991b1b' }}>DUE STUDENTS</span>
+                <span style={{ fontSize: '0.85rem', color: '#991b1b' }}>{t.dueStudentsCountTitle}</span>
                 <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#991b1b' }}>{dueStudents.length}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.85rem', color: '#991b1b' }}>TOTAL OUTSTANDING DUES</span>
+                <span style={{ fontSize: '0.85rem', color: '#991b1b' }}>{t.outstandingDues}</span>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#dc2626' }}>৳ {totalDues.toLocaleString()}</div>
               </div>
             </div>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>STUDENT ID</th>
-                  <th>STUDENT NAME</th>
-                  <th>BATCH</th>
-                  <th>PHONE</th>
-                  <th>FEE TYPE</th>
-                  <th style={{ textAlign: 'right' }}>DUE AMOUNT</th>
+                  <th>{t.thStudentId}</th>
+                  <th>{t.thStudentName}</th>
+                  <th>{t.thBatch}</th>
+                  <th>{t.thPhone}</th>
+                  <th>{t.thFeeType}</th>
+                  <th style={{ textAlign: 'right' }}>{t.dueLabel}</th>
                 </tr>
               </thead>
               <tbody>
@@ -117,12 +119,12 @@ function Reports() {
                       <td><strong>{s.name}</strong></td>
                       <td>{s.batch}</td>
                       <td>{s.phone || '—'}</td>
-                      <td>{s.feeType}</td>
+                      <td>{s.feeType === 'monthly' ? t.badgeMonthly : t.badgeCourse}</td>
                       <td style={{ textAlign: 'right', fontWeight: 700, color: '#dc2626' }}>৳ {s.dueAmount.toLocaleString()}</td>
                     </tr>
                   ))
                 ) : (
-                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No dues recorded.</td></tr>
+                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>{t.allDuesClearDesc}</td></tr>
                 )}
               </tbody>
             </table>
@@ -134,28 +136,28 @@ function Reports() {
           <div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
               <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '14px', borderRadius: '8px' }}>
-                <div style={{ fontSize: '0.8rem', color: '#166534' }}>TOTAL REVENUE</div>
+                <div style={{ fontSize: '0.8rem', color: '#166534' }}>{t.monthlyRevenue}</div>
                 <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#16a34a' }}>৳ {totalCollected.toLocaleString()}</div>
               </div>
               <div style={{ background: '#fef2f2', border: '1px solid #fecaca', padding: '14px', borderRadius: '8px' }}>
-                <div style={{ fontSize: '0.8rem', color: '#991b1b' }}>TOTAL EXPENSES</div>
+                <div style={{ fontSize: '0.8rem', color: '#991b1b' }}>{t.monthlyExpenses}</div>
                 <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#ef4444' }}>৳ {totalExpenseAmount.toLocaleString()}</div>
               </div>
               <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '14px', borderRadius: '8px' }}>
-                <div style={{ fontSize: '0.8rem', color: '#1e40af' }}>NET PROFIT (নেট লাভ)</div>
+                <div style={{ fontSize: '0.8rem', color: '#1e40af' }}>{t.netProfit}</div>
                 <div style={{ fontSize: '1.3rem', fontWeight: 800, color: netProfit >= 0 ? '#2563eb' : '#dc2626' }}>
                   ৳ {netProfit.toLocaleString()}
                 </div>
               </div>
             </div>
-            <h4 style={{ margin: '0 0 10px 0' }}>Expense Breakdown</h4>
+            <h4 style={{ margin: '0 0 10px 0' }}>{t.expenseLedgerSectionTitle}</h4>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>DATE</th>
-                  <th>EXPENSE TITLE</th>
-                  <th>CATEGORY</th>
-                  <th style={{ textAlign: 'right' }}>AMOUNT</th>
+                  <th>{t.thDate}</th>
+                  <th>{t.expenseDescriptionLabel}</th>
+                  <th>{t.expenseCategoryInputLabel}</th>
+                  <th style={{ textAlign: 'right' }}>{t.thAmount}</th>
                 </tr>
               </thead>
               <tbody>
@@ -177,7 +179,7 @@ function Reports() {
         return (
           <div>
             <div className="form-group" style={{ maxWidth: '250px', marginBottom: '1rem' }}>
-              <label>Select Batch</label>
+              <label>{t.batchSelectLabel}</label>
               <select className="form-control" value={selectedBatch} onChange={(e) => setSelectedBatch(e.target.value)}>
                 {batches.map(b => <option key={b.id || b.name} value={b.name}>{b.name}</option>)}
               </select>
@@ -185,12 +187,11 @@ function Reports() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>STUDENT NAME</th>
-                  <th>TOTAL REGISTERED DAYS</th>
-                  <th>PRESENT</th>
-                  <th>ABSENT</th>
-                  <th>ATTENDANCE %</th>
+                  <th>{t.thId}</th>
+                  <th>{t.thStudentName}</th>
+                  <th>{t.present}</th>
+                  <th>{t.absent}</th>
+                  <th>{t.attendance} %</th>
                 </tr>
               </thead>
               <tbody>
@@ -201,7 +202,6 @@ function Reports() {
                       <tr key={student.id}>
                         <td>{student.id}</td>
                         <td><strong>{student.name}</strong></td>
-                        <td>{stats.total || '—'}</td>
                         <td style={{ color: '#16a34a', fontWeight: 600 }}>{stats.present}</td>
                         <td style={{ color: '#dc2626', fontWeight: 600 }}>{stats.absent}</td>
                         <td>
@@ -213,7 +213,7 @@ function Reports() {
                     );
                   })
                 ) : (
-                  <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No students in this batch.</td></tr>
+                  <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>{t.noStudentsInBatchMsg}</td></tr>
                 )}
               </tbody>
             </table>
@@ -226,13 +226,13 @@ function Reports() {
             <table className="data-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>NAME</th>
-                  <th>BATCH</th>
-                  <th>MOBILE</th>
-                  <th>GUARDIAN</th>
-                  <th>FEE</th>
-                  <th>STATUS</th>
+                  <th>{t.thId}</th>
+                  <th>{t.thStudentName}</th>
+                  <th>{t.thBatch}</th>
+                  <th>{t.thPhone}</th>
+                  <th>{t.guardianPhoneLabel}</th>
+                  <th>{t.thFeeType}</th>
+                  <th>{t.thStatus}</th>
                 </tr>
               </thead>
               <tbody>
@@ -246,7 +246,7 @@ function Reports() {
                     <td>৳ {s.feeAmount}</td>
                     <td>
                       <span className={`status-badge ${(s.status || 'Active').toLowerCase()}`}>
-                        {s.status || 'Active'}
+                        {s.status === 'Active' ? t.active : s.status === 'Inactive' ? t.inactive : s.status}
                       </span>
                     </td>
                   </tr>
@@ -257,60 +257,53 @@ function Reports() {
         );
 
       case 'Exam':
-        const activeExam = exams.find(e => e.id === selectedExamId) || exams[0];
-        const examStudents = activeExam 
-          ? students.filter(s => activeExam.batch === 'All Batches' || s.batch === activeExam.batch)
-          : [];
-
+        const selectedExam = exams.find(e => e.id === selectedExamId) || exams[0];
         return (
           <div>
-            <div className="form-group" style={{ maxWidth: '340px', marginBottom: '1rem' }}>
-              <label>Select Assessment</label>
+            <div className="form-group" style={{ maxWidth: '300px', marginBottom: '1rem' }}>
+              <label>{t.examsTitle}</label>
               <select className="form-control" value={selectedExamId} onChange={(e) => setSelectedExamId(e.target.value)}>
-                {exams.map(ex => <option key={ex.id} value={ex.id}>{ex.name} ({ex.subject})</option>)}
+                {exams.map(e => <option key={e.id} value={e.id}>{e.name} ({e.subject})</option>)}
               </select>
             </div>
-            {activeExam && (
+            {selectedExam && (
               <>
-                <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.85rem' }}>
-                  <strong>Subject:</strong> {activeExam.subject} | <strong>Date:</strong> {activeExam.date} | <strong>Pass Marks:</strong> {activeExam.passMarks} / {activeExam.totalMarks}
+                <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', background: '#f8fafc', padding: '12px 16px', borderRadius: '8px' }}>
+                  <div><strong>{t.thBatch}:</strong> {selectedExam.batch}</div>
+                  <div><strong>{t.thSubject}:</strong> {selectedExam.subject}</div>
+                  <div><strong>{t.totalMarksInputLabel}:</strong> {selectedExam.totalMarks}</div>
+                  <div><strong>{t.passMarksInputLabel}:</strong> {selectedExam.passMarks}</div>
                 </div>
                 <table className="data-table">
                   <thead>
                     <tr>
-                      <th>STUDENT ID</th>
-                      <th>NAME</th>
-                      <th>BATCH</th>
-                      <th>MARKS</th>
-                      <th>RESULT</th>
+                      <th>{t.thId}</th>
+                      <th>{t.thStudentName}</th>
+                      <th>{t.marksColumn}</th>
+                      <th>{t.statusColumn}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {examStudents.length > 0 ? (
-                      examStudents.map(s => {
-                        const marks = activeExam.marks && activeExam.marks[s.id] !== undefined ? activeExam.marks[s.id] : '—';
-                        const isPassed = marks !== '—' && Number(marks) >= Number(activeExam.passMarks);
-                        return (
-                          <tr key={s.id}>
-                            <td>{s.id}</td>
-                            <td><strong>{s.name}</strong></td>
-                            <td>{s.batch}</td>
-                            <td style={{ fontWeight: 700 }}>{marks} / {activeExam.totalMarks}</td>
-                            <td>
-                              {marks === '—' ? (
-                                <span className="text-muted">Not graded</span>
-                              ) : isPassed ? (
-                                <span className="status-badge badge-present">Passed</span>
-                              ) : (
-                                <span className="status-badge badge-absent">Failed</span>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No student records for this exam.</td></tr>
-                    )}
+                    {students.map(student => {
+                      const marks = selectedExam.marks ? selectedExam.marks[student.id] : undefined;
+                      const isPassed = marks !== undefined && Number(marks) >= Number(selectedExam.passMarks);
+                      return (
+                        <tr key={student.id}>
+                          <td>{student.id}</td>
+                          <td><strong>{student.name}</strong></td>
+                          <td>{marks !== undefined ? marks : '—'}</td>
+                          <td>
+                            {marks === undefined ? (
+                              <span className="text-muted">{t.notGraded}</span>
+                            ) : isPassed ? (
+                              <span className="status-badge badge-present">{t.passed}</span>
+                            ) : (
+                              <span className="status-badge badge-absent">{t.failed}</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </>
@@ -327,16 +320,16 @@ function Reports() {
       <div className="page-header">
         <div>
           <div className="fee-followup-tag">
-            <BarChart2 size={14} /> INSIGHTS & REPORTS
+            <BarChart2 size={14} /> {t.reportsTag}
           </div>
-          <h1>রিপোর্ট</h1>
-          <p className="subtitle">Analyze performance across fees, attendance, profit & loss, and exams.</p>
+          <h1>{t.reportsTitle}</h1>
+          <p className="subtitle">{t.reportsSubtitle}</p>
         </div>
       </div>
 
       <div className="reports-section">
-        <h3 className="reports-section-title">Financial performance</h3>
-        <p className="reports-section-subtitle">Collections, outstanding fees, and coaching operational expenses.</p>
+        <h3 className="reports-section-title">{t.financialPerformanceHeading}</h3>
+        <p className="reports-section-subtitle">{t.financialPerformanceSubheading}</p>
         
         <div className="reports-grid">
           {/* Collection Report */}
@@ -344,9 +337,11 @@ function Reports() {
             <div className="report-icon-wrapper" style={{ color: '#3b82f6', backgroundColor: '#eff6ff' }}>
               <Receipt size={24} />
             </div>
-            <h3>Collection Report</h3>
-            <p>Fee collections by student, batch, fee type and method (Total: ৳ {totalCollected.toLocaleString()})</p>
-            <button className="btn-open-report" onClick={() => setActiveReport('Collection')}>Open report <ChevronRight size={16} /></button>
+            <h3>{t.collectionReportCardTitle}</h3>
+            <p>{t.collectionReportCardDesc} (৳ {totalCollected.toLocaleString()})</p>
+            <button className="btn-open-report" onClick={() => setActiveReport('Collection')}>
+              {t.openReportBtn} <ChevronRight size={16} />
+            </button>
             <div className="report-watermark">
               <Receipt size={120} strokeWidth={1} />
             </div>
@@ -357,9 +352,11 @@ function Reports() {
             <div className="report-icon-wrapper" style={{ color: '#ef4444', backgroundColor: '#fef2f2' }}>
               <Ban size={24} />
             </div>
-            <h3>Due Report</h3>
-            <p>Students with outstanding fees (Total Dues: ৳ {totalDues.toLocaleString()})</p>
-            <button className="btn-open-report" onClick={() => setActiveReport('Due')}>Open report <ChevronRight size={16} /></button>
+            <h3>{t.dueReportCardTitle}</h3>
+            <p>{t.dueReportCardDesc} (৳ {totalDues.toLocaleString()})</p>
+            <button className="btn-open-report" onClick={() => setActiveReport('Due')}>
+              {t.openReportBtn} <ChevronRight size={16} />
+            </button>
             <div className="report-watermark">
               <Ban size={120} strokeWidth={1} />
             </div>
@@ -370,9 +367,11 @@ function Reports() {
             <div className="report-icon-wrapper" style={{ color: '#0f766e', backgroundColor: '#f0fdfa' }}>
               <Wallet size={24} />
             </div>
-            <h3>Expense & Profit</h3>
-            <p>Revenue vs expenses with net profit (Net Profit: ৳ {netProfit.toLocaleString()})</p>
-            <button className="btn-open-report" onClick={() => setActiveReport('Expense')}>Open report <ChevronRight size={16} /></button>
+            <h3>{t.expenseProfitCardTitle}</h3>
+            <p>{t.expenseProfitCardDesc} (৳ {netProfit.toLocaleString()})</p>
+            <button className="btn-open-report" onClick={() => setActiveReport('Expense')}>
+              {t.openReportBtn} <ChevronRight size={16} />
+            </button>
             <div className="report-watermark">
               <Wallet size={120} strokeWidth={1} />
             </div>
@@ -381,8 +380,8 @@ function Reports() {
       </div>
 
       <div className="reports-section" style={{ marginTop: '3rem' }}>
-        <h3 className="reports-section-title">Academic records</h3>
-        <p className="reports-section-subtitle">Attendance percentages, student rosters, and exam mark sheets.</p>
+        <h3 className="reports-section-title">{t.academicRecordsHeading}</h3>
+        <p className="reports-section-subtitle">{t.academicRecordsSubheading}</p>
         
         <div className="reports-grid">
           {/* Attendance Report */}
@@ -390,9 +389,11 @@ function Reports() {
             <div className="report-icon-wrapper" style={{ color: '#10b981', backgroundColor: '#ecfdf5' }}>
               <ClipboardCheck size={24} />
             </div>
-            <h3>Attendance Report</h3>
-            <p>Student attendance rates and present/absent counts by batch</p>
-            <button className="btn-open-report" onClick={() => setActiveReport('Attendance')}>Open report <ChevronRight size={16} /></button>
+            <h3>{t.attendanceReportCardTitle}</h3>
+            <p>{t.attendanceReportCardDesc}</p>
+            <button className="btn-open-report" onClick={() => setActiveReport('Attendance')}>
+              {t.openReportBtn} <ChevronRight size={16} />
+            </button>
             <div className="report-watermark">
               <ClipboardCheck size={120} strokeWidth={1} />
             </div>
@@ -403,9 +404,11 @@ function Reports() {
             <div className="report-icon-wrapper" style={{ color: '#d97706', backgroundColor: '#fffbeb' }}>
               <Users size={24} />
             </div>
-            <h3>Student Directory Roster</h3>
-            <p>Comprehensive roster of all enrolled students with contact info</p>
-            <button className="btn-open-report" onClick={() => setActiveReport('StudentList')}>Open report <ChevronRight size={16} /></button>
+            <h3>{t.studentRosterCardTitle}</h3>
+            <p>{t.studentRosterCardDesc}</p>
+            <button className="btn-open-report" onClick={() => setActiveReport('StudentList')}>
+              {t.openReportBtn} <ChevronRight size={16} />
+            </button>
             <div className="report-watermark">
               <Users size={120} strokeWidth={1} />
             </div>
@@ -416,9 +419,11 @@ function Reports() {
             <div className="report-icon-wrapper" style={{ color: '#6366f1', backgroundColor: '#eef2ff' }}>
               <FileQuestion size={24} />
             </div>
-            <h3>Exam Mark Sheet</h3>
-            <p>Assessment mark sheets and pass/fail summary results</p>
-            <button className="btn-open-report" onClick={() => setActiveReport('Exam')}>Open report <ChevronRight size={16} /></button>
+            <h3>{t.examMarkSheetCardTitle}</h3>
+            <p>{t.examMarkSheetCardDesc}</p>
+            <button className="btn-open-report" onClick={() => setActiveReport('Exam')}>
+              {t.openReportBtn} <ChevronRight size={16} />
+            </button>
             <div className="report-watermark">
               <FileQuestion size={120} strokeWidth={1} />
             </div>
@@ -431,8 +436,8 @@ function Reports() {
           <div className="modal-content large-modal">
             <div className="modal-header">
               <div>
-                <h2>{activeReport} Report</h2>
-                <p>Live calculated report from Coaching Pro database</p>
+                <h2>{activeReport} {t.reportsTitle}</h2>
+                <p>{t.liveReportSubtitle}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setActiveReport(null)}><X size={20} /></button>
             </div>
@@ -440,9 +445,9 @@ function Reports() {
               {renderReportModalContent()}
             </div>
             <div className="modal-footer">
-              <button className="btn-cancel" onClick={() => setActiveReport(null)}>Close</button>
+              <button className="btn-cancel" onClick={() => setActiveReport(null)}>{t.close}</button>
               <button className="btn-primary" onClick={handlePrint} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Printer size={16} /> Print / Save PDF
+                <Printer size={16} /> {t.printReportBtn}
               </button>
             </div>
           </div>

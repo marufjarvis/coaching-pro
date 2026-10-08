@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Calendar, AlertCircle, ArrowRight, MessageSquare, Wallet, CheckCircle2, X, Copy } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './due-inbox.css';
 
-function DueInbox() {
+function DueInbox({ lang: propLang }) {
+  const { t, lang } = useTranslation(propLang);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBatchFilter, setSelectedBatchFilter] = useState('All');
   const [students, setStudents] = useState(() => dataStore.getStudents());
@@ -38,7 +40,7 @@ function DueInbox() {
       const { dueAmount, isDue } = dataStore.calculateDue(student);
       const dueDateStr = student.feeType === 'course' 
         ? (student.nextInstallmentDate || '01/11/2026') 
-        : '10th of this month';
+        : (lang === 'EN' ? '10th of this month' : 'চলতি মাসের ১০ তারিখ');
       return {
         ...student,
         dueAmount,
@@ -71,13 +73,16 @@ function DueInbox() {
       amount: Number(payAmount),
       method: payMethod,
       collectedBy: 'Admin',
-      note: `${collectingStudent.feeType === 'monthly' ? 'Monthly Fee' : 'Course Fee'}`
+      note: `${collectingStudent.feeType === 'monthly' ? t.monthlyFee : t.courseFee}`
     });
     setCollectingStudent(null);
     setPayAmount('');
   };
 
   const getSmsTemplate = (student) => {
+    if (lang === 'EN') {
+      return `Dear Guardian, outstanding fee for your child ${student.name} (${student.batch}) at ${settings.coachingName} is ৳ ${student.dueAmount}. Please settle soon. Thank you.`;
+    }
     return `সম্মানিত অভিভাবক, ${settings.coachingName}-এ আপনার সন্তান ${student.name}-এর (${student.batch}) চলতি বকেয়া ফি ৳ ${student.dueAmount} টাকা। অনুগ্রহ করে দ্রুত পরিশোধ করুন। ধন্যবাদ।`;
   };
 
@@ -92,34 +97,34 @@ function DueInbox() {
       <div className="page-header">
         <div>
           <div className="fee-followup-tag">
-            <AlertCircle size={14} /> FEE FOLLOW-UP
+            <AlertCircle size={14} /> {t.feeFollowupTag}
           </div>
-          <h1>Due inbox</h1>
-          <p className="subtitle">Collect outstanding fees and send reminders to guardians.</p>
+          <h1>{t.dueInboxTitle}</h1>
+          <p className="subtitle">{t.dueInboxSubtitle}</p>
         </div>
       </div>
 
       <div className="filter-card">
         <div className="filter-group">
-          <label>Batch filter</label>
+          <label>{t.batchFilterLabel}</label>
           <select 
             className="form-control"
             value={selectedBatchFilter}
             onChange={(e) => setSelectedBatchFilter(e.target.value)}
           >
-            <option value="All">All batches</option>
+            <option value="All">{t.allBatchesFilter}</option>
             {batches.map(b => (
               <option key={b.id || b.name} value={b.name}>{b.name}</option>
             ))}
           </select>
         </div>
         <div className="filter-group flex-2">
-          <label>Find a student</label>
+          <label>{t.findStudentLabel}</label>
           <div className="search-input-wrapper">
             <Search className="search-icon" size={16} />
             <input 
               type="text" 
-              placeholder="Search by name / ID / phone..." 
+              placeholder={t.searchDuePlaceholder} 
               className="form-control with-icon"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -127,9 +132,9 @@ function DueInbox() {
           </div>
         </div>
         <div className="filter-group">
-          <label>Due month</label>
+          <label>{t.dueMonthLabel}</label>
           <div className="date-input-wrapper">
-            <input type="text" className="form-control" value="October 2026" readOnly />
+            <input type="text" className="form-control" value={lang === 'EN' ? "October 2026" : "অক্টোবর ২০২৬"} readOnly />
             <Calendar className="calendar-icon" size={16} />
           </div>
         </div>
@@ -138,17 +143,17 @@ function DueInbox() {
       <div className="summary-cards">
         <div className="summary-card outstanding">
           <div>
-            <div className="summary-label">Outstanding this month</div>
+            <div className="summary-label">{t.outstandingThisMonth}</div>
             <div className="summary-value">৳ {totalOutstanding.toLocaleString()}</div>
-            <div className="summary-date">October 2026</div>
+            <div className="summary-date">{lang === 'EN' ? "October 2026" : "অক্টোবর ২০২৬"}</div>
           </div>
           <AlertCircle size={48} className="bg-icon" />
         </div>
         <div className="summary-card count">
           <div>
-            <div className="summary-label">Due students</div>
+            <div className="summary-label">{t.dueStudentsCountTitle}</div>
             <div className="summary-value">{dueStudents.length}</div>
-            <div className="summary-date">Need collection or reminder</div>
+            <div className="summary-date">{t.needCollectionOrReminder}</div>
           </div>
         </div>
       </div>
@@ -156,8 +161,8 @@ function DueInbox() {
       <div className="balances-section">
         <div className="balances-header">
           <div>
-            <h2>Outstanding balances</h2>
-            <p>Select a student to collect fee or send SMS reminder to guardian.</p>
+            <h2>{t.outstandingBalancesTitle}</h2>
+            <p>{t.outstandingBalancesSubtitle}</p>
           </div>
         </div>
 
@@ -169,24 +174,24 @@ function DueInbox() {
                   <div className="avatar">{student.initials || student.name.substring(0, 2).toUpperCase()}</div>
                   <div>
                     <div className="student-name">{student.name}</div>
-                    <div className="student-meta">{student.id} • {student.batch} • {student.phone || 'No phone'}</div>
+                    <div className="student-meta">{student.id} • {student.batch} • {student.phone || t.noPhone}</div>
                   </div>
                 </div>
                 <div className="due-details">
                   <div className="due-amount text-danger">৳ {student.dueAmount.toLocaleString()}</div>
-                  <div className="due-date">Due: {student.dueDateStr}</div>
+                  <div className="due-date">{t.dueLabel}: {student.dueDateStr}</div>
                 </div>
                 <div className="due-actions" style={{ display: 'flex', gap: '8px' }}>
                   <button 
                     className="btn-secondary"
                     style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem' }}
                     onClick={() => setSmsModalStudent(student)}
-                    title="Send SMS Reminder"
+                    title={t.smsReminderTitle}
                   >
-                    <MessageSquare size={14} /> SMS
+                    <MessageSquare size={14} /> {t.btnSms}
                   </button>
                   <button className="btn-collect" onClick={() => handleOpenCollect(student)}>
-                    Collect
+                    {t.btnCollect}
                   </button>
                 </div>
               </div>
@@ -197,7 +202,7 @@ function DueInbox() {
             <div className="empty-icon-circle">
               <span className="zero-icon">✓</span>
             </div>
-            <p>All fees are clear! No outstanding dues right now.</p>
+            <p>{t.allDuesClearDesc}</p>
           </div>
         )}
       </div>
@@ -208,8 +213,8 @@ function DueInbox() {
           <div className="modal-content">
             <div className="modal-header">
               <div>
-                <h2>Collect Fee: {collectingStudent.name}</h2>
-                <p>{collectingStudent.batch} • Total Due: ৳ {collectingStudent.dueAmount}</p>
+                <h2>{t.collectFeeDueTitle}: {collectingStudent.name}</h2>
+                <p>{collectingStudent.batch} • {t.totalDueLabel}: ৳ {collectingStudent.dueAmount.toLocaleString()}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setCollectingStudent(null)}>
                 <X size={20} />
@@ -217,7 +222,7 @@ function DueInbox() {
             </div>
             <div className="modal-body">
               <div className="form-group" style={{ marginBottom: '1rem' }}>
-                <label>AMOUNT (৳)</label>
+                <label>{t.amountToCollect} (৳)</label>
                 <input 
                   type="number" 
                   className="form-control" 
@@ -228,9 +233,9 @@ function DueInbox() {
                 />
               </div>
               <div className="form-group">
-                <label>PAYMENT METHOD</label>
+                <label>{t.paymentMethodPrompt}</label>
                 <select className="form-control" value={payMethod} onChange={(e) => setPayMethod(e.target.value)}>
-                  <option value="Cash">Cash (নগদ)</option>
+                  <option value="Cash">Cash</option>
                   <option value="bKash">bKash</option>
                   <option value="Nagad">Nagad</option>
                   <option value="Rocket">Rocket</option>
@@ -239,8 +244,8 @@ function DueInbox() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setCollectingStudent(null)}>Cancel</button>
-              <button className="btn-primary" onClick={handleConfirmCollect}>Confirm Collection</button>
+              <button className="btn-secondary" onClick={() => setCollectingStudent(null)}>{t.cancel}</button>
+              <button className="btn-primary" onClick={handleConfirmCollect}>{t.confirmCollectionBtn}</button>
             </div>
           </div>
         </div>
@@ -252,8 +257,8 @@ function DueInbox() {
           <div className="modal-content" style={{ maxWidth: '480px' }}>
             <div className="modal-header">
               <div>
-                <h2>SMS Reminder Preview</h2>
-                <p>Send to guardian: {smsModalStudent.guardianPhone || smsModalStudent.phone || 'N/A'}</p>
+                <h2>{t.smsReminderTitle}</h2>
+                <p>{t.sendToGuardianLabel}: {smsModalStudent.guardianPhone || smsModalStudent.phone || 'N/A'}</p>
               </div>
               <button className="btn-close-modal" onClick={() => setSmsModalStudent(null)}>
                 <X size={20} />
@@ -265,17 +270,17 @@ function DueInbox() {
               </div>
               {smsCopied && (
                 <div style={{ color: '#16a34a', fontSize: '0.85rem', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <CheckCircle2 size={14} /> SMS text copied to clipboard!
+                  <CheckCircle2 size={14} /> {t.smsCopiedSuccess}
                 </div>
               )}
             </div>
             <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setSmsModalStudent(null)}>Close</button>
+              <button className="btn-secondary" onClick={() => setSmsModalStudent(null)}>{t.close}</button>
               <button 
                 className="btn-primary" 
                 onClick={() => handleCopySms(getSmsTemplate(smsModalStudent))}
               >
-                <Copy size={16} /> Copy SMS
+                <Copy size={16} /> {t.copySmsBtn}
               </button>
             </div>
           </div>
