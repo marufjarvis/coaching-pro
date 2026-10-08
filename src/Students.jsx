@@ -303,8 +303,8 @@ function Students({ setActiveTab: setParentTab }) {
                               <div>
                                 <span className="student-name">{student.name}</span>
                                 {student.feeType && (
-                                  <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b' }}>
-                                    {student.feeType === 'monthly' ? `৳ ${student.feeAmount}/mo` : `৳ ${student.feeAmount} (Course)`}
+                                  <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>
+                                    {student.feeType === 'monthly' ? 'Monthly' : 'Course'}
                                   </span>
                                 )}
                               </div>
