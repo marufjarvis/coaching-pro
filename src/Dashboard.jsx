@@ -246,7 +246,7 @@ function Dashboard({ onLogout }) {
                 <span style={{ position: 'absolute', top: '2px', right: '2px', width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }}></span>
               )}
             </button>
-            <div className="profile-circle" title="Admin Account">MH</div>
+            <div className="profile-circle" title="Admin Account" onClick={() => setActiveTab('settings')}>MH</div>
           </div>
         </header>
 

@@ -211,7 +211,7 @@
 }
 
 .phone-icon.s-icon {
-  background: #6366f1;
+  background: var(--accent, #00a1ff);
 }
 
 .phone-icon.g-icon {

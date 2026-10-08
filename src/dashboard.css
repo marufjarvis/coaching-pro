@@ -103,13 +103,14 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background-color: #4f46e5;
+  background-color: var(--accent, #00a1ff);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 161, 255, 0.2);
 }
 
 .profile-info {
@@ -269,14 +270,22 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: #4f46e5;
+  background-color: var(--accent, #00a1ff);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 161, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.profile-circle:hover {
+  background-color: var(--accent-hover, #0089d6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 161, 255, 0.3);
 }
 
 /* Dashboard Content */
