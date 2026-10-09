@@ -472,7 +472,8 @@
 }
 
 /* ====================================================
-   HERO PORTRAIT CARD SHOWCASE (MARUF SIR)
+/* ====================================================
+   OPEN HERO CIRCLE SHOWCASE (NO RECTANGULAR CARD BOX)
    ==================================================== */
 .hero-portrait-col {
   display: flex;
@@ -482,64 +483,35 @@
   z-index: 20;
 }
 
-.hero-portrait-card {
+.hero-circle-showcase {
   position: relative;
-  width: 100%;
-  max-width: 480px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.8) 0%, rgba(8, 13, 26, 0.98) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.35);
-  border-radius: 32px;
-  box-shadow: 0 25px 65px -15px rgba(2, 132, 199, 0.45), 0 0 55px rgba(99, 102, 241, 0.3);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hero-portrait-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 30px 75px -15px rgba(2, 132, 199, 0.6), 0 0 65px rgba(99, 102, 241, 0.4);
-}
-
-.hero-portrait-stage {
-  position: relative;
-  width: 100%;
-  height: 480px;
-  overflow: hidden;
-  border-radius: 32px 32px 0 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.5) 0%, rgba(15, 23, 42, 0.92) 65%, rgba(8, 13, 26, 0.99) 100%);
+  width: 100%;
+  max-width: 480px;
+  padding: 1rem 0.5rem;
 }
 
-/* Atmospheric Glow Halo */
-.hero-portrait-halo {
+/* Atmospheric Glow Halo Directly in Hero Space */
+.hero-circle-ambient-halo {
   position: absolute;
-  top: 50%;
+  top: 36%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.5) 0%, rgba(99, 102, 241, 0.35) 50%, transparent 75%);
-  filter: blur(45px);
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(99, 102, 241, 0.28) 50%, transparent 75%);
+  filter: blur(55px);
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
   animation: haloPulse 5s ease-in-out infinite alternate;
 }
 
 @keyframes haloPulse {
   0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.7; }
   100% { transform: translate(-50%, -50%) scale(1.18); opacity: 1; }
-}
-
-.hero-portrait-pattern {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 20px 20px;
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 1;
 }
 
 /* ====================================================
@@ -660,26 +632,26 @@
 }
 
 .hero-float-top-right {
-  top: 1.25rem;
-  right: -1rem;
+  top: 1rem;
+  right: -1.25rem;
   animation: floatSlow 4.5s ease-in-out infinite alternate;
 }
 
 .hero-float-top-left {
-  top: 1.25rem;
-  left: -1rem;
+  top: 1rem;
+  left: -1.25rem;
   animation: floatSlow2 4s ease-in-out infinite alternate;
 }
 
 .hero-float-bottom-left {
-  bottom: 1.25rem;
-  left: -0.75rem;
+  top: 16rem;
+  left: -1.25rem;
   animation: floatSlow 5s ease-in-out infinite alternate;
 }
 
 .hero-float-bottom-right {
-  bottom: 1.25rem;
-  right: -0.5rem;
+  top: 16rem;
+  right: -1rem;
   animation: floatSlow2 4.2s ease-in-out infinite alternate;
 }
 
@@ -775,52 +747,44 @@
   100% { transform: scale(1.6); opacity: 0; }
 }
 
-/* Portrait Card Footer */
-.hero-portrait-footer {
-  position: relative;
-  z-index: 5;
-  padding: 1.15rem 1.4rem 1.4rem;
-  background: rgba(8, 13, 26, 0.98);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0 0 32px 32px;
+/* Open Mentor Credentials (Directly on Hero Space, No Boxy Card) */
+.hero-mentor-credentials {
   text-align: center;
+  z-index: 5;
+  width: 100%;
+  margin-top: 0.5rem;
 }
 
-.mentor-footer-name-row {
+.mentor-cred-name-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  margin-bottom: 2px;
+  gap: 8px;
+  margin-bottom: 0.25rem;
 }
 
-.mentor-footer-name {
-  font-size: 1.25rem;
+.mentor-cred-name {
+  font-size: 1.65rem;
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.3px;
 }
 
-.mentor-verified-badge {
-  display: inline-flex;
-  align-items: center;
-}
-
-.mentor-footer-role {
-  font-size: 0.82rem;
+.mentor-cred-role {
+  font-size: 0.95rem;
   color: #38bdf8;
   font-weight: 600;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
 }
 
-.mentor-footer-quote {
-  font-size: 0.8rem;
-  color: var(--lp-text-secondary);
+.mentor-cred-quote {
+  font-size: 0.88rem;
+  color: #94a3b8;
   font-style: italic;
   margin-bottom: 0.85rem;
 }
 
-.mentor-footer-chips {
+.mentor-cred-chips {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -860,24 +824,22 @@
   width: 100%;
 }
 
-/* Responsive adjustments for hero portrait */
+/* Responsive adjustments for open hero showcase */
 @media (max-width: 992px) {
-  .hero-circle-frame-wrap { width: 280px; height: 280px; }
-  .hero-float-top-left { top: 0.75rem; left: 0.25rem; }
-  .hero-float-top-right { top: 0.75rem; right: 0.25rem; }
-  .hero-float-bottom-left { bottom: 0.75rem; left: 0.25rem; }
-  .hero-float-bottom-right { bottom: 0.75rem; right: 0.25rem; }
-  .hero-portrait-stage { height: 410px; }
+  .hero-circle-frame-wrap { width: 300px; height: 300px; margin-bottom: 1.5rem; }
+  .hero-float-top-left { top: 0.5rem; left: 0; }
+  .hero-float-top-right { top: 0.5rem; right: 0; }
+  .hero-float-bottom-left { top: 13.5rem; left: 0; }
+  .hero-float-bottom-right { top: 13.5rem; right: 0; }
 }
 
 @media (max-width: 640px) {
-  .hero-circle-frame-wrap { width: 240px; height: 240px; }
-  .hero-float-top-left { top: 0.4rem; left: 0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-float-top-right { top: 0.4rem; right: 0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-float-bottom-left { bottom: 0.4rem; left: 0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-float-bottom-right { bottom: 0.4rem; right: 0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-portrait-stage { height: 360px; }
-  .hero-portrait-footer { padding: 1.25rem 1rem; }
+  .hero-circle-frame-wrap { width: 240px; height: 240px; margin-bottom: 1.25rem; }
+  .hero-float-top-left { top: 0.25rem; left: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
+  .hero-float-top-right { top: 0.25rem; right: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
+  .hero-float-bottom-left { top: 11rem; left: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
+  .hero-float-bottom-right { top: 11rem; right: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
+  .mentor-cred-name { font-size: 1.4rem; }
 }
 
 /* INTERACTIVE LAB / CODE PREVIEW CARD */

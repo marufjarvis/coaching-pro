@@ -498,96 +498,93 @@ function LandingPage({
               </div>
             </div>
 
-            {/* Right Hero: Maruf Sir Featured Portrait Showcase */}
+            {/* Right Hero: Open Floating Circle Showcase with Glowing Ring (No Card Wrapper) */}
             <div className="hero-portrait-col">
-              <div className="hero-portrait-card">
-                <div className="hero-portrait-stage">
-                  {/* Atmospheric Glow Halo & Circuit Pattern */}
-                  <div className="hero-portrait-halo"></div>
-                  <div className="hero-portrait-pattern"></div>
+              <div className="hero-circle-showcase">
+                {/* Atmospheric Glow Halo */}
+                <div className="hero-circle-ambient-halo"></div>
 
-                  {/* Circular Avatar Frame with Glowing Multi-Color Ring */}
-                  <div className="hero-circle-frame-wrap">
-                    {/* Animated Rotating Conic Glow Ring */}
-                    <div className="hero-circle-conic-glow"></div>
+                {/* Circular Avatar Frame with Animated Glowing Multi-Color Ring */}
+                <div className="hero-circle-frame-wrap">
+                  {/* Animated Rotating Conic Glow Ring */}
+                  <div className="hero-circle-conic-glow"></div>
 
-                    {/* Secondary Ambient Pulse Ring */}
-                    <div className="hero-circle-pulse-ring"></div>
+                  {/* Secondary Ambient Pulse Ring */}
+                  <div className="hero-circle-pulse-ring"></div>
 
-                    {/* Outer Gradient Border Ring */}
-                    <div className="hero-circle-ring-border">
-                      {/* Inner Circular Avatar Container with Dark Navy Backdrop */}
-                      <div className="hero-circle-avatar-box">
-                        <img 
-                          src="/maruf_transparent.png" 
-                          alt="মারুফ হোসেন - HSC ICT মেন্টর" 
-                          className="hero-mentor-circle-img"
-                          loading="eager"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Floating Badge 1: Top-Right Verified Lead Instructor */}
-                  <div className="hero-float-badge hero-float-top-right">
-                    <div className="float-badge-icon badge-accent-blue">
-                      <Award size={18} />
-                    </div>
-                    <div>
-                      <div className="float-badge-title">মারুফ হোসেন</div>
-                      <div className="float-badge-sub">প্রধান শিক্ষক ও প্রতিষ্ঠাতা</div>
-                    </div>
-                  </div>
-
-                  {/* Floating Badge 2: Top-Left Experience & Specialist */}
-                  <div className="hero-float-badge hero-float-top-left">
-                    <div className="float-badge-icon badge-accent-green">
-                      <Sparkles size={18} />
-                    </div>
-                    <div>
-                      <div className="float-badge-title">HSC ICT স্পেশালিস্ট</div>
-                      <div className="float-badge-sub">১০+ বছর সফল পাঠদান</div>
-                    </div>
-                  </div>
-
-                  {/* Floating Badge 3: Bottom-Left 1200+ A+ Students */}
-                  <div className="hero-float-badge hero-float-bottom-left">
-                    <div className="float-badge-icon badge-accent-amber">
-                      <GraduationCap size={20} />
-                    </div>
-                    <div>
-                      <div className="float-badge-title">১,২০০+ শিক্ষার্থী A+</div>
-                      <div className="float-badge-rating">
-                        <span>★★★★★</span> <small>৫.০ রেটিং</small>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Floating Badge 4: Bottom-Right Live Lab Pulse */}
-                  <div className="hero-float-badge hero-float-bottom-right">
-                    <span className="pulse-indicator"></span>
-                    <div>
-                      <div className="float-badge-title" style={{ color: '#34d399' }}>সরাসরি ল্যাব ক্লাস</div>
-                      <div className="float-badge-sub">ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস</div>
+                  {/* Outer Gradient Border Ring */}
+                  <div className="hero-circle-ring-border">
+                    {/* Inner Circular Avatar Container with Dark Navy Backdrop */}
+                    <div className="hero-circle-avatar-box">
+                      <img 
+                        src="/maruf_transparent.png" 
+                        alt="মারুফ হোসেন - HSC ICT মেন্টর" 
+                        className="hero-mentor-circle-img"
+                        loading="eager"
+                      />
                     </div>
                   </div>
                 </div>
 
-                {/* Portrait Card Footer */}
-                <div className="hero-portrait-footer">
-                  <div className="mentor-footer-name-row">
-                    <span className="mentor-footer-name">মারুফ হোসেন</span>
+                {/* Floating Badge 1: Top-Right Verified Lead Instructor */}
+                <div className="hero-float-badge hero-float-top-right">
+                  <div className="float-badge-icon badge-accent-blue">
+                    <Award size={18} />
+                  </div>
+                  <div>
+                    <div className="float-badge-title">মারুফ হোসেন</div>
+                    <div className="float-badge-sub">প্রধান শিক্ষক ও প্রতিষ্ঠাতা</div>
+                  </div>
+                </div>
+
+                {/* Floating Badge 2: Top-Left Experience & Specialist */}
+                <div className="hero-float-badge hero-float-top-left">
+                  <div className="float-badge-icon badge-accent-green">
+                    <Sparkles size={18} />
+                  </div>
+                  <div>
+                    <div className="float-badge-title">HSC ICT স্পেশালিস্ট</div>
+                    <div className="float-badge-sub">১০+ বছর সফল পাঠদান</div>
+                  </div>
+                </div>
+
+                {/* Floating Badge 3: Bottom-Left 1200+ A+ Students */}
+                <div className="hero-float-badge hero-float-bottom-left">
+                  <div className="float-badge-icon badge-accent-amber">
+                    <GraduationCap size={20} />
+                  </div>
+                  <div>
+                    <div className="float-badge-title">১,২০০+ শিক্ষার্থী A+</div>
+                    <div className="float-badge-rating">
+                      <span>★★★★★</span> <small>৫.০ রেটিং</small>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating Badge 4: Bottom-Right Live Lab Pulse */}
+                <div className="hero-float-badge hero-float-bottom-right">
+                  <span className="pulse-indicator"></span>
+                  <div>
+                    <div className="float-badge-title" style={{ color: '#34d399' }}>সরাসরি ল্যাব ক্লাস</div>
+                    <div className="float-badge-sub">ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস</div>
+                  </div>
+                </div>
+
+                {/* Open Mentor Credentials (Directly on Page Background, No Boxy Card) */}
+                <div className="hero-mentor-credentials">
+                  <div className="mentor-cred-name-row">
+                    <span className="mentor-cred-name">মারুফ হোসেন</span>
                     <span className="mentor-verified-badge" title="সার্টিফাইড ICT শিক্ষক">
-                      <CheckCircle2 size={16} color="#38bdf8" />
+                      <CheckCircle2 size={18} color="#38bdf8" />
                     </span>
                   </div>
-                  <div className="mentor-footer-role">
+                  <div className="mentor-cred-role">
                     Founder & Lead ICT Mentor — Maruf's ICT Care, কুষ্টিয়া
                   </div>
-                  <div className="mentor-footer-quote">
+                  <div className="mentor-cred-quote">
                     "Don't Memorize, Come To Learn"
                   </div>
-                  <div className="mentor-footer-chips">
+                  <div className="mentor-cred-chips">
                     <span className="mentor-chip chip-c">💻 C Programming</span>
                     <span className="mentor-chip chip-gate">⚡ Logic Gates</span>
                     <span className="mentor-chip chip-html">🌐 HTML5 Web</span>
