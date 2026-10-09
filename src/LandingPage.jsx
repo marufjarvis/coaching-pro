@@ -506,6 +506,28 @@ function LandingPage({
                   <div className="hero-portrait-halo"></div>
                   <div className="hero-portrait-pattern"></div>
 
+                  {/* Circular Avatar Frame with Glowing Multi-Color Ring */}
+                  <div className="hero-circle-frame-wrap">
+                    {/* Animated Rotating Conic Glow Ring */}
+                    <div className="hero-circle-conic-glow"></div>
+
+                    {/* Secondary Ambient Pulse Ring */}
+                    <div className="hero-circle-pulse-ring"></div>
+
+                    {/* Outer Gradient Border Ring */}
+                    <div className="hero-circle-ring-border">
+                      {/* Inner Circular Avatar Container */}
+                      <div className="hero-circle-avatar-box">
+                        <img 
+                          src="/maruf1.png" 
+                          alt="মারুফ হোসেন - HSC ICT মেন্টর" 
+                          className="hero-mentor-circle-img"
+                          loading="eager"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Floating Badge 1: Top-Right Verified Lead Instructor */}
                   <div className="hero-float-badge hero-float-top-right">
                     <div className="float-badge-icon badge-accent-blue">
@@ -527,17 +549,6 @@ function LandingPage({
                       <div className="float-badge-sub">১০+ বছর সফল পাঠদান</div>
                     </div>
                   </div>
-
-                  {/* Main Portrait Photo */}
-                  <img 
-                    src="/maruf1.png" 
-                    alt="মারুফ হোসেন - HSC ICT মেন্টর, Maruf's ICT Care" 
-                    className="hero-mentor-img"
-                    loading="eager"
-                  />
-
-                  {/* Smooth Gradient Fade at Bottom */}
-                  <div className="hero-portrait-fade"></div>
 
                   {/* Floating Badge 3: Bottom-Left 1200+ A+ Students */}
                   <div className="hero-float-badge hero-float-bottom-left">
