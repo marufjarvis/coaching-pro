@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Calendar, AlertCircle, ArrowRight, MessageSquare, Wallet, CheckCircle2, X, Copy } from 'lucide-react';
+import { Search, Calendar, AlertCircle, ArrowRight, Wallet, CheckCircle2, X } from 'lucide-react';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './due-inbox.css';
@@ -15,9 +15,6 @@ function DueInbox({ lang: propLang }) {
   const [collectingStudent, setCollectingStudent] = useState(null);
   const [payAmount, setPayAmount] = useState('');
   const [payMethod, setPayMethod] = useState('bKash');
-
-  const [smsModalStudent, setSmsModalStudent] = useState(null);
-  const [smsCopied, setSmsCopied] = useState(false);
 
   useEffect(() => {
     const handleSync = () => {
@@ -78,19 +75,6 @@ function DueInbox({ lang: propLang }) {
     });
     setCollectingStudent(null);
     setPayAmount('');
-  };
-
-  const getSmsTemplate = (student) => {
-    if (lang === 'EN') {
-      return `Dear Guardian, outstanding fee for your child ${student.name} (${student.batch}) at ${settings.coachingName} is ৳ ${student.dueAmount}. Please settle soon. Thank you.`;
-    }
-    return `সম্মানিত অভিভাবক, ${settings.coachingName}-এ আপনার সন্তান ${student.name}-এর (${student.batch}) চলতি বকেয়া ফি ৳ ${student.dueAmount} টাকা। অনুগ্রহ করে দ্রুত পরিশোধ করুন। ধন্যবাদ।`;
-  };
-
-  const handleCopySms = (text) => {
-    navigator.clipboard.writeText(text);
-    setSmsCopied(true);
-    setTimeout(() => setSmsCopied(false), 2000);
   };
 
   return (
@@ -194,15 +178,7 @@ function DueInbox({ lang: propLang }) {
                   <div className="due-amount text-danger">৳ {student.dueAmount.toLocaleString()}</div>
                   <div className="due-date">{t.dueLabel}: {student.dueDateStr}</div>
                 </div>
-                <div className="due-actions" style={{ display: 'flex', gap: '8px' }}>
-                  <button 
-                    className="btn-secondary"
-                    style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85rem' }}
-                    onClick={() => setSmsModalStudent(student)}
-                    title={t.smsReminderTitle}
-                  >
-                    <MessageSquare size={14} /> {t.btnSms}
-                  </button>
+                <div className="due-actions">
                   <button className="btn-collect" onClick={() => handleOpenCollect(student)}>
                     {t.btnCollect}
                   </button>
@@ -259,42 +235,6 @@ function DueInbox({ lang: propLang }) {
             <div className="modal-footer">
               <button className="btn-secondary" onClick={() => setCollectingStudent(null)}>{t.cancel}</button>
               <button className="btn-primary" onClick={handleConfirmCollect}>{t.confirmCollectionBtn}</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* SMS Reminder Modal */}
-      {smsModalStudent && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '480px' }}>
-            <div className="modal-header">
-              <div>
-                <h2>{t.smsReminderTitle}</h2>
-                <p>{t.sendToGuardianLabel}: {smsModalStudent.guardianPhone || smsModalStudent.phone || 'N/A'}</p>
-              </div>
-              <button className="btn-close-modal" onClick={() => setSmsModalStudent(null)}>
-                <X size={20} />
-              </button>
-            </div>
-            <div className="modal-body">
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '14px', borderRadius: '8px', fontSize: '0.9rem', lineHeight: '1.5', color: '#1e293b' }}>
-                {getSmsTemplate(smsModalStudent)}
-              </div>
-              {smsCopied && (
-                <div style={{ color: '#16a34a', fontSize: '0.85rem', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <CheckCircle2 size={14} /> {t.smsCopiedSuccess}
-                </div>
-              )}
-            </div>
-            <div className="modal-footer">
-              <button className="btn-secondary" onClick={() => setSmsModalStudent(null)}>{t.close}</button>
-              <button 
-                className="btn-primary" 
-                onClick={() => handleCopySms(getSmsTemplate(smsModalStudent))}
-              >
-                <Copy size={16} /> {t.copySmsBtn}
-              </button>
             </div>
           </div>
         </div>

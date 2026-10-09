@@ -10,7 +10,6 @@ import {
   Copy, 
   Phone, 
   DollarSign, 
-  Send, 
   CheckCircle2, 
   Sparkles,
   X,
@@ -56,21 +55,6 @@ function Notifications({ setActiveTab, lang: propLang }) {
     setCopiedKey(key);
     showToast(`${label} ${lang === 'EN' ? 'copied to clipboard!' : 'কপি হয়েছে!'}`);
     setTimeout(() => setCopiedKey(null), 2000);
-  };
-
-  const handleCopySms = (student, type) => {
-    let msg = '';
-    if (type === 'course') {
-      msg = lang === 'EN'
-        ? `Dear Guardian, course installment of ৳ ${student.installmentAmount || student.dueAmount} for ${student.studentName} (${student.batch}) at Maruf's ICT Care is now due. Please settle soon. Thank you.`
-        : `শ্রদ্ধেয় অভিভাবক, মারুফ'স আইসিটি কেয়ার-এ আপনার সন্তান ${student.studentName} (${student.batch})-এর কোর্স ফি পরবর্তী কিস্তি ৳ ${student.installmentAmount || student.dueAmount} বকেয়া রয়েছে। অনুগ্রহ করে দ্রুত পরিশোধ করুন। ধন্যবাদ।`;
-    } else {
-      msg = lang === 'EN'
-        ? `Dear Guardian, monthly tuition fee of ৳ ${student.dueAmount} for ${student.studentName} (${student.batch}) at Maruf's ICT Care is now due. Please settle soon. Thank you.`
-        : `শ্রদ্ধেয় অভিভাবক, মারুফ'স আইসিটি কেয়ার-এ আপনার সন্তান ${student.studentName} (${student.batch})-এর চলতি মাসের কোচিং ফি ৳ ${student.dueAmount} বকেয়া রয়েছে। অনুগ্রহ করে পরিশোধ করুন। ধন্যবাদ।`;
-    }
-    navigator.clipboard.writeText(msg);
-    showToast(lang === 'EN' ? 'SMS reminder copied!' : 'এসএমএস রিমাইন্ডার কপি হয়েছে!');
   };
 
   const handleOpenQuickCollect = (studentItem) => {
@@ -345,15 +329,6 @@ function Notifications({ setActiveTab, lang: propLang }) {
                         <CreditCard size={15} />
                         {lang === 'EN' ? 'Collect Installment' : 'কিস্তি গ্রহণ করুন'}
                       </button>
-
-                      <button 
-                        type="button"
-                        className="btn-notif-action btn-secondary-action"
-                        onClick={() => handleCopySms(item, 'course')}
-                      >
-                        <Send size={14} />
-                        {lang === 'EN' ? 'Copy SMS Reminder' : 'এসএমএস রিমাইন্ডার কপি'}
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -430,15 +405,6 @@ function Notifications({ setActiveTab, lang: propLang }) {
                       >
                         <CreditCard size={15} />
                         {lang === 'EN' ? 'Collect Monthly Fee' : 'বেতন গ্রহণ করুন'}
-                      </button>
-
-                      <button 
-                        type="button"
-                        className="btn-notif-action btn-secondary-action"
-                        onClick={() => handleCopySms(item, 'monthly')}
-                      >
-                        <Send size={14} />
-                        {lang === 'EN' ? 'Copy SMS Reminder' : 'এসএমএস রিমাইন্ডার কপি'}
                       </button>
                     </div>
                   </div>

@@ -1065,13 +1065,13 @@ function LandingPage({
 
             <div className="pillar-card">
               <div className="pillar-icon-wrap" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' }}>
-                <Send size={26} />
+                <Clock size={26} />
               </div>
-              <h3 className="pillar-title">{isEn ? 'Automated SMS Updates for Guardians' : 'অভিভাবকদের অটো SMS আপডেট'}</h3>
+              <h3 className="pillar-title">{isEn ? 'Regular Academic Progress Updates' : 'অভিভাবকদের নিয়মিত প্রগ্রেস আপডেট'}</h3>
               <p className="pillar-desc">
                 {isEn 
-                  ? 'Instant automated SMS alerts inform parents regarding attendance status and model test examination results.'
-                  : 'শিক্ষার্থী ক্লাসে উপস্থিত বা অনুপস্থিত থাকলে এবং পরীক্ষার ফলাফল প্রকাশিত হওয়ার সাথে সাথে স্বয়ংক্রিয় SMS পৌঁছায় অভিভাবকের ফোনে।'}
+                  ? 'Parents stay consistently informed about student class attendance, model test performance, and academic progress.'
+                  : 'শিক্ষার্থীর ক্লাসে উপস্থিতি এবং মডেল টেস্ট পরীক্ষার অগ্রগতি সম্পর্কে সরাসরি নিয়মিত আপডেট প্রদান করে অভিভাবককে সর্বদা অবহিত রাখা হয়।'}
               </p>
             </div>
 
