@@ -516,10 +516,10 @@ function LandingPage({
 
                     {/* Outer Gradient Border Ring */}
                     <div className="hero-circle-ring-border">
-                      {/* Inner Circular Avatar Container */}
+                      {/* Inner Circular Avatar Container with Dark Navy Backdrop */}
                       <div className="hero-circle-avatar-box">
                         <img 
-                          src="/maruf1.png" 
+                          src="/maruf_transparent.png" 
                           alt="মারুফ হোসেন - HSC ICT মেন্টর" 
                           className="hero-mentor-circle-img"
                           loading="eager"
@@ -1313,29 +1313,28 @@ function LandingPage({
       <section id="mentor" className="mentor-section">
         <div className="lp-container">
           <div className="mentor-card">
-            {/* Left Mentor Showcase Column with Grand Circular Glowing Ring */}
+            {/* Left Mentor Showcase Column with Grand Arch Portrait Showcase */}
             <div className="mentor-photo-wrap">
               <div className="mentor-spotlight-box">
                 {/* Atmospheric Glow Halo */}
                 <div className="mentor-spotlight-halo"></div>
 
-                {/* Circular Avatar Frame with Glowing Ring */}
-                <div className="mentor-circle-frame-wrap">
-                  {/* Animated Rotating Conic Glow Ring */}
-                  <div className="mentor-circle-conic-glow"></div>
-
-                  {/* Secondary Ambient Pulse Ring */}
-                  <div className="mentor-circle-pulse-ring"></div>
+                {/* Grand Arch Portrait Frame with Glowing Neon Border */}
+                <div className="mentor-arch-frame-wrap">
+                  {/* Animated Rotating Conic Glow */}
+                  <div className="mentor-arch-conic-glow"></div>
 
                   {/* Outer Gradient Border Ring */}
-                  <div className="mentor-circle-ring-border">
-                    <div className="mentor-circle-avatar-box">
+                  <div className="mentor-arch-ring-border">
+                    <div className="mentor-arch-inner-box">
                       <img 
-                        src="/maruf1.png" 
+                        src="/maruf_transparent.png" 
                         alt="মারুফ হোসেন - প্রধান প্রশিক্ষক ও মেন্টর" 
-                        className="mentor-circle-img"
+                        className="mentor-arch-cutout-img"
                         loading="lazy"
                       />
+                      {/* Smooth Bottom Fade */}
+                      <div className="mentor-arch-bottom-fade"></div>
                     </div>
                   </div>
 
