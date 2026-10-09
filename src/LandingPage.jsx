@@ -295,7 +295,7 @@ function LandingPage({
                 <div className="nav-brand-title">
                   Maruf's <span>ICT Care</span>
                 </div>
-                <div className="nav-brand-sub">HSC ICT Academic & Practical Lab</div>
+                <div className="nav-brand-sub">ICT মুখস্ত নয়, এসো শিখি</div>
               </div>
             </div>
 
@@ -1478,9 +1478,9 @@ function LandingPage({
                 </div>
                 <div>
                   <div className="nav-brand-title">
-                    Maruf's <span>ICT Care</span>
+                    Maruf's <span>ICT</span> Care
                   </div>
-                  <div className="nav-brand-sub">Don't Memorise, Come To Learn</div>
+                  <div className="nav-brand-sub">ICT মুখস্ত নয়, এসো শিখি</div>
                 </div>
               </div>
               <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.6, marginBottom: '1.25rem' }}>
