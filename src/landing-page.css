@@ -537,14 +537,14 @@
   object-fit: contain;
   object-position: center;
   display: block;
-  transform: scale(1.24) translateY(14px);
+  transform: scale(1.21) translateY(32px);
   filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 35px rgba(56, 189, 248, 0.28));
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
   will-change: transform, filter;
 }
 
 .hero-natural-img-box:hover .hero-mentor-natural-img {
-  transform: scale(1.28) translateY(10px);
+  transform: scale(1.24) translateY(28px);
   filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 50px rgba(56, 189, 248, 0.45));
 }
 
@@ -783,7 +783,7 @@
 /* Responsive adjustments for open hero showcase */
 @media (max-width: 992px) {
   .hero-natural-img-box { height: 410px; margin-bottom: 1.25rem; }
-  .hero-mentor-natural-img { transform: scale(1.22) translateY(12px); }
+  .hero-mentor-natural-img { transform: scale(1.19) translateY(26px); }
   .hero-float-top-left { top: 1rem; left: -2rem; }
   .hero-float-top-right { top: 1.5rem; right: -2rem; }
   .hero-float-bottom-left { top: 14rem; left: -3.5rem; }
@@ -792,7 +792,7 @@
 
 @media (max-width: 640px) {
   .hero-natural-img-box { height: 340px; margin-bottom: 1rem; }
-  .hero-mentor-natural-img { transform: scale(1.2) translateY(10px); }
+  .hero-mentor-natural-img { transform: scale(1.17) translateY(22px); }
   .hero-float-badge { padding: 0.35rem 0.55rem; font-size: 0.72rem; border-radius: 10px; }
   .hero-float-top-left { top: 0.25rem; left: -0.75rem; }
   .hero-float-top-right { top: 1rem; right: -0.75rem; }
