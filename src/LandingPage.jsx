@@ -2,7 +2,7 @@
 // High-Converting, Eye-Catching HSC ICT Coaching Landing Page for Maruf's ICT Care
 // Designed to mesmerize students and provide seamless navigation to Student & Admin Portals
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   GraduationCap, 
   ShieldCheck, 
@@ -35,6 +35,81 @@ import {
   Lock
 } from 'lucide-react';
 import './landing-page.css';
+
+// Bengali numeral formatter
+const toBengaliDigits = (num) => {
+  const bnDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  return num.toString().replace(/\d/g, (d) => bnDigits[Number(d)]);
+};
+
+const formatBengaliNumber = (num) => {
+  const formattedEn = num.toLocaleString('en-US');
+  return toBengaliDigits(formattedEn);
+};
+
+// Smooth animated counting system
+function AnimatedCounter({ end, suffix = '', duration = 1800 }) {
+  const [count, setCount] = useState(0);
+  const elementRef = useRef(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    let animationFrameId;
+
+    const startCounting = () => {
+      if (hasAnimated.current) return;
+      hasAnimated.current = true;
+      let startTimestamp = null;
+
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        // Silky smooth ease-out cubic deceleration
+        const easeOutProgress = 1 - Math.pow(1 - progress, 3);
+        const current = progress >= 1 ? end : Math.round(easeOutProgress * end);
+        setCount(current);
+
+        if (progress < 1) {
+          animationFrameId = requestAnimationFrame(step);
+        } else {
+          setCount(end);
+        }
+      };
+
+      animationFrameId = requestAnimationFrame(step);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          startCounting();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (elementRef.current) {
+      observer.observe(elementRef.current);
+    }
+
+    // Immediate start on mount if in view
+    const fallbackTimer = setTimeout(() => {
+      startCounting();
+    }, 100);
+
+    return () => {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
+      clearTimeout(fallbackTimer);
+    };
+  }, [end, duration]);
+
+  return (
+    <span ref={elementRef} className="counter-number">
+      {formatBengaliNumber(count)}{suffix}
+    </span>
+  );
+}
 
 function LandingPage({ 
   onGoToLogin,
@@ -430,18 +505,24 @@ function LandingPage({
                 </button>
               </div>
 
-              {/* Hero Stats */}
+              {/* Hero Stats with Live Counting Animation */}
               <div className="hero-stats-row">
                 <div className="stat-item">
-                  <h3>৯৮%+</h3>
+                  <h3>
+                    <AnimatedCounter end={98} suffix="%+" duration={1800} />
+                  </h3>
                   <p>বোর্ড পরীক্ষায় A+ পাশের হার</p>
                 </div>
                 <div className="stat-item">
-                  <h3>১,২০০+</h3>
+                  <h3>
+                    <AnimatedCounter end={1200} suffix="+" duration={1800} />
+                  </h3>
                   <p>সফল ও সন্তুষ্ট শিক্ষার্থী</p>
                 </div>
                 <div className="stat-item">
-                  <h3>১০০%</h3>
+                  <h3>
+                    <AnimatedCounter end={100} suffix="%" duration={1800} />
+                  </h3>
                   <p>প্র্যাকটিক্যাল ল্যাব সাপোর্ট</p>
                 </div>
               </div>

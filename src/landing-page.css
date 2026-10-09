@@ -475,11 +475,30 @@ html {
   border-top: 1px solid var(--lp-border);
 }
 
+.stat-item {
+  transition: transform 0.25s ease;
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+}
+
 .stat-item h3 {
-  font-size: 1.75rem;
+  font-size: 1.85rem;
   font-weight: 800;
   color: #ffffff;
   margin-bottom: 0.15rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.counter-number {
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, #ffffff 40%, #7dd3fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  will-change: transform;
 }
 
 .stat-item p {
