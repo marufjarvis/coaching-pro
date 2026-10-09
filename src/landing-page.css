@@ -557,7 +557,7 @@
   z-index: 5;
 }
 
-/* Floating Badges */
+/* Floating Badges (Shifted to sides, completely off the portrait) */
 .hero-float-badge {
   position: absolute;
   z-index: 10;
@@ -566,35 +566,36 @@
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 14px;
-  padding: 0.55rem 0.85rem;
+  padding: 0.45rem 0.75rem;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.55rem;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
   pointer-events: auto;
+  white-space: nowrap;
 }
 
 .hero-float-top-right {
-  top: 2.5rem;
-  right: -1.5rem;
+  top: 2rem;
+  right: -3.5rem;
   animation: floatSlow 4.5s ease-in-out infinite alternate;
 }
 
 .hero-float-top-left {
   top: 1.5rem;
-  left: -1.5rem;
+  left: -3.5rem;
   animation: floatSlow2 4s ease-in-out infinite alternate;
 }
 
 .hero-float-bottom-left {
-  top: 17rem;
-  left: -1.75rem;
+  top: 15.5rem;
+  left: -6.5rem;
   animation: floatSlow 5s ease-in-out infinite alternate;
 }
 
 .hero-float-bottom-right {
-  top: 19rem;
-  right: -1.25rem;
+  top: 16.5rem;
+  right: -6rem;
   animation: floatSlow2 4.2s ease-in-out infinite alternate;
 }
 
@@ -780,18 +781,19 @@
 /* Responsive adjustments for open hero showcase */
 @media (max-width: 992px) {
   .hero-natural-img-box { height: 400px; margin-bottom: 1.25rem; }
-  .hero-float-top-left { top: 1rem; left: 0; }
-  .hero-float-top-right { top: 2rem; right: 0; }
-  .hero-float-bottom-left { top: 14rem; left: 0; }
-  .hero-float-bottom-right { top: 15.5rem; right: 0; }
+  .hero-float-top-left { top: 1rem; left: -2rem; }
+  .hero-float-top-right { top: 1.5rem; right: -2rem; }
+  .hero-float-bottom-left { top: 14rem; left: -3.5rem; }
+  .hero-float-bottom-right { top: 15rem; right: -3.5rem; }
 }
 
 @media (max-width: 640px) {
   .hero-natural-img-box { height: 330px; margin-bottom: 1rem; }
-  .hero-float-top-left { top: 0.5rem; left: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-float-top-right { top: 1.5rem; right: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-float-bottom-left { top: 11.5rem; left: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-float-bottom-right { top: 13rem; right: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
+  .hero-float-badge { padding: 0.35rem 0.55rem; font-size: 0.72rem; border-radius: 10px; }
+  .hero-float-top-left { top: 0.25rem; left: -0.75rem; }
+  .hero-float-top-right { top: 1rem; right: -0.75rem; }
+  .hero-float-bottom-left { top: 11.5rem; left: -1.5rem; }
+  .hero-float-bottom-right { top: 12.5rem; right: -1.5rem; }
   .mentor-cred-name { font-size: 1.4rem; }
 }
 

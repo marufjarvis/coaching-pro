@@ -538,6 +538,28 @@ function LandingPage({
                   </div>
                 </div>
 
+                {/* Floating Badge 3: Bottom-Left 1200+ A+ Students (Shifted to Side) */}
+                <div className="hero-float-badge hero-float-bottom-left">
+                  <div className="float-badge-icon badge-accent-amber">
+                    <GraduationCap size={18} />
+                  </div>
+                  <div>
+                    <div className="float-badge-title">১,২০০+ শিক্ষার্থী A+</div>
+                    <div className="float-badge-rating">
+                      <span>★★★★★</span> <small>৫.০ রেটিং</small>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating Badge 4: Bottom-Right Live Lab Pulse (Shifted to Side) */}
+                <div className="hero-float-badge hero-float-bottom-right">
+                  <span className="pulse-indicator"></span>
+                  <div>
+                    <div className="float-badge-title" style={{ color: '#34d399' }}>সরাসরি ল্যাব ক্লাস</div>
+                    <div className="float-badge-sub">ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস</div>
+                  </div>
+                </div>
+
                 {/* Open Mentor Credentials (Directly on Page Background, No Boxy Card) */}
                 <div className="hero-mentor-credentials">
                   <div className="mentor-cred-name-row">
