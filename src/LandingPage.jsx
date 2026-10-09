@@ -569,7 +569,7 @@ function LandingPage({
                     </span>
                   </div>
                   <div className="mentor-cred-role">
-                    Founder & Lead ICT Mentor — Maruf's ICT Care, কুষ্টিয়া
+                    AI Engineer | Blockchain Developer | Quantum Expert
                   </div>
                   <div className="mentor-cred-quote">
                     "Don't Memorize, Come To Learn"
@@ -1338,7 +1338,7 @@ function LandingPage({
                     <CheckCircle2 size={18} />
                   </span>
                 </div>
-                <div className="mentor-designation">প্রধান প্রশিক্ষক ও প্রতিষ্ঠাতা — Maruf's ICT Care, কুষ্টিয়া</div>
+                <div className="mentor-designation">AI Engineer | Blockchain Developer | Quantum Expert</div>
                 <div className="mentor-skill-pills">
                   <span className="mentor-pill-item">💻 সি প্রোগ্রামিং</span>
                   <span className="mentor-pill-item">⚡ লজিক গেইট</span>
