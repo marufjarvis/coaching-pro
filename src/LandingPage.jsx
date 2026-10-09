@@ -32,7 +32,6 @@ import {
   Lock
 } from 'lucide-react';
 import { dataStore } from './dataStore';
-import { useTranslation } from './translations';
 import './landing-page.css';
 
 // Bengali numeral formatter
@@ -124,9 +123,8 @@ function LandingPage({
   const handleOpenLogin = onGoToLogin || onGoToStudentLogin || onGoToAdminLogin;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  // Translation & Language Context
-  const { lang, setLang } = useTranslation();
-  const isEn = lang === 'EN';
+  // Landing page always stays in standard Bengali and configured CMS content (independent of backend dashboard language switch)
+  const isEn = false;
 
   // Dynamic Frontend CMS Data (Single Unified Content Store)
   const [frontendData, setFrontendData] = useState(() => dataStore.getFrontendSettings());
