@@ -184,8 +184,8 @@ function App() {
       onGoToStudentLogin={() => navigateTo('#/login')}
       onGoToAdminLogin={() => navigateTo('#/admin-login')}
       onGoToEnroll={(preferredBatch) => {
-        if (preferredBatch && typeof preferredBatch === 'string') {
-          navigateTo(`#/enroll/${encodeURIComponent(preferredBatch)}`);
+        if (preferredBatch && typeof preferredBatch === 'string' && preferredBatch.trim() !== '') {
+          navigateTo(`#/enroll/${encodeURIComponent(preferredBatch.trim())}`);
         } else {
           navigateTo('#/enroll');
         }

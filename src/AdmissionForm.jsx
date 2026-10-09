@@ -19,7 +19,7 @@ function AdmissionForm({ batch: initialBatch }) {
     name: '',
     phone: '',
     guardianPhone: '',
-    selectedBatch: initialBatch || (batchOptions.length > 0 ? batchOptions[0] : 'HSC 2026 রেগুলার ব্যাচ')
+    selectedBatch: initialBatch || ''
   });
   const [submitted, setSubmitted] = useState(false);
 
@@ -33,7 +33,11 @@ function AdmissionForm({ batch: initialBatch }) {
     }
   }, [initialBatch]);
 
-  const isFormValid = formData.name.trim() !== '' && formData.phone.trim() !== '' && formData.guardianPhone.trim() !== '';
+  const isFormValid = 
+    formData.name.trim() !== '' && 
+    formData.phone.trim() !== '' && 
+    formData.guardianPhone.trim() !== '' &&
+    (Boolean(initialBatch) || Boolean(formData.selectedBatch));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -118,7 +122,7 @@ function AdmissionForm({ batch: initialBatch }) {
 
         <h1 className="admission-title">HSC ICT অনলাইন ভর্তি</h1>
         <p className="admission-subtitle">
-          Maruf's ICT Care &middot; {initialBatch || formData.selectedBatch || 'নতুন শিক্ষাবর্ষ'}
+          Maruf's ICT Care &middot; {initialBatch ? initialBatch : 'নতুন শিক্ষাবর্ষ'}
         </p>
         
         {initialBatch && (
@@ -178,10 +182,11 @@ function AdmissionForm({ batch: initialBatch }) {
 
           {!initialBatch && (
             <div className="form-group">
-              <label>পছন্দের ব্যাচ</label>
+              <label>পছন্দের ব্যাচ *</label>
               <select
                 value={formData.selectedBatch}
                 onChange={(e) => setFormData({...formData, selectedBatch: e.target.value})}
+                required
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -192,6 +197,7 @@ function AdmissionForm({ batch: initialBatch }) {
                   backgroundColor: '#ffffff'
                 }}
               >
+                <option value="">-- আপনার পছন্দের ব্যাচ নির্বাচন করুন --</option>
                 {batchOptions.map((bName, i) => (
                   <option key={i} value={bName}>{bName}</option>
                 ))}

@@ -526,7 +526,7 @@ function LandingPage({
             <div className="top-announcement-content">
               <span className="announcement-badge">{notice.badge || (isEn ? 'Special Announcement' : 'অফার ও আপডেট')}</span>
               <span>{notice.text || (isEn ? '📢 Limited seats available for HSC 2026 & 2025 batches! Hands-on classroom lab support included.' : '📢 HSC 2026 ও 2025 ব্যাচে সীমিত আসনে নতুন ভর্তি চলছে! সরাসরি ক্লাসরুমে ল্যাব সাপোর্ট।')}</span>
-              <span className="announcement-link" onClick={onGoToEnroll}>
+              <span className="announcement-link" onClick={() => onGoToEnroll && onGoToEnroll('')}>
                 {notice.btnText || (isEn ? 'Online Admission' : 'অনলাইন ভর্তি আবেদন')} <ArrowRight size={14} />
               </span>
             </div>
@@ -704,7 +704,7 @@ function LandingPage({
 
                 <button 
                   type="button" 
-                  onClick={onGoToEnroll} 
+                  onClick={() => onGoToEnroll && onGoToEnroll('')} 
                   className="btn-hero-enroll"
                   id="btn-hero-enroll"
                 >
@@ -985,7 +985,7 @@ function LandingPage({
             <div className="chapter-modal-actions">
               <button 
                 type="button" 
-                onClick={() => { setSelectedChapter(null); onGoToEnroll(); }}
+                onClick={() => { setSelectedChapter(null); onGoToEnroll && onGoToEnroll(''); }}
                 className="btn-batch-enroll"
               >
                 {isEn ? 'Apply for Admission' : 'ভর্তি আবেদন করুন'}
@@ -1515,7 +1515,7 @@ function LandingPage({
             <div className="cta-banner-actions">
               <button 
                 type="button" 
-                onClick={onGoToEnroll}
+                onClick={() => onGoToEnroll && onGoToEnroll('')}
                 className="btn-cta-student"
               >
                 <Sparkles size={18} color="#0284c7" />
@@ -1610,7 +1610,7 @@ function LandingPage({
                   </span>
                 </li>
                 <li>
-                  <span className="footer-link-item" onClick={onGoToEnroll} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <span className="footer-link-item" onClick={() => onGoToEnroll && onGoToEnroll('')} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     <Sparkles size={14} /> {isEn ? 'Online Admission Form' : 'সরাসরি ভর্তি আবেদন'}
                   </span>
                 </li>
