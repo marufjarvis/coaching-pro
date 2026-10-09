@@ -116,12 +116,13 @@ function App() {
     if (isLoggedIn) {
       return <Dashboard onLogout={handleLogout} />;
     }
-    // If not logged in as admin, redirect to admin login
+    // If not logged in as admin, show unified login with admin tab
     return (
       <Login 
         onLogin={handleLogin} 
-        onSwitchToStudent={() => navigateTo('#/student-login')} 
+        onStudentLogin={handleStudentLogin}
         onBackToHome={() => navigateTo('#/')}
+        initialTab="admin"
       />
     );
   }
@@ -134,8 +135,9 @@ function App() {
     return (
       <Login 
         onLogin={handleLogin} 
-        onSwitchToStudent={() => navigateTo('#/student-login')} 
+        onStudentLogin={handleStudentLogin}
         onBackToHome={() => navigateTo('#/')}
+        initialTab="admin"
       />
     );
   }
@@ -145,26 +147,31 @@ function App() {
     if (isStudentLoggedIn && currentStudent) {
       return <StudentDashboard onLogout={handleStudentLogout} student={currentStudent} />;
     }
-    // If not logged in as student, redirect to student login
+    // If not logged in as student, redirect to login with student tab
     return (
-      <StudentLogin 
-        onStudentLogin={handleStudentLogin} 
-        onSwitchToAdmin={() => navigateTo('#/admin-login')} 
+      <Login 
+        onLogin={handleLogin} 
+        onStudentLogin={handleStudentLogin}
         onBackToHome={() => navigateTo('#/')}
+        initialTab="student"
       />
     );
   }
 
-  // 5. Student Login Route (#/student-login)
-  if (currentHash === '#/student-login') {
+  // 5. Unified Login & Student Login Route (#/login or #/student-login)
+  if (currentHash === '#/login' || currentHash === '#/student-login') {
     if (isStudentLoggedIn && currentStudent) {
       return <StudentDashboard onLogout={handleStudentLogout} student={currentStudent} />;
     }
+    if (isLoggedIn) {
+      return <Dashboard onLogout={handleLogout} />;
+    }
     return (
-      <StudentLogin 
-        onStudentLogin={handleStudentLogin} 
-        onSwitchToAdmin={() => navigateTo('#/admin-login')} 
+      <Login 
+        onLogin={handleLogin} 
+        onStudentLogin={handleStudentLogin}
         onBackToHome={() => navigateTo('#/')}
+        initialTab="student"
       />
     );
   }
@@ -172,7 +179,8 @@ function App() {
   // 6. Default / Root Route (Landing Page for Students & Visitors)
   return (
     <LandingPage 
-      onGoToStudentLogin={() => navigateTo('#/student-login')}
+      onGoToLogin={() => navigateTo('#/login')}
+      onGoToStudentLogin={() => navigateTo('#/login')}
       onGoToAdminLogin={() => navigateTo('#/admin-login')}
       onGoToEnroll={(preferredBatch) => {
         if (preferredBatch && typeof preferredBatch === 'string') {

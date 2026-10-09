@@ -31,11 +31,13 @@ import {
   Laptop,
   Layers,
   FileCheck,
-  Send
+  Send,
+  Lock
 } from 'lucide-react';
 import './landing-page.css';
 
 function LandingPage({ 
+  onGoToLogin,
   onGoToStudentLogin, 
   onGoToAdminLogin, 
   onGoToEnroll, 
@@ -45,6 +47,7 @@ function LandingPage({
   isStudentLoggedIn,
   batches = []
 }) {
+  const handleOpenLogin = onGoToLogin || onGoToStudentLogin || onGoToAdminLogin;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('c_program'); // 'c_program' | 'html' | 'logic_gate' | 'number_converter'
   
@@ -333,16 +336,16 @@ function LandingPage({
               </button>
             )}
 
-            {/* Student Login Button */}
-            {!isStudentLoggedIn && (
+            {/* Single Unified Login Button */}
+            {(!isAdminLoggedIn && !isStudentLoggedIn) && (
               <button 
                 type="button" 
-                onClick={onGoToStudentLogin} 
-                className="btn-nav-student"
-                id="btn-student-login-nav"
-                title="শিক্ষার্থীর মোবাইল নম্বর দিয়ে লগইন করুন"
+                onClick={handleOpenLogin} 
+                className="btn-nav-login"
+                id="btn-login-nav"
+                title="লগইন করুন"
               >
-                <GraduationCap size={16} /> শিক্ষার্থী পোর্টাল
+                <Lock size={15} strokeWidth={2.5} /> লগইন
               </button>
             )}
 
@@ -355,19 +358,6 @@ function LandingPage({
             >
               <Sparkles size={15} /> ভর্তি আবেদন
             </button>
-
-            {/* Admin Login Button (Discrete) */}
-            {!isAdminLoggedIn && (
-              <button 
-                type="button" 
-                onClick={onGoToAdminLogin} 
-                className="btn-nav-admin"
-                id="btn-admin-login-nav"
-                title="শিক্ষক ও এডমিন লগইন"
-              >
-                <ShieldCheck size={15} /> এডমিন লগইন
-              </button>
-            )}
 
             {/* Mobile Hamburger Button */}
             <button 
@@ -394,14 +384,38 @@ function LandingPage({
             <a href="#contact" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>যোগাযোগ ও লোকেশন</a>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.75rem' }}>
-              <button 
-                type="button" 
-                onClick={() => { setMobileMenuOpen(false); onGoToStudentLogin(); }} 
-                className="btn-nav-student"
-                style={{ justifyContent: 'center' }}
-              >
-                <GraduationCap size={18} /> শিক্ষার্থী পোর্টাল লগইন
-              </button>
+              {isAdminLoggedIn && (
+                <button 
+                  type="button" 
+                  onClick={() => { setMobileMenuOpen(false); onGoToDashboard(); }} 
+                  className="btn-nav-admin"
+                  style={{ justifyContent: 'center' }}
+                >
+                  <ShieldCheck size={16} /> এডমিন ড্যাশবোর্ড
+                </button>
+              )}
+
+              {isStudentLoggedIn && (
+                <button 
+                  type="button" 
+                  onClick={() => { setMobileMenuOpen(false); onGoToStudentDashboard(); }} 
+                  className="btn-nav-student"
+                  style={{ justifyContent: 'center' }}
+                >
+                  <GraduationCap size={18} /> আমার ড্যাশবোর্ড
+                </button>
+              )}
+
+              {(!isAdminLoggedIn && !isStudentLoggedIn) && (
+                <button 
+                  type="button" 
+                  onClick={() => { setMobileMenuOpen(false); handleOpenLogin(); }} 
+                  className="btn-nav-login"
+                  style={{ justifyContent: 'center' }}
+                >
+                  <Lock size={16} strokeWidth={2.5} /> লগইন করুন
+                </button>
+              )}
 
               <button 
                 type="button" 
@@ -410,15 +424,6 @@ function LandingPage({
                 style={{ justifyContent: 'center' }}
               >
                 <Sparkles size={16} /> অনলাইন ভর্তি আবেদন
-              </button>
-
-              <button 
-                type="button" 
-                onClick={() => { setMobileMenuOpen(false); onGoToAdminLogin(); }} 
-                className="btn-nav-admin"
-                style={{ justifyContent: 'center' }}
-              >
-                <ShieldCheck size={16} /> শিক্ষক / এডমিন লগইন
               </button>
             </div>
           </div>
@@ -456,12 +461,12 @@ function LandingPage({
               <div className="hero-cta-group">
                 <button 
                   type="button" 
-                  onClick={onGoToStudentLogin} 
+                  onClick={handleOpenLogin} 
                   className="btn-hero-primary"
-                  id="btn-hero-student-login"
+                  id="btn-hero-login"
                 >
-                  <GraduationCap size={20} strokeWidth={2.5} />
-                  শিক্ষার্থী পোর্টাল লগইন
+                  <Lock size={19} strokeWidth={2.5} />
+                  লগইন করুন
                   <ArrowRight size={18} />
                 </button>
 
@@ -473,14 +478,6 @@ function LandingPage({
                 >
                   <Sparkles size={18} />
                   অনলাইন ভর্তি আবেদন
-                </button>
-
-                <button 
-                  type="button" 
-                  onClick={onGoToAdminLogin} 
-                  className="btn-hero-admin-link"
-                >
-                  <ShieldCheck size={16} /> এডমিন পোর্টাল
                 </button>
               </div>
 
@@ -1046,12 +1043,12 @@ function LandingPage({
               <div style={{ marginTop: '2.25rem' }}>
                 <button 
                   type="button" 
-                  onClick={onGoToStudentLogin}
+                  onClick={handleOpenLogin}
                   className="btn-hero-primary"
-                  id="btn-spotlight-student-login"
+                  id="btn-spotlight-login"
                 >
-                  <GraduationCap size={20} />
-                  স্টুডেন্ট পোর্টালে লগইন করুন
+                  <Lock size={20} strokeWidth={2.5} />
+                  পোর্টালে লগইন করুন
                   <ArrowRight size={18} />
                 </button>
               </div>
@@ -1342,12 +1339,12 @@ function LandingPage({
 
               <button 
                 type="button" 
-                onClick={onGoToStudentLogin}
+                onClick={handleOpenLogin}
                 className="btn-hero-enroll"
                 style={{ background: 'rgba(255, 255, 255, 0.2)', color: '#ffffff', borderColor: '#ffffff' }}
               >
-                <GraduationCap size={18} />
-                শিক্ষার্থী পোর্টাল লগইন
+                <Lock size={18} />
+                লগইন করুন
               </button>
 
               <a 
@@ -1421,8 +1418,8 @@ function LandingPage({
               <h4 className="footer-col-title">পোর্টাল ও সার্ভিসেস</h4>
               <ul className="footer-links-list">
                 <li>
-                  <span className="footer-link-item" onClick={onGoToStudentLogin} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                    <GraduationCap size={14} /> শিক্ষার্থী ড্যাশবোর্ড
+                  <span className="footer-link-item" onClick={handleOpenLogin} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <Lock size={14} /> পোর্টাল লগইন
                   </span>
                 </li>
                 <li>
@@ -1430,15 +1427,17 @@ function LandingPage({
                     <Sparkles size={14} /> সরাসরি ভর্তি আবেদন
                   </span>
                 </li>
-                <li>
-                  <span className="footer-link-item" onClick={onGoToAdminLogin} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                    <ShieldCheck size={14} /> শিক্ষক ও এডমিন লগইন
-                  </span>
-                </li>
                 {isAdminLoggedIn && (
                   <li>
                     <span className="footer-link-item" onClick={onGoToDashboard} style={{ color: '#38bdf8', fontWeight: 600 }}>
                       ⚡ এডমিন কন্ট্রোল প্যানেল
+                    </span>
+                  </li>
+                )}
+                {isStudentLoggedIn && (
+                  <li>
+                    <span className="footer-link-item" onClick={onGoToStudentDashboard} style={{ color: '#38bdf8', fontWeight: 600 }}>
+                      🎓 শিক্ষার্থী কন্ট্রোল প্যানেল
                     </span>
                   </li>
                 )}
