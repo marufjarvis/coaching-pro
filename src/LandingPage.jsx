@@ -601,55 +601,23 @@ function LandingPage({
       {/* Chapter Details Modal */}
       {selectedChapter && (
         <div 
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(6px)',
-            zIndex: 100,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1.5rem'
-          }}
+          className="chapter-modal-backdrop"
           onClick={() => setSelectedChapter(null)}
         >
           <div 
-            style={{
-              background: '#0f172a',
-              border: '1px solid rgba(56, 189, 248, 0.3)',
-              borderRadius: '20px',
-              padding: '2rem',
-              maxWidth: '560px',
-              width: '100%',
-              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.6)',
-              position: 'relative'
-            }}
+            className="chapter-modal-box"
             onClick={(e) => e.stopPropagation()}
           >
             <button 
               type="button" 
               onClick={() => setSelectedChapter(null)}
-              style={{
-                position: 'absolute',
-                top: '1rem',
-                right: '1rem',
-                background: 'rgba(255, 255, 255, 0.08)',
-                border: 'none',
-                borderRadius: '50%',
-                width: '32px',
-                height: '32px',
-                color: '#ffffff',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
+              className="chapter-modal-close-btn"
+              aria-label="Close modal"
             >
               <X size={18} />
             </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', paddingRight: '2rem' }}>
               <div 
                 style={{
                   width: '44px',
@@ -659,7 +627,8 @@ function LandingPage({
                   color: selectedChapter.color,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  flexShrink: 0
                 }}
               >
                 <selectedChapter.icon size={22} />
@@ -668,21 +637,21 @@ function LandingPage({
                 <span style={{ fontSize: '0.8rem', color: selectedChapter.color, fontWeight: 700 }}>
                   অধ্যায় {selectedChapter.num} স্পেশাল গাইডলাইন
                 </span>
-                <h3 style={{ fontSize: '1.25rem', color: '#ffffff', fontWeight: 800 }}>{selectedChapter.titleBn}</h3>
+                <h3 style={{ fontSize: '1.25rem', color: '#ffffff', fontWeight: 800, lineHeight: 1.3 }}>{selectedChapter.titleBn}</h3>
               </div>
             </div>
 
             <div style={{ marginBottom: '1.25rem', background: '#090f1d', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
               <h4 style={{ fontSize: '0.9rem', color: '#38bdf8', marginBottom: '0.4rem', fontWeight: 700 }}>🔬 ক্লাসরুম প্র্যাকটিক্যাল সুবিধা:</h4>
-              <p style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>{selectedChapter.practical}</p>
+              <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.5 }}>{selectedChapter.practical}</p>
             </div>
 
             <div style={{ marginBottom: '1.5rem', background: 'rgba(16, 185, 129, 0.08)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.25)' }}>
               <h4 style={{ fontSize: '0.9rem', color: '#34d399', marginBottom: '0.4rem', fontWeight: 700 }}>💡 বোর্ড পরীক্ষার কৌশল ও টিপস:</h4>
-              <p style={{ fontSize: '0.85rem', color: '#e2e8f0' }}>{selectedChapter.tips}</p>
+              <p style={{ fontSize: '0.85rem', color: '#e2e8f0', lineHeight: 1.5 }}>{selectedChapter.tips}</p>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div className="chapter-modal-actions">
               <button 
                 type="button" 
                 onClick={() => { setSelectedChapter(null); onGoToEnroll(); }}
@@ -693,15 +662,7 @@ function LandingPage({
               <button 
                 type="button" 
                 onClick={() => setSelectedChapter(null)}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  color: '#ffffff',
-                  borderRadius: '10px',
-                  padding: '0.8rem 1.25rem',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
+                className="btn-modal-close-alt"
               >
                 বন্ধ করুন
               </button>

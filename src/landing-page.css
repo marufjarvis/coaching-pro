@@ -768,33 +768,7 @@ html {
 .mentor-chip.chip-html { border-color: rgba(16, 185, 129, 0.3); color: #34d399; }
 .mentor-chip.chip-db { border-color: rgba(99, 102, 241, 0.3); color: #818cf8; }
 
-
-/* Responsive adjustments for open hero showcase */
-@media (max-width: 992px) {
-  .hero-mentor-natural-img {
-    max-height: 440px;
-    transform: scale(1.12);
-    transform-origin: center 25%;
-  }
-  .hero-float-top-left { top: 0.75rem; left: -2rem; }
-  .hero-float-top-right { top: 1.25rem; right: -2rem; }
-  .hero-float-bottom-left { top: 14.5rem; left: -3rem; }
-  .hero-float-bottom-right { top: 15.5rem; right: -3rem; }
-}
-
-@media (max-width: 640px) {
-  .hero-mentor-natural-img {
-    max-height: 350px;
-    transform: scale(1.08);
-    transform-origin: center 25%;
-  }
-  .hero-float-badge { padding: 0.35rem 0.55rem; font-size: 0.72rem; border-radius: 10px; }
-  .hero-float-top-left { top: 0.25rem; left: -0.75rem; }
-  .hero-float-top-right { top: 1rem; right: -0.75rem; }
-  .hero-float-bottom-left { top: 12rem; left: -1.5rem; }
-  .hero-float-bottom-right { top: 13rem; right: -1.5rem; }
-  .mentor-cred-name { font-size: 1.4rem; }
-}
+/* Note: All responsive media queries consolidated at the bottom of stylesheet */
 
 /* SECTION TITLES */
 .lp-section-header {
@@ -1667,7 +1641,83 @@ html {
   font-size: 0.85rem;
 }
 
-/* RESPONSIVE BREAKPOINTS */
+/* ====================================================
+   CHAPTER DETAILS MODAL STYLING
+   ==================================================== */
+.chapter-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.chapter-modal-box {
+  background: #0f172a;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 560px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chapter-modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.chapter-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.chapter-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-modal-close-alt {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 0.8rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.btn-modal-close-alt:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* ====================================================
+   RESPONSIVE BREAKPOINTS (Desktop, Tablet, Mobile)
+   ==================================================== */
+
+/* --- TABLET & LAPTOP (<= 1024px) --- */
 @media (max-width: 1024px) {
   .hero-grid {
     grid-template-columns: 1fr;
@@ -1688,11 +1738,34 @@ html {
   .footer-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  .hero-mentor-natural-img {
+    max-height: 440px;
+    transform: scale(1.1);
+    transform-origin: center 25%;
+  }
+  .hero-float-top-left { top: 0.75rem; left: -1rem; }
+  .hero-float-top-right { top: 1.25rem; right: -1rem; }
+  .hero-float-bottom-left { top: 14.5rem; left: -1.5rem; }
+  .hero-float-bottom-right { top: 15.5rem; right: -1.5rem; }
 }
 
+/* --- TABLETS & LARGE PHONES (<= 768px) --- */
 @media (max-width: 768px) {
+  /* Announcement Notice Bar */
   .top-announcement-bar {
     font-size: 0.78rem;
+    padding: 0.4rem 0.75rem;
+  }
+  .top-announcement-content {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
+    line-height: 1.4;
+  }
+
+  /* Navigation Bar */
+  .nav-container {
+    padding: 0.75rem 1.25rem;
   }
   .nav-links-desktop {
     display: none;
@@ -1700,48 +1773,375 @@ html {
   .mobile-menu-toggle {
     display: block;
   }
-  .hero-title {
-    font-size: 2.2rem;
+
+  /* Section Headings */
+  .lp-section-header {
+    margin: 0 auto 2.5rem;
   }
+  .lp-section-title {
+    font-size: 1.85rem;
+  }
+  .lp-section-subtitle {
+    font-size: 0.95rem;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding: 3rem 0 3.5rem;
+  }
+  .hero-title {
+    font-size: 2.1rem;
+    line-height: 1.3;
+  }
+  .hero-subtitle {
+    font-size: 1.05rem;
+  }
+  .hero-stats-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    text-align: center;
+    padding-top: 1.25rem;
+  }
+  .stat-item h3 {
+    font-size: 1.4rem;
+  }
+  .stat-item p {
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  /* Grids collapse to single column */
   .chapters-grid,
   .pillars-grid,
   .batches-grid,
   .testimonials-grid,
   .faq-grid {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* Portal Spotlight */
+  .portal-spotlight-card {
+    padding: 2.25rem 1.25rem;
+  }
+
+  /* Mentor Section */
+  .mentor-natural-img-wrapper {
+    height: 380px;
+  }
+
+  /* CTA Banner */
+  .cta-banner-section {
+    padding: 3.5rem 0;
+  }
+  .cta-banner-card {
+    padding: 2.5rem 1.5rem;
+    border-radius: 20px;
+  }
+  .cta-banner-title {
+    font-size: 1.85rem;
+  }
+  .cta-banner-sub {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Footer */
+  .landing-footer {
+    padding: 3rem 0 1.5rem;
   }
   .footer-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
+    margin-bottom: 2rem;
   }
   .footer-bottom-bar {
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
     text-align: center;
-  }
-  .hero-stats-row {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  .mentor-natural-img-wrapper {
-    height: 380px;
+    font-size: 0.8rem;
   }
 }
 
+/* --- MOBILE PHONES (<= 640px) --- */
 @media (max-width: 640px) {
+  /* Container Padding */
+  .lp-container {
+    padding: 0 1rem;
+  }
+
+  /* Sticky Navigation */
+  .nav-container {
+    padding: 0.6rem 0.85rem;
+  }
+  .nav-brand-title {
+    font-size: 1.1rem;
+  }
+  .nav-brand-sub {
+    font-size: 0.68rem;
+  }
+  .nav-logo-box {
+    width: 36px;
+    height: 36px;
+  }
+  .btn-nav-login {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  /* Ambient Halo Contained & Hide off-screen background glows */
+  .hero-circle-ambient-halo {
+    width: 280px;
+    height: 280px;
+    filter: blur(35px);
+  }
+  .landing-ambient-glow-1,
+  .landing-ambient-glow-2,
+  .landing-ambient-glow-3 {
+    display: none;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding: 2rem 0 2.5rem;
+  }
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  .hero-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .hero-badges-row {
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero-badge-tag {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.65rem;
+  }
+
+  /* Hero Mentor Showcase */
+  .hero-circle-showcase {
+    max-width: 100%;
+    padding: 0.5rem 0;
+  }
+  .hero-natural-img-box {
+    max-width: 310px;
+    margin: 0 auto 1rem;
+  }
+  .hero-mentor-natural-img {
+    max-height: 330px;
+    transform: scale(1.04);
+    transform-origin: center 25%;
+  }
+
+  /* Mobile Drawer Scroll */
+  .mobile-nav-drawer {
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+  }
+
+  /* Hero Floating Badges - Inside screen padding, zero clipping */
+  .hero-float-badge {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.72rem;
+    border-radius: 10px;
+    max-width: 150px;
+    white-space: normal;
+    gap: 0.4rem;
+  }
+  .float-badge-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+  .float-badge-title {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+  .float-badge-sub {
+    font-size: 0.65rem;
+  }
+  .float-badge-rating {
+    font-size: 0.68rem;
+  }
+
+  .hero-float-top-left {
+    top: 0.25rem;
+    left: 0.25rem;
+  }
+  .hero-float-top-right {
+    top: 0.25rem;
+    right: 0.25rem;
+  }
+  .hero-float-bottom-left {
+    top: 11.5rem;
+    left: 0.25rem;
+  }
+  .hero-float-bottom-right {
+    top: 13.5rem;
+    right: 0.25rem;
+  }
+
+  .mentor-cred-name {
+    font-size: 1.35rem;
+  }
+  .mentor-cred-role {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+  .mentor-cred-chips {
+    gap: 0.35rem;
+  }
+  .mentor-chip {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.55rem;
+  }
+
+  /* Cards Padding on Mobile */
+  .chapter-card,
+  .pillar-card,
+  .batch-card,
+  .testimonial-card,
+  .faq-card {
+    padding: 1.25rem 1rem;
+    border-radius: 14px;
+  }
+
+  /* Modal on Mobile */
+  .chapter-modal-backdrop {
+    padding: 0.75rem;
+  }
+  .chapter-modal-box {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+    max-height: 85vh;
+  }
+  .chapter-modal-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .chapter-modal-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Teacher/Mentor Section */
+  .mentor-card {
+    padding: 1.5rem 1rem;
+    border-radius: 20px;
+  }
   .mentor-natural-img-wrapper {
-    height: 320px;
+    height: 300px;
+  }
+  .mentor-natural-ambient-glow {
+    width: 260px;
+    height: 260px;
+    filter: blur(35px);
+  }
+  .mentor-float-badge {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
   }
   .mentor-float-top-left {
     top: 0.5rem;
-    left: -0.25rem;
-    font-size: 0.78rem;
-    padding: 0.35rem 0.65rem;
+    left: 0.25rem;
   }
   .mentor-float-bottom-right {
     bottom: 0.5rem;
-    right: -0.25rem;
+    right: 0.25rem;
+  }
+  .mentor-name-row .mentor-name {
+    font-size: 1.4rem;
+  }
+  .mentor-bio {
+    font-size: 0.92rem;
+  }
+}
+
+/* --- SMALL MOBILE PHONES (<= 480px) --- */
+@media (max-width: 480px) {
+  /* Container on compact screens */
+  .lp-container {
+    padding: 0 0.85rem;
+  }
+
+  /* Section Titles */
+  .lp-section-title {
+    font-size: 1.55rem;
+  }
+  .lp-section-header {
+    margin: 0 auto 1.75rem;
+  }
+
+  /* Hero Headings */
+  .hero-title {
+    font-size: 1.6rem;
+  }
+  .hero-pill-badge {
     font-size: 0.78rem;
-    padding: 0.35rem 0.65rem;
+    padding: 0.3rem 0.75rem;
+  }
+
+  /* Hero CTA Buttons */
+  .hero-cta-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    margin-bottom: 1.75rem;
+  }
+  .btn-hero-primary,
+  .btn-hero-enroll {
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem 1.25rem;
+    font-size: 0.98rem;
+  }
+
+  /* Mentor Section CTA */
+  .mentor-card div:last-child > div:last-child {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .mentor-card a.btn-hero-primary,
+  .mentor-card a.btn-hero-enroll {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Hero Mentor Image on compact screens */
+  .hero-natural-img-box {
+    max-width: 285px;
+  }
+  .hero-mentor-natural-img {
+    max-height: 295px;
+    transform: scale(1.02);
+  }
+  .hero-float-bottom-left {
+    top: 10.5rem;
+    left: 0.25rem;
+  }
+  .hero-float-bottom-right {
+    top: 12.5rem;
+    right: 0.25rem;
+  }
+
+  /* CTA Banner Card */
+  .cta-banner-title {
+    font-size: 1.45rem;
+  }
+  .cta-banner-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.65rem;
+  }
+  .btn-cta-student,
+  .btn-cta-call {
+    width: 100%;
+    justify-content: center;
   }
 }
