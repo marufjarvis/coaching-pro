@@ -32,10 +32,10 @@ export const api = {
       body: JSON.stringify({ email, password })
     });
   },
-  async studentLogin({ loginId, password }) {
+  async studentLogin({ phone, loginId }) {
     return request('/student-login', {
       method: 'POST',
-      body: JSON.stringify({ login_id: loginId, password })
+      body: JSON.stringify({ phone: phone || loginId })
     });
   },
 

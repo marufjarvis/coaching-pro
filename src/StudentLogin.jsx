@@ -1,15 +1,14 @@
 // src/StudentLogin.jsx
 // Dedicated Student Portal Login Screen for Coaching Pro
+// Authentication via registered mobile number only
 
 import React, { useState } from 'react';
-import { User, Phone, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, AlertCircle, Sparkles, Smartphone, ShieldCheck } from 'lucide-react';
+import { Phone, ArrowRight, ArrowLeft, AlertCircle, Sparkles, Smartphone, ShieldCheck } from 'lucide-react';
 import { api } from './api';
 import { dataStore } from './dataStore';
 
 function StudentLogin({ onStudentLogin, onSwitchToAdmin }) {
-  const [loginId, setLoginId] = useState('STU-66115');
-  const [password, setPassword] = useState('01723619524');
-  const [showPassword, setShowPassword] = useState(false);
+  const [phone, setPhone] = useState('01723619524');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -18,42 +17,28 @@ function StudentLogin({ onStudentLogin, onSwitchToAdmin }) {
     setError(null);
     setLoading(true);
 
+    const cleanPhone = phone.trim();
+
     try {
-      // 1. Authenticate against MySQL Database via Laravel REST API
-      const res = await api.studentLogin({ loginId: loginId.trim(), password: password.trim() });
+      // 1. Authenticate against MySQL Database via Laravel REST API (/api/student-login)
+      const res = await api.studentLogin({ phone: cleanPhone });
       if (res && res.success && res.student) {
         onStudentLogin(res.student);
       } else {
-        setError(res?.message || 'ভুল শিক্ষার্থী আইডি অথবা পাসওয়ার্ড!');
+        setError(res?.message || 'এই মোবাইল নম্বরে কোনো শিক্ষার্থী খুঁজে পাওয়া যায়নি!');
       }
     } catch (err) {
       // 2. Offline / Server fallback: verify from local dataStore students
-      const cleanId = loginId.trim();
-      const cleanPass = password.trim();
       const allStudents = dataStore.getStudents();
       const matchedStudent = allStudents.find(s => 
-        s.id.toLowerCase() === cleanId.toLowerCase() || 
-        (s.phone && s.phone === cleanId) ||
-        (s.guardianPhone && s.guardianPhone === cleanId)
+        (s.phone && s.phone.replace(/[\s-]/g, '') === cleanPhone.replace(/[\s-]/g, '')) ||
+        (s.guardianPhone && s.guardianPhone.replace(/[\s-]/g, '') === cleanPhone.replace(/[\s-]/g, ''))
       );
 
       if (matchedStudent) {
-        // Verify password against phone, student ID, guardian phone, or 12345678
-        const isMatch = (
-          cleanPass === '12345678' ||
-          cleanPass === matchedStudent.phone ||
-          cleanPass === matchedStudent.guardianPhone ||
-          cleanPass === matchedStudent.id ||
-          (matchedStudent.phone && matchedStudent.phone.endsWith(cleanPass))
-        );
-
-        if (isMatch) {
-          onStudentLogin(matchedStudent);
-        } else {
-          setError('পাসওয়ার্ড অথবা মোবাইল নম্বর সঠিক নয়! ভর্তি ফর্মে দেওয়া মোবাইল নম্বর বা 12345678 দিয়ে চেষ্টা করুন।');
-        }
+        onStudentLogin(matchedStudent);
       } else {
-        setError(err.message || 'শিক্ষার্থী আইডি অথবা মোবাইল নম্বর পাওয়া যায়নি!');
+        setError(err.message || 'এই মোবাইল নম্বরে কোনো শিক্ষার্থী খুঁজে পাওয়া যায়নি! ভর্তি ফর্মে দেওয়া মোবাইল নম্বর প্রদান করুন।');
       }
     } finally {
       setLoading(false);
@@ -124,40 +109,18 @@ function StudentLogin({ onStudentLogin, onSwitchToAdmin }) {
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label className="form-label">শিক্ষার্থী আইডি অথবা মোবাইল নম্বর</label>
+              <label className="form-label">নিবন্ধিত মোবাইল নম্বর</label>
               <div className="input-wrapper">
-                <User size={18} className="input-icon" />
+                <Phone size={18} className="input-icon" />
                 <input 
-                  type="text" 
+                  type="tel" 
                   className="form-input" 
-                  placeholder="যেমন: STU-66115 বা 01723619524" 
-                  value={loginId}
-                  onChange={(e) => { setLoginId(e.target.value); setError(null); }}
+                  placeholder="যেমন: 01723619524" 
+                  value={phone}
+                  onChange={(e) => { setPhone(e.target.value); setError(null); }}
                   required
+                  autoFocus
                 />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">পাসওয়ার্ড অথবা নিবন্ধিত মোবাইল নম্বর</label>
-              <div className="input-wrapper">
-                <Lock size={18} className="input-icon" />
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  className="form-input" 
-                  placeholder="মোবাইল নম্বর অথবা 12345678"
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(null); }}
-                  required
-                />
-                <button 
-                  type="button" 
-                  className="input-icon-right"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
               </div>
             </div>
 
@@ -165,7 +128,7 @@ function StudentLogin({ onStudentLogin, onSwitchToAdmin }) {
               type="submit" 
               className="submit-btn" 
               disabled={loading}
-              style={{ opacity: loading ? 0.75 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+              style={{ opacity: loading ? 0.75 : 1, cursor: loading ? 'not-allowed' : 'pointer', marginTop: '1.25rem' }}
             >
               {loading ? 'যাচাই করা হচ্ছে...' : 'শিক্ষার্থী ড্যাশবোর্ডে প্রবেশ করুন'} {!loading && <ArrowRight size={18} strokeWidth={2.5} />}
             </button>

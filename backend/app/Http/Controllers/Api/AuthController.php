@@ -46,47 +46,31 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle Student Login (via Student ID or Phone number)
+     * Handle Student Login (directly via registered Mobile Number)
      */
     public function studentLogin(Request $request)
     {
-        $request->validate([
-            'login_id' => 'required|string',
-            'password' => 'required|string',
-        ]);
+        $phone = trim($request->input('phone') ?? $request->input('login_id') ?? '');
 
-        $loginId = trim($request->input('login_id'));
-        $password = trim($request->input('password'));
+        if (empty($phone)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'অনুগ্রহ করে নিবন্ধিত মোবাইল নম্বর প্রদান করুন।'
+            ], 422);
+        }
 
-        // Search student by ID or Phone or Guardian Phone
+        // Search student by Phone, Guardian Phone, or ID
         $student = Student::with(['payments', 'attendances', 'examMarks.exam'])
-            ->where('id', $loginId)
-            ->orWhere('phone', $loginId)
-            ->orWhere('guardian_phone', $loginId)
+            ->where('phone', $phone)
+            ->orWhere('guardian_phone', $phone)
+            ->orWhere('id', $phone)
             ->first();
 
         if (!$student) {
             return response()->json([
                 'success' => false,
-                'message' => 'শিক্ষার্থী আইডি অথবা মোবাইল নম্বর পাওয়া যায়নি!'
+                'message' => 'এই মোবাইল নম্বরে কোনো শিক্ষার্থী খুঁজে পাওয়া যায়নি! কোচিং সেন্টারে নিবন্ধিত মোবাইল নম্বর প্রদান করুন।'
             ], 404);
-        }
-
-        // Verify password: allow registered phone, guardian phone, student ID, or master pin '12345678'
-        $matched = (
-            $password === '12345678' ||
-            $password === $student->phone ||
-            $password === $student->guardian_phone ||
-            $password === $student->id ||
-            substr($student->phone, -4) === $password ||
-            substr($student->phone, -6) === $password
-        );
-
-        if (!$matched) {
-            return response()->json([
-                'success' => false,
-                'message' => 'পাসওয়ার্ড অথবা মোবাইল নম্বর সঠিক নয়! ভর্তি ফর্মে দেওয়া মোবাইল নম্বর বা 12345678 দিয়ে চেষ্টা করুন।'
-            ], 401);
         }
 
         $paidSum = (float) $student->payments->sum('amount');
