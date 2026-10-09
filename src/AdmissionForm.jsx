@@ -7,19 +7,22 @@ import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { dataStore } from './dataStore';
 
 function AdmissionForm({ batch: initialBatch }) {
+  const availableBatches = dataStore.getBatches();
+  const rawBatchOptions = availableBatches.length > 0 
+    ? availableBatches.map(b => b.name)
+    : ['HSC 2026 রেগুলার ব্যাচ', 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ', 'HSC 2027 ফাউন্ডেশন কোর্স'];
+  const batchOptions = (initialBatch && !rawBatchOptions.includes(initialBatch))
+    ? [initialBatch, ...rawBatchOptions]
+    : rawBatchOptions;
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     guardianPhone: '',
     college: '',
-    selectedBatch: initialBatch || 'HSC 2026 রেগুলার ব্যাচ'
+    selectedBatch: initialBatch || (batchOptions.length > 0 ? batchOptions[0] : 'HSC 2026 রেগুলার ব্যাচ')
   });
   const [submitted, setSubmitted] = useState(false);
-
-  const availableBatches = dataStore.getBatches();
-  const batchOptions = availableBatches.length > 0 
-    ? availableBatches.map(b => b.name)
-    : ['HSC 2026 রেগুলার ব্যাচ', 'HSC 2025 টেস্ট পেপার সলভ ব্যাচ', 'HSC 2027 ফাউন্ডেশন কোর্স'];
 
   const isFormValid = formData.name.trim() !== '' && formData.phone.trim() !== '' && formData.guardianPhone.trim() !== '';
 

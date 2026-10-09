@@ -129,9 +129,18 @@ function LandingPage({
   // Dynamic Frontend CMS Data (Single Unified Content Store)
   const [frontendData, setFrontendData] = useState(() => dataStore.getFrontendSettings());
 
+  // Dynamic Live Batches & Students synced with backend and dataStore
+  const [liveBatches, setLiveBatches] = useState(() => {
+    const stored = dataStore.getBatches();
+    return stored.length > 0 ? stored : (batches.length > 0 ? batches : []);
+  });
+  const [students, setStudents] = useState(() => dataStore.getStudents());
+
   useEffect(() => {
     const handleSync = () => {
       setFrontendData(dataStore.getFrontendSettings());
+      setLiveBatches(dataStore.getBatches());
+      setStudents(dataStore.getStudents());
     };
     window.addEventListener('coaching-data-change', handleSync);
     window.addEventListener('storage', handleSync);
@@ -140,6 +149,12 @@ function LandingPage({
       window.removeEventListener('storage', handleSync);
     };
   }, []);
+
+  useEffect(() => {
+    if (batches && batches.length > 0) {
+      setLiveBatches(batches);
+    }
+  }, [batches]);
 
   const {
     notice = {},
@@ -415,16 +430,40 @@ function LandingPage({
     }
   ];
 
-  const currentBatches = batches.length > 0 ? batches.map((b, i) => ({
-    id: b.id || `batch-${i}`,
-    title: b.name,
-    tagline: isEn ? 'HSC ICT Special Academic Care' : 'HSC ICT স্পেশাল একাডেমিক কেয়ার',
-    days: i % 2 === 0 ? (isEn ? 'Sat, Mon, Wed' : 'শনি, সোম, বুধ') : (isEn ? 'Sun, Tue, Thu' : 'রবি, মঙ্গল, বৃহস্পতি'),
-    time: i === 0 ? (isEn ? '8:00 AM & 4:00 PM' : 'সকাল ৮:০০ ও বিকাল ৪:০০') : (isEn ? '9:00 AM & 5:00 PM' : 'সকাল ৯:০০ ও বিকাল ৫:০০'),
-    seatsLeft: isEn ? 'Limited Seats' : 'সীমিত আসন',
-    status: isEn ? 'Admission Open' : 'ভর্তি চলছে',
-    featured: i === 0
-  })) : defaultBatches;
+  const currentBatches = (liveBatches && liveBatches.length > 0 ? liveBatches : defaultBatches).map((b, i) => {
+    const title = b.name || b.title;
+    const enrolledCount = students.filter(s => s.batch === title || s.preferredBatch === title).length;
+    const seatLimit = Number(b.seatLimit) || 50;
+    const seatsRemaining = Math.max(0, seatLimit - enrolledCount);
+
+    // Dynamic seat status text
+    let seatsStatusText = b.seatsLeft;
+    if (!seatsStatusText) {
+      if (seatsRemaining === 0 || b.status === 'ব্যাচ পূর্ণ' || b.status === 'Batch Full') {
+        seatsStatusText = isEn ? 'Batch Full' : 'আসন পূর্ণ';
+      } else if (seatsRemaining <= 10) {
+        seatsStatusText = isEn ? `${seatsRemaining} seats left` : `${seatsRemaining}টি আসন খালি`;
+      } else {
+        seatsStatusText = isEn ? 'Limited Seats' : 'সীমিত আসন';
+      }
+    }
+
+    return {
+      id: b.id || `batch-${i}`,
+      title: title,
+      name: title,
+      tagline: b.tagline || (isEn ? 'Complete syllabus from basics to board A+ preparation' : 'সম্পূর্ণ সিলেবাস বেসিক থেকে বোর্ড A+ প্রস্তুতি'),
+      days: b.days || (i % 2 === 0 ? (isEn ? 'Sat, Mon, Wed' : 'শনি, সোম, বুধ') : (isEn ? 'Sun, Tue, Thu' : 'রবি, মঙ্গল, বৃহস্পতি')),
+      time: b.time || (i === 0 ? (isEn ? '8:00 AM & 4:00 PM (2 slots)' : 'সকাল ৮:০০ ও বিকাল ৪:০০ (২টি স্লট)') : (isEn ? '9:00 AM & 5:00 PM (2 slots)' : 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)')),
+      seatsLeft: seatsStatusText,
+      seatsRemaining,
+      enrolledCount,
+      seatLimit,
+      status: b.status || (seatsRemaining === 0 ? 'আসন পূর্ণ' : 'ভর্তি চলছে'),
+      coverage: b.coverage || (isEn ? 'Chapters 1-6 + Practical Lab' : 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব'),
+      featured: b.featured !== undefined ? Boolean(b.featured) : (i === 0)
+    };
+  });
 
   // Student Testimonials (Dynamic with fallback)
   const testimonials = (customTestimonials && customTestimonials.length > 0)
@@ -1179,19 +1218,32 @@ function LandingPage({
             <p className="lp-section-subtitle">
               {isEn 
                 ? 'Classes are conducted with a maximum of 50 students per batch.'
-                : 'প্রতি ব্যাচে সর্বোচ্চ ৫০জন শিক্ষার্থী নিয়ে ক্লাস পরিচালিত হয়।'}
+                : 'প্রতি ব্যাচে সর্বোচ্চ ৫০ জন শিক্ষার্থী নিয়ে ক্লাস পরিচালিত হয়।'}
             </p>
           </div>
 
           <div className="batches-grid">
             {currentBatches.map((batch, bIdx) => (
-              <div key={bIdx} className={`batch-card ${batch.featured ? 'featured' : ''}`}>
+              <div key={batch.id || bIdx} className={`batch-card ${batch.featured ? 'featured' : ''}`}>
                 {batch.featured && (
                   <span className="batch-featured-tag">{isEn ? 'Most Popular' : 'সর্বাধিক চাহিদাসম্পন্ন'}</span>
                 )}
 
                 <div className="batch-header">
-                  <h3 className="batch-title">{batch.title}</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                    <h3 className="batch-title" style={{ margin: 0 }}>{batch.title}</h3>
+                    <span style={{ 
+                      fontSize: '0.75rem', 
+                      fontWeight: '700', 
+                      padding: '2px 8px', 
+                      borderRadius: '12px', 
+                      backgroundColor: batch.seatsRemaining === 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                      color: batch.seatsRemaining === 0 ? '#ef4444' : '#10b981',
+                      border: `1px solid ${batch.seatsRemaining === 0 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
+                    }}>
+                      {batch.status}
+                    </span>
+                  </div>
                   <p className="batch-subtitle">{batch.tagline}</p>
                 </div>
 
@@ -1206,11 +1258,11 @@ function LandingPage({
                   </li>
                   <li className="batch-info-item">
                     <Users size={18} className="batch-info-icon" />
-                    <span><strong>{isEn ? 'Seat Status:' : 'আসন স্ট্যাটাস:'}</strong> <span style={{ color: '#f59e0b', fontWeight: 'bold' }}>{batch.seatsLeft}</span></span>
+                    <span><strong>{isEn ? 'Seat Status:' : 'আসন স্ট্যাটাস:'}</strong> <span style={{ color: batch.seatsRemaining <= 5 ? '#ef4444' : '#f59e0b', fontWeight: 'bold' }}>{batch.seatsLeft}</span></span>
                   </li>
                   <li className="batch-info-item">
                     <Award size={18} className="batch-info-icon" />
-                    <span><strong>{isEn ? 'Coverage:' : 'কভারেজ:'}</strong> {isEn ? 'Chapters 1-6 + Practical Lab' : 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব'}</span>
+                    <span><strong>{isEn ? 'Coverage:' : 'কভারেজ:'}</strong> {batch.coverage}</span>
                   </li>
                 </ul>
 

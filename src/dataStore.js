@@ -544,6 +544,46 @@ export const defaultFrontendSettings_EN = {
 // Backward-compatible default alias
 export const defaultFrontendSettings = defaultFrontendSettings_BN;
 
+// Default Academic Batches for HSC ICT Coaching
+export const DEFAULT_INITIAL_BATCHES = [
+  {
+    id: 'BAT-2026',
+    name: 'HSC 2026 রেগুলার ব্যাচ',
+    tagline: 'সম্পূর্ণ সিলেবাস বেসিক থেকে বোর্ড A+ প্রস্তুতি',
+    days: 'শনি, সোম, বুধ',
+    time: 'সকাল ৮:০০ ও বিকাল ৪:০০ (২টি স্লট)',
+    seatLimit: 50,
+    seatsLeft: '৪টি আসন খালি',
+    status: 'ভর্তি চলছে',
+    coverage: 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
+    featured: true
+  },
+  {
+    id: 'BAT-2025',
+    name: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ',
+    tagline: 'বিগত বছরের বোর্ড CQ-MCQ ও বিশেষ সাজেশন',
+    days: 'রবি, মঙ্গল, বৃহস্পতি',
+    time: 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)',
+    seatLimit: 50,
+    seatsLeft: '৩টি আসন খালি',
+    status: 'সীমিত আসন',
+    coverage: 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
+    featured: false
+  },
+  {
+    id: 'BAT-2027',
+    name: 'HSC 2027 ফাউন্ডেশন কোর্স',
+    tagline: 'আইসিটি শুরু থেকেই সহজ ও আনন্দময় করার ব্যাচ',
+    days: 'শনি, সোম, বুধ',
+    time: 'সকাল ১০:০০ টা',
+    seatLimit: 50,
+    seatsLeft: '৮টি আসন খালি',
+    status: 'ভর্তি চলছে',
+    coverage: 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
+    featured: false
+  }
+];
+
 export const dataStore = {
   // --- BACKEND SYNCHRONIZATION ---
   async syncWithBackend() {
@@ -618,20 +658,36 @@ export const dataStore = {
       if (data) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map(b => ({
+          return parsed.map((b, idx) => ({
             id: b.id || `BAT-${Math.random().toString().slice(2, 6)}`,
-            name: typeof b === 'string' ? b.trim() : (b.name ? b.name.trim() : '')
+            name: typeof b === 'string' ? b.trim() : (b.name ? b.name.trim() : ''),
+            days: (b && b.days) || (idx % 2 === 0 ? 'শনি, সোম, বুধ' : 'রবি, মঙ্গল, বৃহস্পতি'),
+            time: (b && b.time) || (idx === 0 ? 'সকাল ৮:০০ ও বিকাল ৪:০০ (২টি স্লট)' : 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)'),
+            tagline: (b && b.tagline) || 'সম্পূর্ণ সিলেবাস বেসিক থেকে বোর্ড A+ প্রস্তুতি',
+            seatLimit: Number(b && b.seatLimit) || 50,
+            seatsLeft: (b && b.seatsLeft) || '',
+            status: (b && b.status) || 'ভর্তি চলছে',
+            coverage: (b && b.coverage) || 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
+            featured: b && b.featured !== undefined ? Boolean(b.featured) : (idx === 0)
           }));
         }
       }
     } catch (e) {}
-    return [];
+    return DEFAULT_INITIAL_BATCHES;
   },
 
   saveBatches(batches) {
     const cleaned = batches.map(b => ({
       id: b.id,
-      name: b.name.trim()
+      name: (b.name || '').trim(),
+      days: (b.days || '').trim(),
+      time: (b.time || '').trim(),
+      tagline: (b.tagline || '').trim(),
+      seatLimit: Number(b.seatLimit) || 50,
+      seatsLeft: (b.seatsLeft || '').trim(),
+      status: b.status || 'ভর্তি চলছে',
+      coverage: b.coverage || 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
+      featured: Boolean(b.featured)
     }));
     localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(cleaned));
     notifyChange();
@@ -639,14 +695,23 @@ export const dataStore = {
 
   addBatch(batchInput) {
     const batches = this.getBatches();
-    const batchName = typeof batchInput === 'string' 
-      ? batchInput.trim() 
-      : (batchInput && batchInput.name ? batchInput.name.trim() : '');
+    const isObj = typeof batchInput === 'object' && batchInput !== null;
+    const batchName = isObj 
+      ? (batchInput.name ? batchInput.name.trim() : '') 
+      : (typeof batchInput === 'string' ? batchInput.trim() : '');
     if (!batchName) return null;
 
     const newBatch = {
-      id: `BAT-${Date.now().toString().slice(-4)}`,
-      name: batchName
+      id: (isObj && batchInput.id) || `BAT-${Date.now().toString().slice(-4)}`,
+      name: batchName,
+      days: (isObj && batchInput.days && batchInput.days.trim()) || 'শনি, সোম, বুধ',
+      time: (isObj && batchInput.time && batchInput.time.trim()) || 'সকাল ১০:০০ টা',
+      tagline: (isObj && batchInput.tagline && batchInput.tagline.trim()) || 'সম্পূর্ণ সিলেবাস বেসিক থেকে বোর্ড A+ প্রস্তুতি',
+      seatLimit: Number(isObj && batchInput.seatLimit) || 50,
+      seatsLeft: (isObj && batchInput.seatsLeft && batchInput.seatsLeft.trim()) || '',
+      status: (isObj && batchInput.status) || 'ভর্তি চলছে',
+      coverage: (isObj && batchInput.coverage) || 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
+      featured: isObj && batchInput.featured !== undefined ? Boolean(batchInput.featured) : false
     };
     const updated = [...batches, newBatch];
     this.saveBatches(updated);
@@ -667,13 +732,28 @@ export const dataStore = {
 
   updateBatch(id, updatedData) {
     const batches = this.getBatches();
-    const newName = typeof updatedData === 'string' 
-      ? updatedData.trim() 
-      : (updatedData && updatedData.name ? updatedData.name.trim() : '');
-    const updated = batches.map(b => (b.id === id || b.name === id ? { ...b, name: newName || b.name } : b));
+    const isObj = typeof updatedData === 'object' && updatedData !== null;
+    const newName = isObj 
+      ? (updatedData.name ? updatedData.name.trim() : '') 
+      : (typeof updatedData === 'string' ? updatedData.trim() : '');
+
+    const updated = batches.map(b => {
+      if (b.id === id || b.name === id) {
+        if (isObj) {
+          return {
+            ...b,
+            ...updatedData,
+            name: newName || b.name,
+            seatLimit: Number(updatedData.seatLimit) || b.seatLimit || 50
+          };
+        }
+        return { ...b, name: newName || b.name };
+      }
+      return b;
+    });
     this.saveBatches(updated);
 
-    api.updateBatch(id, newName).catch(e => console.error('[API Batch Update Error]', e));
+    api.updateBatch(id, newName || id).catch(e => console.error('[API Batch Update Error]', e));
   },
 
   deleteBatch(id) {
