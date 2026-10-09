@@ -29,6 +29,7 @@ function Dashboard({ onLogout }) {
   const [students, setStudents] = useState(() => dataStore.getStudents());
   const [payments, setPayments] = useState(() => dataStore.getPayments());
   const [settings, setSettings] = useState(() => dataStore.getSettings());
+  const [pendingAdmissions, setPendingAdmissions] = useState(() => dataStore.getPendingAdmissions());
 
   const [isGuideVisible, setIsGuideVisible] = useState(() => {
     return localStorage.getItem('coachingDismissedGuide') !== 'true';
@@ -45,6 +46,7 @@ function Dashboard({ onLogout }) {
       setStudents(dataStore.getStudents());
       setPayments(dataStore.getPayments());
       setSettings(dataStore.getSettings());
+      setPendingAdmissions(dataStore.getPendingAdmissions());
     };
     window.addEventListener('coaching-data-change', handleSync);
     window.addEventListener('storage', handleSync);
@@ -90,76 +92,188 @@ function Dashboard({ onLogout }) {
       {/* Sidebar */}
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <div className="sidebar-logo">
-            <img src="/logo.png" alt="Logo" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+          <div className="sidebar-brand-group">
+            <div className="sidebar-logo">
+              <img src="/logo.png" alt="Logo" style={{ width: '26px', height: '26px', objectFit: 'contain' }} />
+            </div>
+            <div className="sidebar-brand-text">
+              <div className="sidebar-brand">{settings.coachingName}</div>
+              <div className="sidebar-subtitle">{t.workspace}</div>
+            </div>
           </div>
-          <div>
-            <div className="sidebar-brand">{settings.coachingName}</div>
-            <div className="sidebar-subtitle">{t.workspace}</div>
-          </div>
+          <button 
+            type="button" 
+            className="sidebar-close-btn" 
+            onClick={() => setIsSidebarOpen(false)}
+            aria-label="Close sidebar menu"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         <div className="sidebar-nav">
+          {/* 1. Overview */}
           <div className="nav-section">
             <div className="nav-label">{t.overview}</div>
-            <a href="#" className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('dashboard'); setIsSidebarOpen(false); }}>
-              <LayoutDashboard size={20} /> {t.dashboard}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('dashboard'); setIsSidebarOpen(false); }}
+            >
+              <LayoutDashboard size={18} />
+              <span>{t.dashboard}</span>
             </a>
           </div>
 
+          {/* 2. Academic Management */}
           <div className="nav-section">
             <div className="nav-label">{t.academic}</div>
-            <a href="#" className={`nav-item ${activeTab === 'batches' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('batches'); setIsSidebarOpen(false); }}>
-              <BookOpen size={20} /> {t.batches}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'batches' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('batches'); setIsSidebarOpen(false); }}
+            >
+              <BookOpen size={18} />
+              <span>{t.batches}</span>
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('students'); setIsSidebarOpen(false); }}>
-              <Users size={20} /> {t.students}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'students' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('students'); setIsSidebarOpen(false); }}
+            >
+              <Users size={18} />
+              <span>{t.students}</span>
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'online-admission' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('online-admission'); setIsSidebarOpen(false); }}>
-              <UserCheck size={20} /> {t.onlineAdmission}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'online-admission' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('online-admission'); setIsSidebarOpen(false); }}
+            >
+              <UserCheck size={18} />
+              <span>{t.onlineAdmission}</span>
+              {pendingAdmissions.length > 0 && (
+                <span className="nav-badge nav-badge-amber">
+                  {pendingAdmissions.length}
+                </span>
+              )}
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'enrollment' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('enrollment'); setIsSidebarOpen(false); }}>
-              <Link size={20} /> {t.enrollmentLinks}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('attendance'); setIsSidebarOpen(false); }}
+            >
+              <CalendarCheck size={18} />
+              <span>{t.attendance}</span>
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('attendance'); setIsSidebarOpen(false); }}>
-              <CalendarCheck size={20} /> {t.attendance}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'exams' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('exams'); setIsSidebarOpen(false); }}
+            >
+              <FileText size={18} />
+              <span>{t.exams}</span>
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'exams' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('exams'); setIsSidebarOpen(false); }}>
-              <FileText size={20} /> {t.exams}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'enrollment' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('enrollment'); setIsSidebarOpen(false); }}
+            >
+              <Link size={18} />
+              <span>{t.enrollmentLinks}</span>
             </a>
           </div>
 
+          {/* 3. Financial Collections & Accounting */}
           <div className="nav-section">
             <div className="nav-label">{t.collections}</div>
-            <a href="#" className={`nav-item ${activeTab === 'payments' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('payments'); setIsSidebarOpen(false); }}>
-              <CreditCard size={20} /> {t.payments}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'payments' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('payments'); setIsSidebarOpen(false); }}
+            >
+              <CreditCard size={18} />
+              <span>{t.payments}</span>
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'due-inbox' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('due-inbox'); setIsSidebarOpen(false); }}>
-              <Inbox size={20} /> {t.dueInbox}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'due-inbox' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('due-inbox'); setIsSidebarOpen(false); }}
+            >
+              <Inbox size={18} />
+              <span>{t.dueInbox}</span>
+              {stats.dueCount > 0 && (
+                <span className="nav-badge nav-badge-red">
+                  {stats.dueCount}
+                </span>
+              )}
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'expenses' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('expenses'); setIsSidebarOpen(false); }}>
-              <Receipt size={20} /> {t.expenses}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'expenses' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('expenses'); setIsSidebarOpen(false); }}
+            >
+              <Receipt size={18} />
+              <span>{t.expenses}</span>
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('reports'); setIsSidebarOpen(false); }}>
-              <BarChart3 size={20} /> {t.reports}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('reports'); setIsSidebarOpen(false); }}
+            >
+              <BarChart3 size={18} />
+              <span>{t.reports}</span>
             </a>
           </div>
 
+          {/* 4. Administration & Settings */}
           <div className="nav-section">
             <div className="nav-label">{t.account}</div>
-            <a href="#" className={`nav-item ${activeTab === 'notifications' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('notifications'); setIsSidebarOpen(false); }}>
-              <Bell size={20} /> {t.notifications}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'notifications' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('notifications'); setIsSidebarOpen(false); }}
+            >
+              <Bell size={18} />
+              <span>{t.notifications}</span>
               {((stats.notificationCount !== undefined ? stats.notificationCount : stats.dueCount) > 0) && (
-                <span style={{ marginLeft: 'auto', background: '#ef4444', color: '#fff', fontSize: '10px', padding: '2px 7px', borderRadius: '10px', fontWeight: '700' }}>
+                <span className="nav-badge nav-badge-blue">
                   {stats.notificationCount !== undefined ? stats.notificationCount : stats.dueCount}
                 </span>
               )}
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'staff' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('staff'); setIsSidebarOpen(false); }}>
-              <UserPlus size={20} /> {t.staff}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'staff' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('staff'); setIsSidebarOpen(false); }}
+            >
+              <UserPlus size={18} />
+              <span>{t.staff}</span>
             </a>
-            <a href="#" className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setActiveTab('settings'); setIsSidebarOpen(false); }}>
-              <SettingsIcon size={20} /> {t.settings}
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('settings'); setIsSidebarOpen(false); }}
+            >
+              <SettingsIcon size={18} />
+              <span>{t.settings}</span>
+            </a>
+          </div>
+
+          {/* 5. Direct Link to Live Coaching Website */}
+          <div className="nav-section nav-section-website" style={{ marginTop: '0.5rem', paddingTop: '0.6rem', borderTop: '1px solid #f1f5f9' }}>
+            <a 
+              href="#/" 
+              className="nav-item nav-item-website"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsSidebarOpen(false);
+                window.location.hash = '#/';
+              }}
+              title="কোচিং এর আকর্ষণীয় মূল ওয়েবসাইট দেখুন"
+            >
+              <Globe size={18} style={{ color: '#0284c7' }} />
+              <span style={{ fontWeight: 600, color: '#0284c7' }}>{lang === 'EN' ? 'Public Website' : 'কোচিং ওয়েবসাইট'}</span>
+              <ArrowRight size={14} style={{ marginLeft: 'auto', color: '#0284c7' }} />
             </a>
           </div>
         </div>
@@ -214,20 +328,20 @@ function Dashboard({ onLogout }) {
         {/* Header */}
         <header className="top-header">
           <div className="header-left">
-            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-              <Menu size={24} />
+            <button className="mobile-menu-btn" onClick={() => setIsSidebarOpen(true)} aria-label="Open menu">
+              <Menu size={22} />
             </button>
             <div className="header-logo-circle">
-              <img src="/logo.png" alt="Logo" style={{ width: '20px', height: '20px', objectFit: 'contain' }} />
+              <img src="/logo.png" alt="Logo" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
             </div>
             <div className="header-title">
               <strong>{settings.coachingName}</strong>
-              <span>{t.coachingAdmin} • {(t[activeTab] || activeTab).toUpperCase()}</span>
+              <span className="hide-on-mobile">{t.coachingAdmin} • {(t[activeTab] || activeTab).toUpperCase()}</span>
             </div>
           </div>
           
-          <div className="header-search" style={{ position: 'relative' }}>
-            <Search size={18} className="search-icon" />
+          <div className="header-search">
+            <Search size={16} className="search-icon" />
             <input 
               type="text" 
               placeholder={t.searchHeaderPlaceholder} 
@@ -237,21 +351,21 @@ function Dashboard({ onLogout }) {
               onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
             />
             {searchFocused && searchResults.length > 0 && (
-              <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 100, marginTop: '6px', overflow: 'hidden' }}>
+              <div className="search-dropdown-results">
                 {searchResults.map((res, i) => (
                   <div 
                     key={i} 
-                    style={{ padding: '8px 12px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                    className="search-result-item"
                     onClick={() => {
                       setActiveTab(res.targetTab);
                       setHeaderSearch('');
                     }}
                   >
                     <div>
-                      <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>{res.title}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{res.subtitle}</div>
+                      <div className="search-res-title">{res.title}</div>
+                      <div className="search-res-sub">{res.subtitle}</div>
                     </div>
-                    <span style={{ fontSize: '0.7rem', background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', textTransform: 'capitalize' }}>{res.type}</span>
+                    <span className="search-res-badge">{res.type}</span>
                   </div>
                 ))}
               </div>
@@ -262,41 +376,33 @@ function Dashboard({ onLogout }) {
             <button 
               type="button"
               onClick={() => { window.location.hash = '#/'; }} 
-              className="btn-outline"
-              style={{ padding: '0.4rem 0.75rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '5px', borderColor: '#0284c7', color: '#0284c7', fontWeight: 600 }}
+              className="btn-header-website"
               title="কোচিং এর মূল ওয়েবসাইট দেখুন"
             >
-              <Globe size={15} /> {lang === 'EN' ? 'View Website' : 'মূল ওয়েবসাইট'}
+              <Globe size={15} /> 
+              <span className="hide-on-mobile">{lang === 'EN' ? 'Website' : 'ওয়েবসাইট'}</span>
             </button>
             <div className="lang-toggle">
               <span className={`lang ${lang === 'EN' ? 'active' : ''}`} onClick={() => handleLangToggle('EN')}>EN</span>
               <span className={`lang ${lang === 'BN' ? 'active' : ''}`} onClick={() => handleLangToggle('BN')}>BN</span>
             </div>
             <button className="icon-btn" onClick={() => setActiveTab('notifications')} title={t.notifications} style={{ position: 'relative' }}>
-              <Bell size={20} />
+              <Bell size={18} />
               {((stats.notificationCount !== undefined ? stats.notificationCount : stats.dueCount) > 0) && (
-                <span style={{ 
-                  position: 'absolute', 
-                  top: '-3px', 
-                  right: '-3px', 
-                  minWidth: '18px', 
-                  height: '18px', 
-                  borderRadius: '9px', 
-                  background: '#ef4444', 
-                  color: 'white', 
-                  fontSize: '10px', 
-                  fontWeight: '700', 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  padding: '0 4px', 
-                  border: '2px solid white' 
-                }}>
+                <span className="header-notif-badge">
                   {stats.notificationCount !== undefined ? stats.notificationCount : stats.dueCount}
                 </span>
               )}
             </button>
-            <div className="profile-circle" title="Admin Account" onClick={() => setActiveTab('settings')}>MH</div>
+            <div className="profile-circle" title="Admin Account" onClick={() => setActiveTab('settings')}>
+              {(() => {
+                try {
+                  const u = JSON.parse(localStorage.getItem('coachingUser') || 'null');
+                  if (u && u.role === 'manager') return 'CM';
+                  return 'MH';
+                } catch (e) { return 'MH'; }
+              })()}
+            </div>
           </div>
         </header>
 
