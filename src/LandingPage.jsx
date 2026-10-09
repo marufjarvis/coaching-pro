@@ -1313,16 +1313,62 @@ function LandingPage({
       <section id="mentor" className="mentor-section">
         <div className="lp-container">
           <div className="mentor-card">
+            {/* Left Mentor Showcase Column with Grand Circular Glowing Ring */}
             <div className="mentor-photo-wrap">
-              <div className="mentor-photo-frame">
-                <img 
-                  src="/maruf1.png" 
-                  alt="মারুফ হোসেন" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', borderRadius: '20px' }} 
-                />
+              <div className="mentor-spotlight-box">
+                {/* Atmospheric Glow Halo */}
+                <div className="mentor-spotlight-halo"></div>
+
+                {/* Circular Avatar Frame with Glowing Ring */}
+                <div className="mentor-circle-frame-wrap">
+                  {/* Animated Rotating Conic Glow Ring */}
+                  <div className="mentor-circle-conic-glow"></div>
+
+                  {/* Secondary Ambient Pulse Ring */}
+                  <div className="mentor-circle-pulse-ring"></div>
+
+                  {/* Outer Gradient Border Ring */}
+                  <div className="mentor-circle-ring-border">
+                    <div className="mentor-circle-avatar-box">
+                      <img 
+                        src="/maruf1.png" 
+                        alt="মারুফ হোসেন - প্রধান প্রশিক্ষক ও মেন্টর" 
+                        className="mentor-circle-img"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Floating Badge 1: Top-Left Experience */}
+                  <div className="mentor-float-badge mentor-float-top-left">
+                    <Sparkles size={16} color="#34d399" />
+                    <span>১০+ বছর অভিজ্ঞতা</span>
+                  </div>
+
+                  {/* Floating Badge 2: Bottom-Right A+ Rating */}
+                  <div className="mentor-float-badge mentor-float-bottom-right">
+                    <Award size={16} color="#38bdf8" />
+                    <span>১,২০০+ সফল শিক্ষার্থী</span>
+                  </div>
+                </div>
               </div>
-              <h3 className="mentor-name">মারুফ হোসেন</h3>
-              <div className="mentor-designation">প্রধান প্রশিক্ষক ও মেন্টর, Maruf's ICT Care</div>
+
+              {/* Mentor Identification and Highlights */}
+              <div className="mentor-info-block">
+                <div className="mentor-name-row">
+                  <h3 className="mentor-name">মারুফ হোসেন</h3>
+                  <span className="mentor-verified-badge" title="সার্টিফাইড লিড ICT মেন্টর">
+                    <CheckCircle2 size={18} />
+                  </span>
+                </div>
+                <div className="mentor-designation">প্রধান প্রশিক্ষক ও প্রতিষ্ঠাতা — Maruf's ICT Care, কুষ্টিয়া</div>
+                <div className="mentor-skill-pills">
+                  <span className="mentor-pill-item">💻 সি প্রোগ্রামিং</span>
+                  <span className="mentor-pill-item">⚡ লজিক গেইট</span>
+                  <span className="mentor-pill-item">🌐 ওয়েব ডিজাইন</span>
+                  <span className="mentor-pill-item">🗄️ ডেটাবেজ</span>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -1341,7 +1387,7 @@ function LandingPage({
               <ul className="mentor-bullet-list">
                 <li className="mentor-bullet-item">
                   <CheckCircle2 size={18} color="#10b981" />
-                  <span>৫+ বছরের অভিজ্ঞ ICT শিক্ষক ও সফটওয়্যার প্রফেশনাল</span>
+                  <span>১০+ বছরের অভিজ্ঞ ICT শিক্ষক ও সফটওয়্যার প্রফেশনাল</span>
                 </li>
                 <li className="mentor-bullet-item">
                   <CheckCircle2 size={18} color="#10b981" />
