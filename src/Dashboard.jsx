@@ -17,6 +17,7 @@ import Notifications from './Notifications';
 import Staff from './Staff';
 import Settings from './Settings';
 import OnlineAdmission from './OnlineAdmission';
+import FrontendSettings from './FrontendSettings';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './dashboard.css';
@@ -248,6 +249,16 @@ function Dashboard({ onLogout }) {
             >
               <UserPlus size={18} />
               <span>{t.staff}</span>
+            </a>
+            <a 
+              href="#" 
+              className={`nav-item ${activeTab === 'frontend' ? 'active' : ''}`} 
+              onClick={(e) => { e.preventDefault(); setActiveTab('frontend'); setIsSidebarOpen(false); }}
+              title="ওয়েবসাইট ও ল্যান্ডিং পেজ কাস্টমাইজেশন"
+            >
+              <Globe size={18} />
+              <span>Frontend</span>
+              <span className="nav-badge nav-badge-blue" style={{ fontSize: '10px', padding: '1px 6px' }}>CMS</span>
             </a>
             <a 
               href="#" 
@@ -665,6 +676,8 @@ function Dashboard({ onLogout }) {
               <Staff lang={lang} />
             ) : activeTab === 'settings' ? (
               <Settings lang={lang} />
+            ) : activeTab === 'frontend' ? (
+              <FrontendSettings lang={lang} />
             ) : null}
           </div>
         )}

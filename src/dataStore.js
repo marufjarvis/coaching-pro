@@ -13,6 +13,7 @@ const STORAGE_KEYS = {
   EXPENSES: 'coachingExpenses',
   STAFF: 'coachingStaff',
   SETTINGS: 'coachingSettings',
+  FRONTEND: 'coachingFrontendSettings',
   PENDING_ADMISSIONS: 'pendingAdmissions',
   LANGUAGE: 'coachingLanguage',
   DISMISSED_GUIDE: 'coachingDismissedGuide'
@@ -23,6 +24,139 @@ const notifyChange = () => {
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('coaching-data-change'));
     window.dispatchEvent(new Event('storage'));
+  }
+};
+
+// Default Landing Page Frontend Settings
+export const defaultFrontendSettings = {
+  // 1. Notice Bar
+  notice: {
+    enabled: true,
+    badge: 'অফার ও আপডেট',
+    text: '📢 HSC 2026 ও 2025 ব্যাচে সীমিত আসনে নতুন ভর্তি চলছে! সরাসরি ক্লাসরুমে ল্যাব সাপোর্ট।',
+    btnText: 'অনলাইন ভর্তি আবেদন'
+  },
+
+  // 2. Branding & Tagline
+  brand: {
+    titlePrefix: "Maruf's",
+    titleHighlight: "ICT Care",
+    tagline: 'ICT মুখস্ত নয়, এসো শিখি',
+    logoUrl: '/logo.png'
+  },
+
+  // 3. Hero Section
+  hero: {
+    pillBadge: 'কুষ্টিয়ার সেরা HSC ICT লার্নিং সেন্টার',
+    titleLine1: 'HSC ICT-তে A+ নিশ্চিত করতে',
+    titleHighlight: 'মুখস্ত নয়, এসো প্রযুক্তির সাথে শিখি',
+    subtitle: 'তথ্য ও যোগাযোগ প্রযুক্তি মুখস্ত করার বিষয় নয়! সি প্রোগ্রামিং, এইচটিএমএল টেবিল, লজিক গেইট এবং ডেটাবেজ ম্যানেজমেন্ট প্রজেক্টর ও ল্যাপটপে হাতে-কলমে প্র্যাকটিক্যাল ল্যাবে আয়ত্ত করে বোর্ড পরীক্ষায় পূর্ণাঙ্গ ১০০ নম্বর অর্জন করো।',
+    tags: [
+      'সংখ্যা পদ্ধতি ও লজিক গেইট',
+      'HTML5 ওয়েব ডিজাইন',
+      'সি প্রোগ্রামিং ল্যাব',
+      'SQL ডেটাবেজ'
+    ],
+    primaryBtnText: 'লগইন করুন',
+    enrollBtnText: 'অনলাইন ভর্তি আবেদন',
+    stat1: { number: 98, suffix: '%+', label: 'বোর্ড পরীক্ষায় A+ পাশের হার' },
+    stat2: { number: 1200, suffix: '+', label: 'সফল ও সন্তুষ্ট শিক্ষার্থী' },
+    stat3: { number: 100, suffix: '%', label: 'প্র্যাকটিক্যাল ল্যাব সাপোর্ট' }
+  },
+
+  // 4. Mentor Hero Showcase & Badges
+  mentorHero: {
+    image: '/m2.png',
+    name: 'মারুফ হোসেন',
+    role: 'AI Engineer | Blockchain Developer | Quantum Expert',
+    badge1Title: 'মারুফ হোসেন',
+    badge1Sub: 'প্রধান শিক্ষক ও প্রতিষ্ঠাতা',
+    badge2Title: 'HSC ICT স্পেশালিস্ট',
+    badge2Sub: '১০+ বছর সফল পাঠদান',
+    badge3Title: '১,২০০+ শিক্ষার্থী A+',
+    badge3Sub: '৫.০ রেটিং',
+    badge4Title: 'সরাসরি ল্যাব ক্লাস',
+    badge4Sub: 'ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস',
+    chips: [
+      '🤖 Artificial Intelligence',
+      '⛓️ Blockchain & Web3',
+      '⚛️ Quantum Computing',
+      '🧠 Deep Learning & LLMs'
+    ]
+  },
+
+  // 5. Mentor Detailed Profile Section
+  mentorSection: {
+    pill: '"ICT মুখস্ত নয়, এসো শিখি"',
+    title: 'প্রযুক্তির যুগে মুখস্ত বিদ্যার কোনো স্থান নেই',
+    bio: '"এইচএসসি পরীক্ষার সবচেয়ে আধুনিক ও গুরুত্বপূর্ণ বিষয় হচ্ছে তথ্য ও যোগাযোগ প্রযুক্তি (ICT)। কিন্তু অনেকেই সঠিক গাইডলাইনের অভাবে সি প্রোগ্রামিং কিংবা লজিক গেইট মুখস্ত করার চেষ্টা করে হতাশ হয়। আমাদের ক্লাসরুমে প্রতিটি টপিক ল্যাপটপ এবং মাল্টিমিডিয়া স্ক্রিনে জীবন্ত করে তোলা হয়, যাতে প্রতিটি শিক্ষার্থী আত্মবিশ্বাসের সাথে A+ অর্জন করতে পারে।"',
+    bullets: [
+      '১০+ বছরের অভিজ্ঞ ICT শিক্ষক ও সফটওয়্যার প্রফেশনাল',
+      'সহজ ভাষায় লজিক বিল্ড-আপ ও প্রোগ্রামিং প্রশিক্ষণ কৌশল',
+      'যেকোনো পরামর্শ বা পড়ালেখা সংক্রান্ত প্রয়োজনে সার্বক্ষণিক মেন্টরিং'
+    ],
+    phone: '01723619524',
+    whatsapp: '8801723619524'
+  },
+
+  // 6. Testimonials
+  testimonials: [
+    {
+      id: 1,
+      name: 'তামিম ইকবাল',
+      college: 'কুষ্টিয়া সরকারি কলেজ',
+      score: 'ICT: ৯৮/১০০ (A+)',
+      text: 'ICT-এর ৩য় ও ৫ম অধ্যায় নিয়ে সবাই বলত মুখস্ত করা কঠিন। মারুফ স্যারের ক্লাসে ল্যাপটপে সি কোডিং এবং ডিজিটাল লজিক গেইট প্র্যাকটিক্যালি দেখার পর ভয় একদম কেটে যায়। ফাইনাল পরীক্ষায় ৯৮ পেয়েছি!'
+    },
+    {
+      id: 2,
+      name: 'সুমাইয়া ফারহানা',
+      college: 'কুষ্টিয়া সরকারি মহিলা কলেজ',
+      score: 'ICT: ৯৬/১০০ (A+)',
+      text: 'স্যারের কোচিংয়ের স্টুডেন্ট পোর্টালটা দারুণ! প্রতি ক্লাসের হাজিরা আর সাপ্তাহিক টেস্টের মার্কশীট মোবাইল দিয়েই দেখতে পেয়েছি। কোনো টপিক বুঝতে সমস্যা হলে স্যার আলাদা সময়ে বুঝিয়ে দিয়েছেন।'
+    },
+    {
+      id: 3,
+      name: 'আরিফুল ইসলাম',
+      college: 'কুষ্টিয়া ইসলামিয়া কলেজ',
+      score: 'ICT: ৯৫/১০০ (A+)',
+      text: 'অধ্যায় ৪-এর HTML টেবিল আর অধ্যায় ৬-এর SQL কুয়েরি ক্লাসেই সম্পূর্ণ প্র্যাকটিস করানো হয়েছিল। বিগত ১০ বছরের বোর্ড প্রশ্ন সলভ করায় পরীক্ষার হলে সব প্রশ্ন হুবহু কমন পেয়েছি।'
+    }
+  ],
+
+  // 7. FAQ Section
+  faq: [
+    {
+      id: 1,
+      question: 'আমার আগে কোনো কোডিং বা কম্পিউটার অভিজ্ঞতা নেই, আমি কি পারব?',
+      answer: 'অবশ্যই! আমাদের কোর্সটি একদম জিরো লেভেল থেকে শুরু হয়। অ্যালগরিদম, ফ্লোচার্ট ও সি প্রোগ্রামিং এত সহজ উদাহরণ দিয়ে ক্লাসে ল্যাপটপে দেখানো হয় যে কোনো পূর্ব অভিজ্ঞতা ছাড়াই যে কেউ সহজেই বুঝতে পারে।'
+    },
+    {
+      id: 2,
+      question: 'স্টুডেন্ট পোর্টালে লগইন করার নিয়ম কী?',
+      answer: 'কোনো জটিল আইডি বা পাসওয়ার্ডের ঝামেলা নেই। ভর্তি হওয়ার সময় যে মোবাইল নম্বর দিয়েছেন, সেই নম্বরটি দিয়েই উপরের "লগইন" বাটনে ক্লিক করে এক সেকেন্ডে লগইন করা যায়।'
+    },
+    {
+      id: 3,
+      question: 'কোনো ক্লাস মিস হয়ে গেলে কীভাবে কভার করব?',
+      answer: 'অসুস্থতা বা পরীক্ষার কারণে কোনো ক্লাস মিস হলে আমাদের স্যারের সাথে কথা বলে ব্যাকআপ ক্লাসে বা অন্য ব্যাচের সাথে ক্লাসটি ফ্রিতে কভার করে নেওয়া যায়।'
+    },
+    {
+      id: 4,
+      question: 'ভর্তি হতে চাইলে কীভাবে আবেদন করব?',
+      answer: 'আমাদের ওয়েবসাইটে "অনলাইন ভর্তি আবেদন" ফর্মে নাম ও ফোন নম্বর দিয়ে আবেদন করতে পারেন, অথবা কুষ্টিয়া সরকারি কলেজ গেটের ক্যাম্পাসে সরাসরি এসে ভর্তি হতে পারেন।'
+    }
+  ],
+
+  // 8. Contact & Footer
+  contact: {
+    address: 'কুষ্টিয়া সরকারি কলেজ গেট, কুষ্টিয়া, বাংলাদেশ',
+    phone: '+৮৮০ ১৭২৩-৬১৯৫২৪',
+    phoneRaw: '01723619524',
+    whatsapp: '8801723619524',
+    hours: 'সকাল ৭:০০ - রাত ৮:০০ (প্রতিদিন খোলা)',
+    copyright: "© 2026 Maruf's ICT Care. সর্বস্বত্ব সংরক্ষিত।",
+    footerTagline: 'Designed for HSC ICT Students • ICT মুখস্ত নয়, এসো শিখি'
   }
 };
 
@@ -574,6 +708,100 @@ export const dataStore = {
 
     api.updateSettings(updated).catch(e => console.error('[API Save Settings Error]', e));
     return updated;
+  },
+
+  // --- FRONTEND LANDING PAGE CMS SETTINGS ---
+  getFrontendSettings() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.FRONTEND);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (parsed && typeof parsed === 'object') {
+          return {
+            ...defaultFrontendSettings,
+            ...parsed,
+            notice: { ...defaultFrontendSettings.notice, ...(parsed.notice || {}) },
+            brand: { ...defaultFrontendSettings.brand, ...(parsed.brand || {}) },
+            hero: { 
+              ...defaultFrontendSettings.hero, 
+              ...(parsed.hero || {}),
+              tags: Array.isArray(parsed.hero?.tags) ? parsed.hero.tags : defaultFrontendSettings.hero.tags,
+              stat1: { ...defaultFrontendSettings.hero.stat1, ...(parsed.hero?.stat1 || {}) },
+              stat2: { ...defaultFrontendSettings.hero.stat2, ...(parsed.hero?.stat2 || {}) },
+              stat3: { ...defaultFrontendSettings.hero.stat3, ...(parsed.hero?.stat3 || {}) }
+            },
+            mentorHero: { 
+              ...defaultFrontendSettings.mentorHero, 
+              ...(parsed.mentorHero || {}),
+              chips: Array.isArray(parsed.mentorHero?.chips) ? parsed.mentorHero.chips : defaultFrontendSettings.mentorHero.chips
+            },
+            mentorSection: { 
+              ...defaultFrontendSettings.mentorSection, 
+              ...(parsed.mentorSection || {}),
+              bullets: Array.isArray(parsed.mentorSection?.bullets) ? parsed.mentorSection.bullets : defaultFrontendSettings.mentorSection.bullets
+            },
+            contact: { ...defaultFrontendSettings.contact, ...(parsed.contact || {}) },
+            testimonials: Array.isArray(parsed.testimonials) && parsed.testimonials.length > 0 
+              ? parsed.testimonials 
+              : defaultFrontendSettings.testimonials,
+            faq: Array.isArray(parsed.faq) && parsed.faq.length > 0 
+              ? parsed.faq 
+              : defaultFrontendSettings.faq
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('[dataStore] Failed to read frontend settings', e);
+    }
+    return JSON.parse(JSON.stringify(defaultFrontendSettings));
+  },
+
+  saveFrontendSettings(newSettings) {
+    const current = this.getFrontendSettings();
+    const updated = {
+      ...current,
+      ...newSettings,
+      notice: { ...current.notice, ...(newSettings.notice || {}) },
+      brand: { ...current.brand, ...(newSettings.brand || {}) },
+      hero: { 
+        ...current.hero, 
+        ...(newSettings.hero || {}),
+        tags: Array.isArray(newSettings.hero?.tags) ? newSettings.hero.tags : current.hero.tags,
+        stat1: { ...current.hero.stat1, ...(newSettings.hero?.stat1 || {}) },
+        stat2: { ...current.hero.stat2, ...(newSettings.hero?.stat2 || {}) },
+        stat3: { ...current.hero.stat3, ...(newSettings.hero?.stat3 || {}) }
+      },
+      mentorHero: { 
+        ...current.mentorHero, 
+        ...(newSettings.mentorHero || {}),
+        chips: Array.isArray(newSettings.mentorHero?.chips) ? newSettings.mentorHero.chips : current.mentorHero.chips
+      },
+      mentorSection: { 
+        ...current.mentorSection, 
+        ...(newSettings.mentorSection || {}),
+        bullets: Array.isArray(newSettings.mentorSection?.bullets) ? newSettings.mentorSection.bullets : current.mentorSection.bullets
+      },
+      contact: { ...current.contact, ...(newSettings.contact || {}) },
+      testimonials: Array.isArray(newSettings.testimonials) ? newSettings.testimonials : current.testimonials,
+      faq: Array.isArray(newSettings.faq) ? newSettings.faq : current.faq
+    };
+    try {
+      localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(updated));
+    } catch (e) {
+      console.error('[dataStore] Failed to save frontend settings', e);
+    }
+    notifyChange();
+    return updated;
+  },
+
+  resetFrontendSettings() {
+    try {
+      localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(defaultFrontendSettings));
+    } catch (e) {
+      console.error('[dataStore] Failed to reset frontend settings', e);
+    }
+    notifyChange();
+    return JSON.parse(JSON.stringify(defaultFrontendSettings));
   },
 
   // --- ONLINE ADMISSIONS ---

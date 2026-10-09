@@ -20,20 +20,18 @@ import {
   Users, 
   BookOpen, 
   Award, 
-  Play, 
   Lightbulb, 
   Binary, 
   MessageCircle, 
   Menu, 
   X, 
-  ExternalLink,
-  ChevronRight,
-  Laptop,
-  Layers,
-  FileCheck,
-  Send,
+  ChevronRight, 
+  Laptop, 
+  FileCheck, 
+  Send, 
   Lock
 } from 'lucide-react';
+import { dataStore } from './dataStore';
 import './landing-page.css';
 
 // Bengali numeral formatter
@@ -125,6 +123,32 @@ function LandingPage({
   const handleOpenLogin = onGoToLogin || onGoToStudentLogin || onGoToAdminLogin;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
+  // Dynamic Frontend CMS Data
+  const [frontendData, setFrontendData] = useState(() => dataStore.getFrontendSettings());
+
+  useEffect(() => {
+    const handleSync = () => {
+      setFrontendData(dataStore.getFrontendSettings());
+    };
+    window.addEventListener('coaching-data-change', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('coaching-data-change', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, []);
+
+  const {
+    notice = {},
+    brand = {},
+    hero = {},
+    mentorHero = {},
+    mentorSection = {},
+    testimonials: customTestimonials,
+    faq: customFaq,
+    contact = {}
+  } = frontendData || {};
+
   // Expanded Chapter Modal/Details
   const [selectedChapter, setSelectedChapter] = useState(null);
 
@@ -285,27 +309,29 @@ function LandingPage({
     featured: i === 0
   })) : defaultBatches;
 
-  // Student Testimonials
-  const testimonials = [
-    {
-      name: 'তামিম ইকবাল',
-      college: 'কুষ্টিয়া সরকারি কলেজ',
-      score: 'ICT: ৯৮/১০০ (A+)',
-      text: 'ICT-এর ৩য় ও ৫ম অধ্যায় নিয়ে সবাই বলত মুখস্ত করা কঠিন। মারুফ স্যারের ক্লাসে ল্যাপটপে সি কোডিং এবং ডিজিটাল লজিক গেইট প্র্যাকটিক্যালি দেখার পর ভয় একদম কেটে যায়। ফাইনাল পরীক্ষায় ৯৮ পেয়েছি!'
-    },
-    {
-      name: 'সুমাইয়া ফারহানা',
-      college: 'কুষ্টিয়া সরকারি মহিলা কলেজ',
-      score: 'ICT: ৯৬/১০০ (A+)',
-      text: 'স্যারের কোচিংয়ের স্টুডেন্ট পোর্টালটা দারুণ! প্রতি ক্লাসের হাজিরা আর সাপ্তাহিক টেস্টের মার্কশীট মোবাইল দিয়েই দেখতে পেয়েছি। কোনো টপিক বুঝতে সমস্যা হলে স্যার আলাদা সময়ে বুঝিয়ে দিয়েছেন।'
-    },
-    {
-      name: 'আরিফুল ইসলাম',
-      college: 'কুষ্টিয়া ইসলামিয়া কলেজ',
-      score: 'ICT: ৯৫/১০০ (A+)',
-      text: 'অধ্যায় ৪-এর HTML টেবিল আর অধ্যায় ৬-এর SQL কুয়েরি ক্লাসেই সম্পূর্ণ প্র্যাকটিস করানো হয়েছিল। বিগত ১০ বছরের বোর্ড প্রশ্ন সলভ করায় পরীক্ষার হলে সব প্রশ্ন হুবহু কমন পেয়েছি।'
-    }
-  ];
+  // Student Testimonials (Dynamic with fallback)
+  const testimonials = (customTestimonials && customTestimonials.length > 0)
+    ? customTestimonials
+    : [
+        {
+          name: 'তামিম ইকবাল',
+          college: 'কুষ্টিয়া সরকারি কলেজ',
+          score: 'ICT: ৯৮/১০০ (A+)',
+          text: 'ICT-এর ৩য় ও ৫ম অধ্যায় নিয়ে সবাই বলত মুখস্ত করা কঠিন। মারুফ স্যারের ক্লাসে ল্যাপটপে সি কোডিং এবং ডিজিটাল লজিক গেইট প্র্যাকটিক্যালি দেখার পর ভয় একদম কেটে যায়। ফাইনাল পরীক্ষায় ৯৮ পেয়েছি!'
+        },
+        {
+          name: 'সুমাইয়া ফারহানা',
+          college: 'কুষ্টিয়া সরকারি মহিলা কলেজ',
+          score: 'ICT: ৯৬/১০০ (A+)',
+          text: 'স্যারের কোচিংয়ের স্টুডেন্ট পোর্টালটা দারুণ! প্রতি ক্লাসের হাজিরা আর সাপ্তাহিক টেস্টের মার্কশীট মোবাইল দিয়েই দেখতে পেয়েছি। কোনো টপিক বুঝতে সমস্যা হলে স্যার আলাদা সময়ে বুঝিয়ে দিয়েছেন।'
+        },
+        {
+          name: 'আরিফুল ইসলাম',
+          college: 'কুষ্টিয়া ইসলামিয়া কলেজ',
+          score: 'ICT: ৯৫/১০০ (A+)',
+          text: 'অধ্যায় ৪-এর HTML টেবিল আর অধ্যায় ৬-এর SQL কুয়েরি ক্লাসেই সম্পূর্ণ প্র্যাকটিস করানো হয়েছিল। বিগত ১০ বছরের বোর্ড প্রশ্ন সলভ করায় পরীক্ষার হলে সব প্রশ্ন হুবহু কমন পেয়েছি।'
+        }
+      ];
 
   return (
     <div className="landing-page">
@@ -317,15 +343,17 @@ function LandingPage({
       {/* STICKY HEADER SECTION (Top Announcement Bar + Navigation Bar) */}
       <header className="landing-header-sticky">
         {/* 1. TOP NOTICE BAR */}
-        <div className="top-announcement-bar">
-          <div className="top-announcement-content">
-            <span className="announcement-badge">অফার ও আপডেট</span>
-            <span>📢 HSC 2026 ও 2025 ব্যাচে সীমিত আসনে নতুন ভর্তি চলছে! সরাসরি ক্লাসরুমে ল্যাব সাপোর্ট।</span>
-            <span className="announcement-link" onClick={onGoToEnroll}>
-              অনলাইন ভর্তি আবেদন <ArrowRight size={14} />
-            </span>
+        {notice.enabled !== false && (
+          <div className="top-announcement-bar">
+            <div className="top-announcement-content">
+              <span className="announcement-badge">{notice.badge || 'অফার ও আপডেট'}</span>
+              <span>{notice.text || '📢 HSC 2026 ও 2025 ব্যাচে সীমিত আসনে নতুন ভর্তি চলছে! সরাসরি ক্লাসরুমে ল্যাব সাপোর্ট।'}</span>
+              <span className="announcement-link" onClick={onGoToEnroll}>
+                {notice.btnText || 'অনলাইন ভর্তি আবেদন'} <ArrowRight size={14} />
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* 2. NAVIGATION BAR */}
         <nav className="landing-nav">
@@ -333,13 +361,13 @@ function LandingPage({
             {/* Logo & Branding */}
             <div className="nav-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
               <div className="nav-logo-box">
-                <img src="/logo.png" alt="Maruf's ICT Care Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+                <img src={brand.logoUrl || "/logo.png"} alt="Maruf's ICT Care Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
               </div>
               <div>
                 <div className="nav-brand-title">
-                  Maruf's <span>ICT Care</span>
+                  {brand.titlePrefix || "Maruf's"} <span>{brand.titleHighlight || "ICT Care"}</span>
                 </div>
-                <div className="nav-brand-sub">ICT মুখস্ত নয়, এসো শিখি</div>
+                <div className="nav-brand-sub">{brand.tagline || "ICT মুখস্ত নয়, এসো শিখি"}</div>
               </div>
             </div>
 
@@ -461,24 +489,24 @@ function LandingPage({
             {/* Left Hero Content */}
             <div>
               <div className="hero-pill-badge">
-                <Sparkles size={14} /> কুষ্টিয়ার সেরা HSC ICT লার্নিং সেন্টার
+                <Sparkles size={14} /> {hero.pillBadge || 'কুষ্টিয়ার সেরা HSC ICT লার্নিং সেন্টার'}
               </div>
 
               <h1 className="hero-title">
-                HSC ICT-তে A+ নিশ্চিত করতে <br />
-                <span className="hero-title-highlight">মুখস্ত নয়, এসো প্রযুক্তির সাথে শিখি</span>
+                {hero.titleLine1 || 'HSC ICT-তে A+ নিশ্চিত করতে'} <br />
+                <span className="hero-title-highlight">{hero.titleHighlight || 'মুখস্ত নয়, এসো প্রযুক্তির সাথে শিখি'}</span>
               </h1>
 
               <p className="hero-subtitle">
-                তথ্য ও যোগাযোগ প্রযুক্তি মুখস্ত করার বিষয় নয়! সি প্রোগ্রামিং, এইচটিএমএল টেবিল, লজিক গেইট এবং ডেটাবেজ ম্যানেজমেন্ট প্রজেক্টর ও ল্যাপটপে হাতে-কলমে প্র্যাকটিক্যাল ল্যাবে আয়ত্ত করে বোর্ড পরীক্ষায় পূর্ণাঙ্গ ১০০ নম্বর অর্জন করো।
+                {hero.subtitle || 'তথ্য ও যোগাযোগ প্রযুক্তি মুখস্ত করার বিষয় নয়! সি প্রোগ্রামিং, এইচটিএমএল টেবিল, লজিক গেইট এবং ডেটাবেজ ম্যানেজমেন্ট প্রজেক্টর ও ল্যাপটপে হাতে-কলমে প্র্যাকটিক্যাল ল্যাবে আয়ত্ত করে বোর্ড পরীক্ষায় পূর্ণাঙ্গ ১০০ নম্বর অর্জন করো।'}
               </p>
 
               {/* Subject Chapter Highlights Row */}
               <div className="hero-badges-row">
-                <span className="hero-badge-tag"><Binary size={15} color="#f59e0b" /> সংখ্যা পদ্ধতি ও লজিক গেইট</span>
-                <span className="hero-badge-tag"><Code size={15} color="#10b981" /> HTML5 ওয়েব ডিজাইন</span>
-                <span className="hero-badge-tag"><Terminal size={15} color="#ec4899" /> সি প্রোগ্রামিং ল্যাব</span>
-                <span className="hero-badge-tag"><Database size={15} color="#6366f1" /> SQL ডেটাবেজ</span>
+                <span className="hero-badge-tag"><Binary size={15} color="#f59e0b" /> {hero.tags?.[0] || 'সংখ্যা পদ্ধতি ও লজিক গেইট'}</span>
+                <span className="hero-badge-tag"><Code size={15} color="#10b981" /> {hero.tags?.[1] || 'HTML5 ওয়েব ডিজাইন'}</span>
+                <span className="hero-badge-tag"><Terminal size={15} color="#ec4899" /> {hero.tags?.[2] || 'সি প্রোগ্রামিং ল্যাব'}</span>
+                <span className="hero-badge-tag"><Database size={15} color="#6366f1" /> {hero.tags?.[3] || 'SQL ডেটাবেজ'}</span>
               </div>
 
               {/* Primary Action Buttons */}
@@ -490,7 +518,7 @@ function LandingPage({
                   id="btn-hero-login"
                 >
                   <Lock size={19} strokeWidth={2.5} />
-                  লগইন করুন
+                  {hero.primaryBtnText || 'লগইন করুন'}
                   <ArrowRight size={18} />
                 </button>
 
@@ -501,7 +529,7 @@ function LandingPage({
                   id="btn-hero-enroll"
                 >
                   <Sparkles size={18} />
-                  অনলাইন ভর্তি আবেদন
+                  {hero.enrollBtnText || 'অনলাইন ভর্তি আবেদন'}
                 </button>
               </div>
 
@@ -509,21 +537,21 @@ function LandingPage({
               <div className="hero-stats-row">
                 <div className="stat-item">
                   <h3>
-                    <AnimatedCounter end={98} suffix="%+" duration={1800} />
+                    <AnimatedCounter end={hero.stat1?.number ?? 98} suffix={hero.stat1?.suffix || '%+'} duration={1800} />
                   </h3>
-                  <p>বোর্ড পরীক্ষায় A+ পাশের হার</p>
+                  <p>{hero.stat1?.label || 'বোর্ড পরীক্ষায় A+ পাশের হার'}</p>
                 </div>
                 <div className="stat-item">
                   <h3>
-                    <AnimatedCounter end={1200} suffix="+" duration={1800} />
+                    <AnimatedCounter end={hero.stat2?.number ?? 1200} suffix={hero.stat2?.suffix || '+'} duration={1800} />
                   </h3>
-                  <p>সফল ও সন্তুষ্ট শিক্ষার্থী</p>
+                  <p>{hero.stat2?.label || 'সফল ও সন্তুষ্ট শিক্ষার্থী'}</p>
                 </div>
                 <div className="stat-item">
                   <h3>
-                    <AnimatedCounter end={100} suffix="%" duration={1800} />
+                    <AnimatedCounter end={hero.stat3?.number ?? 100} suffix={hero.stat3?.suffix || '%'} duration={1800} />
                   </h3>
-                  <p>প্র্যাকটিক্যাল ল্যাব সাপোর্ট</p>
+                  <p>{hero.stat3?.label || 'প্র্যাকটিক্যাল ল্যাব সাপোর্ট'}</p>
                 </div>
               </div>
             </div>
@@ -537,8 +565,8 @@ function LandingPage({
                 {/* Natural Image Presentation (No Circle Frame, No Card Box) */}
                 <div className="hero-natural-img-box">
                   <img 
-                    src="/m2.png" 
-                    alt="মারুফ হোসেন - HSC ICT মেন্টর" 
+                    src={mentorHero.image || "/m2.png"} 
+                    alt={`${mentorHero.name || 'মারুফ হোসেন'} - HSC ICT মেন্টর`} 
                     className="hero-mentor-natural-img"
                     loading="eager"
                   />
@@ -550,8 +578,8 @@ function LandingPage({
                     <Award size={18} />
                   </div>
                   <div>
-                    <div className="float-badge-title">মারুফ হোসেন</div>
-                    <div className="float-badge-sub">প্রধান শিক্ষক ও প্রতিষ্ঠাতা</div>
+                    <div className="float-badge-title">{mentorHero.badge1Title || 'মারুফ হোসেন'}</div>
+                    <div className="float-badge-sub">{mentorHero.badge1Sub || 'প্রধান শিক্ষক ও প্রতিষ্ঠাতা'}</div>
                   </div>
                 </div>
 
@@ -561,8 +589,8 @@ function LandingPage({
                     <Sparkles size={18} />
                   </div>
                   <div>
-                    <div className="float-badge-title">HSC ICT স্পেশালিস্ট</div>
-                    <div className="float-badge-sub">১০+ বছর সফল পাঠদান</div>
+                    <div className="float-badge-title">{mentorHero.badge2Title || 'HSC ICT স্পেশালিস্ট'}</div>
+                    <div className="float-badge-sub">{mentorHero.badge2Sub || '১০+ বছর সফল পাঠদান'}</div>
                   </div>
                 </div>
 
@@ -572,9 +600,9 @@ function LandingPage({
                     <GraduationCap size={18} />
                   </div>
                   <div>
-                    <div className="float-badge-title">১,২০০+ শিক্ষার্থী A+</div>
+                    <div className="float-badge-title">{mentorHero.badge3Title || '১,২০০+ শিক্ষার্থী A+'}</div>
                     <div className="float-badge-rating">
-                      <span>★★★★★</span> <small>৫.০ রেটিং</small>
+                      <span>★★★★★</span> <small>{mentorHero.badge3Sub || '৫.০ রেটিং'}</small>
                     </div>
                   </div>
                 </div>
@@ -583,27 +611,31 @@ function LandingPage({
                 <div className="hero-float-badge hero-float-bottom-right">
                   <span className="pulse-indicator"></span>
                   <div>
-                    <div className="float-badge-title" style={{ color: '#34d399' }}>সরাসরি ল্যাব ক্লাস</div>
-                    <div className="float-badge-sub">ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস</div>
+                    <div className="float-badge-title" style={{ color: '#34d399' }}>{mentorHero.badge4Title || 'সরাসরি ল্যাব ক্লাস'}</div>
+                    <div className="float-badge-sub">{mentorHero.badge4Sub || 'ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস'}</div>
                   </div>
                 </div>
 
                 {/* Open Mentor Credentials (Directly on Page Background, No Boxy Card) */}
                 <div className="hero-mentor-credentials">
                   <div className="mentor-cred-name-row">
-                    <span className="mentor-cred-name">মারুফ হোসেন</span>
+                    <span className="mentor-cred-name">{mentorHero.name || 'মারুফ হোসেন'}</span>
                     <span className="mentor-verified-badge" title="সার্টিফাইড ICT শিক্ষক">
                       <CheckCircle2 size={18} color="#38bdf8" />
                     </span>
                   </div>
                   <div className="mentor-cred-role">
-                    AI Engineer | Blockchain Developer | Quantum Expert
+                    {mentorHero.role || 'AI Engineer | Blockchain Developer | Quantum Expert'}
                   </div>
                   <div className="mentor-cred-chips">
-                    <span className="mentor-chip chip-ai">🤖 Artificial Intelligence</span>
-                    <span className="mentor-chip chip-blockchain">⛓️ Blockchain & Web3</span>
-                    <span className="mentor-chip chip-quantum">⚛️ Quantum Computing</span>
-                    <span className="mentor-chip chip-ml">🧠 Deep Learning & LLMs</span>
+                    {(mentorHero.chips && mentorHero.chips.length > 0 ? mentorHero.chips : [
+                      '🤖 Artificial Intelligence',
+                      '⛓️ Blockchain & Web3',
+                      '⚛️ Quantum Computing',
+                      '🧠 Deep Learning & LLMs'
+                    ]).map((chip, chipIdx) => (
+                      <span key={chipIdx} className="mentor-chip">{chip}</span>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1045,8 +1077,8 @@ function LandingPage({
 
                 <div className="mentor-natural-img-wrapper">
                   <img 
-                    src="/m2.png" 
-                    alt="মারুফ হোসেন - প্রধান প্রশিক্ষক ও মেন্টর" 
+                    src={mentorHero.image || "/m2.png"} 
+                    alt={`${mentorHero.name || 'মারুফ হোসেন'} - প্রধান প্রশিক্ষক ও মেন্টর`} 
                     className="mentor-natural-img"
                     loading="lazy"
                   />
@@ -1055,72 +1087,74 @@ function LandingPage({
                 {/* Floating Badge 1: Top-Left Experience */}
                 <div className="mentor-float-badge mentor-float-top-left">
                   <Sparkles size={16} color="#34d399" />
-                  <span>১০+ বছর অভিজ্ঞতা</span>
+                  <span>{mentorHero.badge2Sub || '১০+ বছর অভিজ্ঞতা'}</span>
                 </div>
 
                 {/* Floating Badge 2: Bottom-Right A+ Rating */}
                 <div className="mentor-float-badge mentor-float-bottom-right">
                   <Award size={16} color="#38bdf8" />
-                  <span>১,২০০+ সফল শিক্ষার্থী</span>
+                  <span>{mentorHero.badge3Title || '১,২০০+ সফল শিক্ষার্থী'}</span>
                 </div>
               </div>
 
               {/* Mentor Identification and Highlights */}
               <div className="mentor-info-block">
                 <div className="mentor-name-row">
-                  <h3 className="mentor-name">মারুফ হোসেন</h3>
+                  <h3 className="mentor-name">{mentorHero.name || 'মারুফ হোসেন'}</h3>
                   <span className="mentor-verified-badge" title="সার্টিফাইড লিড ICT মেন্টর">
                     <CheckCircle2 size={18} />
                   </span>
                 </div>
-                <div className="mentor-designation">AI Engineer | Blockchain Developer | Quantum Expert</div>
+                <div className="mentor-designation">{mentorHero.role || 'AI Engineer | Blockchain Developer | Quantum Expert'}</div>
                 <div className="mentor-skill-pills">
-                  <span className="mentor-pill-item">🤖 Artificial Intelligence</span>
-                  <span className="mentor-pill-item">⛓️ Blockchain & Web3</span>
-                  <span className="mentor-pill-item">⚛️ Quantum Computing</span>
-                  <span className="mentor-pill-item">🧠 Deep Learning & LLMs</span>
+                  {(mentorHero.chips && mentorHero.chips.length > 0 ? mentorHero.chips : [
+                    '🤖 Artificial Intelligence',
+                    '⛓️ Blockchain & Web3',
+                    '⚛️ Quantum Computing',
+                    '🧠 Deep Learning & LLMs'
+                  ]).map((chip, chipIdx) => (
+                    <span key={chipIdx} className="mentor-pill-item">{chip}</span>
+                  ))}
                 </div>
               </div>
             </div>
 
             <div>
               <div className="hero-pill-badge" style={{ marginBottom: '1rem' }}>
-                <Lightbulb size={14} /> "ICT মুখস্ত নয়, এসো শিখি"
+                <Lightbulb size={14} /> {mentorSection.pill || '"ICT মুখস্ত নয়, এসো শিখি"'}
               </div>
 
               <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: '#ffffff', marginBottom: '1rem', lineHeight: 1.3 }}>
-                প্রযুক্তির যুগে মুখস্ত বিদ্যার কোনো স্থান নেই
+                {mentorSection.title || 'প্রযুক্তির যুগে মুখস্ত বিদ্যার কোনো স্থান নেই'}
               </h2>
 
               <p className="mentor-bio">
-                "এইচএসসি পরীক্ষার সবচেয়ে আধুনিক ও গুরুত্বপূর্ণ বিষয় হচ্ছে তথ্য ও যোগাযোগ প্রযুক্তি (ICT)। কিন্তু অনেকেই সঠিক গাইডলাইনের অভাবে সি প্রোগ্রামিং কিংবা লজিক গেইট মুখস্ত করার চেষ্টা করে হতাশ হয়। আমাদের ক্লাসরুমে প্রতিটি টপিক ল্যাপটপ এবং মাল্টিমিডিয়া স্ক্রিনে জীবন্ত করে তোলা হয়, যাতে প্রতিটি শিক্ষার্থী আত্মবিশ্বাসের সাথে A+ অর্জন করতে পারে।"
+                {mentorSection.bio || '"এইচএসসি পরীক্ষার সবচেয়ে আধুনিক ও গুরুত্বপূর্ণ বিষয় হচ্ছে তথ্য ও যোগাযোগ প্রযুক্তি (ICT)। কিন্তু অনেকেই সঠিক গাইডলাইনের অভাবে সি প্রোগ্রামিং কিংবা লজিক গেইট মুখস্ত করার চেষ্টা করে হতাশ হয়। আমাদের ক্লাসরুমে প্রতিটি টপিক ল্যাপটপ এবং মাল্টিমিডিয়া স্ক্রিনে জীবন্ত করে তোলা হয়, যাতে প্রতিটি শিক্ষার্থী আত্মবিশ্বাসের সাথে A+ অর্জন করতে পারে।"'}
               </p>
 
               <ul className="mentor-bullet-list">
-                <li className="mentor-bullet-item">
-                  <CheckCircle2 size={18} color="#10b981" />
-                  <span>১০+ বছরের অভিজ্ঞ ICT শিক্ষক ও সফটওয়্যার প্রফেশনাল</span>
-                </li>
-                <li className="mentor-bullet-item">
-                  <CheckCircle2 size={18} color="#10b981" />
-                  <span>সহজ ভাষায় লজিক বিল্ড-আপ ও প্রোগ্রামিং প্রশিক্ষণ কৌশল</span>
-                </li>
-                <li className="mentor-bullet-item">
-                  <CheckCircle2 size={18} color="#10b981" />
-                  <span>যেকোনো পরামর্শ বা পড়ালেখা সংক্রান্ত প্রয়োজনে সার্বক্ষণিক মেন্টরিং</span>
-                </li>
+                {(mentorSection.bullets && mentorSection.bullets.length > 0 ? mentorSection.bullets : [
+                  '১০+ বছরের অভিজ্ঞ ICT শিক্ষক ও সফটওয়্যার প্রফেশনাল',
+                  'সহজ ভাষায় লজিক বিল্ড-আপ ও প্রোগ্রামিং প্রশিক্ষণ কৌশল',
+                  'যেকোনো পরামর্শ বা পড়ালেখা সংক্রান্ত প্রয়োজনে সার্বক্ষণিক মেন্টরিং'
+                ]).map((bullet, bulletIdx) => (
+                  <li key={bulletIdx} className="mentor-bullet-item">
+                    <CheckCircle2 size={18} color="#10b981" />
+                    <span>{bullet}</span>
+                  </li>
+                ))}
               </ul>
 
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
                 <a 
-                  href="tel:01723619524" 
+                  href={`tel:${mentorSection.phone || '01723619524'}`} 
                   className="btn-hero-primary"
                   style={{ textDecoration: 'none' }}
                 >
                   <Phone size={18} /> সরাসরি স্যারের সাথে কথা বলুন
                 </a>
                 <a 
-                  href="https://wa.me/8801723619524" 
+                  href={`https://wa.me/${mentorSection.whatsapp || '8801723619524'}`} 
                   target="_blank" 
                   rel="noreferrer"
                   className="btn-hero-enroll"
@@ -1146,41 +1180,33 @@ function LandingPage({
           </div>
 
           <div className="faq-grid">
-            <div className="faq-card">
-              <h4 className="faq-q">
-                <span style={{ color: '#38bdf8' }}>Q.</span> আমার আগে কোনো কোডিং বা কম্পিউটার অভিজ্ঞতা নেই, আমি কি পারব?
-              </h4>
-              <p className="faq-a">
-                অবশ্যই! আমাদের কোর্সটি একদম জিরো লেভেল থেকে শুরু হয়। অ্যালগরিদম, ফ্লোচার্ট ও সি প্রোগ্রামিং এত সহজ উদাহরণ দিয়ে ক্লাসে ল্যাপটপে দেখানো হয় যে কোনো পূর্ব অভিজ্ঞতা ছাড়াই যে কেউ সহজেই বুঝতে পারে।
-              </p>
-            </div>
-
-            <div className="faq-card">
-              <h4 className="faq-q">
-                <span style={{ color: '#38bdf8' }}>Q.</span> স্টুডেন্ট পোর্টালে লগইন করার নিয়ম কী?
-              </h4>
-              <p className="faq-a">
-                কোনো জটিল আইডি বা পাসওয়ার্ডের ঝামেলা নেই। ভর্তি হওয়ার সময় যে মোবাইল নম্বর দিয়েছেন, সেই নম্বরটি দিয়েই উপরের "শিক্ষার্থী পোর্টাল" বাটনে ক্লিক করে এক সেকেন্ডে লগইন করা যায়।
-              </p>
-            </div>
-
-            <div className="faq-card">
-              <h4 className="faq-q">
-                <span style={{ color: '#38bdf8' }}>Q.</span> কোনো ক্লাস মিস হয়ে গেলে কীভাবে কভার করব?
-              </h4>
-              <p className="faq-a">
-                অসুস্থতা বা পরীক্ষার কারণে কোনো ক্লাস মিস হলে আমাদের স্যারের সাথে কথা বলে ব্যাকআপ ক্লাসে বা অন্য ব্যাচের সাথে ক্লাসটি ফ্রিতে কভার করে নেওয়া যায়।
-              </p>
-            </div>
-
-            <div className="faq-card">
-              <h4 className="faq-q">
-                <span style={{ color: '#38bdf8' }}>Q.</span> ভর্তি হতে চাইলে কীভাবে আবেদন করব?
-              </h4>
-              <p className="faq-a">
-                আমাদের ওয়েবসাইটে "অনলাইন ভর্তি আবেদন" ফর্মে নাম ও ফোন নম্বর দিয়ে আবেদন করতে পারেন, অথবা কুষ্টিয়া সরকারি কলেজ গেটের ক্যাম্পাসে সরাসরি এসে ভর্তি হতে পারেন।
-              </p>
-            </div>
+            {(customFaq && customFaq.length > 0 ? customFaq : [
+              {
+                question: 'আমার আগে কোনো কোডিং বা কম্পিউটার অভিজ্ঞতা নেই, আমি কি পারব?',
+                answer: 'অবশ্যই! আমাদের কোর্সটি একদম জিরো লেভেল থেকে শুরু হয়। অ্যালগরিদম, ফ্লোচার্ট ও সি প্রোগ্রামিং এত সহজ উদাহরণ দিয়ে ক্লাসে ল্যাপটপে দেখানো হয় যে কোনো পূর্ব অভিজ্ঞতা ছাড়াই যে কেউ সহজেই বুঝতে পারে।'
+              },
+              {
+                question: 'স্টুডেন্ট পোর্টালে লগইন করার নিয়ম কী?',
+                answer: 'কোনো জটিল আইডি বা পাসওয়ার্ডের ঝামেলা নেই। ভর্তি হওয়ার সময় যে মোবাইল নম্বর দিয়েছেন, সেই নম্বরটি দিয়েই উপরের "লগইন" বাটনে ক্লিক করে এক সেকেন্ডে লগইন করা যায়।'
+              },
+              {
+                question: 'কোনো ক্লাস মিস হয়ে গেলে কীভাবে কভার করব?',
+                answer: 'অসুস্থতা বা পরীক্ষার কারণে কোনো ক্লাস মিস হলে আমাদের স্যারের সাথে কথা বলে ব্যাকআপ ক্লাসে বা অন্য ব্যাচের সাথে ক্লাসটি ফ্রিতে কভার করে নেওয়া যায়।'
+              },
+              {
+                question: 'ভর্তি হতে চাইলে কীভাবে আবেদন করব?',
+                answer: 'আমাদের ওয়েবসাইটে "অনলাইন ভর্তি আবেদন" ফর্মে নাম ও ফোন নম্বর দিয়ে আবেদন করতে পারেন, অথবা কুষ্টিয়া সরকারি কলেজ গেটের ক্যাম্পাসে সরাসরি এসে ভর্তি হতে পারেন।'
+              }
+            ]).map((faqItem, fIdx) => (
+              <div key={faqItem.id || fIdx} className="faq-card">
+                <h4 className="faq-q">
+                  <span style={{ color: '#38bdf8' }}>Q.</span> {faqItem.question}
+                </h4>
+                <p className="faq-a">
+                  {faqItem.answer}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1217,10 +1243,10 @@ function LandingPage({
               </button>
 
               <a 
-                href="tel:01723619524" 
+                href={`tel:${contact.phoneRaw || mentorSection.phone || '01723619524'}`} 
                 className="btn-cta-call"
               >
-                <Phone size={18} /> হটলাইন: 01723619524
+                <Phone size={18} /> হটলাইন: {contact.phoneRaw || mentorSection.phone || '01723619524'}
               </a>
             </div>
           </div>
@@ -1235,13 +1261,13 @@ function LandingPage({
             <div>
               <div className="nav-brand" style={{ marginBottom: '1rem' }}>
                 <div className="nav-logo-box">
-                  <img src="/logo.png" alt="Maruf's ICT Care Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+                  <img src={brand.logoUrl || "/logo.png"} alt="Maruf's ICT Care Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
                 </div>
                 <div>
                   <div className="nav-brand-title">
-                    Maruf's <span>ICT</span> Care
+                    {brand.titlePrefix || "Maruf's"} <span>{brand.titleHighlight || "ICT Care"}</span>
                   </div>
-                  <div className="nav-brand-sub">ICT মুখস্ত নয়, এসো শিখি</div>
+                  <div className="nav-brand-sub">{brand.tagline || "ICT মুখস্ত নয়, এসো শিখি"}</div>
                 </div>
               </div>
               <p style={{ fontSize: '0.88rem', color: '#94a3b8', lineHeight: 1.6, marginBottom: '1.25rem' }}>
@@ -1249,7 +1275,7 @@ function LandingPage({
               </p>
               <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <a 
-                  href="https://wa.me/8801723619524" 
+                  href={`https://wa.me/${contact.whatsapp || '8801723619524'}`} 
                   target="_blank" 
                   rel="noreferrer"
                   style={{
@@ -1318,25 +1344,25 @@ function LandingPage({
               <h4 className="footer-col-title">যোগাযোগ ও ঠিকানা</h4>
               <div className="footer-contact-item">
                 <MapPin size={18} color="#38bdf8" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>কুষ্টিয়া সরকারি কলেজ গেট, কুষ্টিয়া, বাংলাদেশ</span>
+                <span>{contact.address || 'কুষ্টিয়া সরকারি কলেজ গেট, কুষ্টিয়া, বাংলাদেশ'}</span>
               </div>
               <div className="footer-contact-item">
                 <Phone size={18} color="#10b981" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>+৮৮০ ১৭২৩-৬১৯৫২৪</span>
+                <span>{contact.phone || '+৮৮০ ১৭২৩-৬১৯৫২৪'}</span>
               </div>
               <div className="footer-contact-item">
                 <Clock size={18} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>সকাল ৭:০০ - রাত ৮:০০ (প্রতিদিন খোলা)</span>
+                <span>{contact.hours || 'সকাল ৭:০০ - রাত ৮:০০ (প্রতিদিন খোলা)'}</span>
               </div>
             </div>
           </div>
 
           <div className="footer-bottom-bar">
             <div>
-              © 2026 Maruf's ICT Care. সর্বস্বত্ব সংরক্ষিত।
+              {contact.copyright || "© 2026 Maruf's ICT Care. সর্বস্বত্ব সংরক্ষিত।"}
             </div>
             <div style={{ color: '#64748b', fontSize: '0.8rem' }}>
-              Designed for HSC ICT Students • ICT মুখস্ত নয়, এসো শিখি
+              {contact.footerTagline || 'Designed for HSC ICT Students • ICT মুখস্ত নয়, এসো শিখি'}
             </div>
           </div>
         </div>
