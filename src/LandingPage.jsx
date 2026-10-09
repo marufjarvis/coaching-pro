@@ -436,16 +436,16 @@ function LandingPage({
     const seatLimit = Number(b.seatLimit) || 50;
     const seatsRemaining = Math.max(0, seatLimit - enrolledCount);
 
-    // Dynamic seat status text
-    let seatsStatusText = b.seatsLeft;
-    if (!seatsStatusText) {
-      if (seatsRemaining === 0 || b.status === 'ব্যাচ পূর্ণ' || b.status === 'Batch Full') {
-        seatsStatusText = isEn ? 'Batch Full' : 'আসন পূর্ণ';
-      } else if (seatsRemaining <= 10) {
-        seatsStatusText = isEn ? `${seatsRemaining} seats left` : `${seatsRemaining}টি আসন খালি`;
-      } else {
-        seatsStatusText = isEn ? 'Limited Seats' : 'সীমিত আসন';
-      }
+    // Dynamic seat status text based on real enrolled students
+    let seatsStatusText = '';
+    if (seatsRemaining === 0 || b.status === 'ব্যাচ পূর্ণ' || b.status === 'Batch Full') {
+      seatsStatusText = isEn ? 'Batch Full' : 'আসন পূর্ণ';
+    } else if (enrolledCount > 0) {
+      seatsStatusText = isEn 
+        ? `${seatsRemaining} seats left (${enrolledCount} enrolled)` 
+        : `${seatsRemaining}টি আসন খালি (${enrolledCount} জন ভর্তি)`;
+    } else {
+      seatsStatusText = b.seatsLeft || (isEn ? 'Limited Seats' : 'সীমিত আসন');
     }
 
     const enrollUrl = b.enrollUrl || dataStore.getEnrollmentUrl(title);

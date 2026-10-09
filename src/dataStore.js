@@ -1254,18 +1254,15 @@ export const dataStore = {
   // --- STUDENTS ---
   getStudents() {
     try {
-      const isSeeded = localStorage.getItem('coaching_demo_20_seeded_v2');
-      if (!isSeeded) {
-        localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(defaultDemoStudents));
-        localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(defaultDemoPayments));
-        localStorage.setItem('coaching_demo_20_seeded_v2', 'true');
-        return defaultDemoStudents;
-      }
       const data = localStorage.getItem(STORAGE_KEYS.STUDENTS);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length >= 20) return parsed;
       }
+      // Force seed the 20 demo students (10 Course @ 4000 BDT, 10 Monthly @ 500 BDT)
+      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(defaultDemoStudents));
+      localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(defaultDemoPayments));
+      return defaultDemoStudents;
     } catch (e) {}
     return defaultDemoStudents;
   },
@@ -1347,8 +1344,10 @@ export const dataStore = {
       const data = localStorage.getItem(STORAGE_KEYS.PAYMENTS);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length >= 15) return parsed;
       }
+      localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(defaultDemoPayments));
+      return defaultDemoPayments;
     } catch (e) {}
     return defaultDemoPayments;
   },
