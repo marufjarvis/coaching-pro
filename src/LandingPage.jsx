@@ -504,7 +504,7 @@ function LandingPage({
                 {/* Atmospheric Glow Halo */}
                 <div className="hero-circle-ambient-halo"></div>
 
-                {/* Natural Image Presentation (No Circle Frame) */}
+                {/* Natural Image Presentation (No Circle Frame, No Card Box) */}
                 <div className="hero-natural-img-box">
                   <img 
                     src="/m2.png" 
@@ -512,8 +512,6 @@ function LandingPage({
                     className="hero-mentor-natural-img"
                     loading="eager"
                   />
-                  {/* Subtle Natural Bottom Fade */}
-                  <div className="hero-natural-bottom-fade"></div>
                 </div>
 
                 {/* Floating Badge 1: Top-Right Verified Lead Instructor */}
@@ -1310,8 +1308,6 @@ function LandingPage({
                     className="mentor-natural-img"
                     loading="lazy"
                   />
-                  {/* Smooth Bottom Fade */}
-                  <div className="mentor-natural-bottom-fade"></div>
                 </div>
 
                 {/* Floating Badge 1: Top-Left Experience */}
