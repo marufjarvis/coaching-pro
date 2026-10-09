@@ -848,17 +848,13 @@ export const dataStore = {
     return updated;
   },
 
-  // --- FRONTEND LANDING PAGE CMS SETTINGS (Bilingual EN/BN) ---
-  getFrontendSettings(lang) {
-    const activeLang = (lang || this.getLanguage()) === 'EN' ? 'EN' : 'BN';
-    const defaults = activeLang === 'EN' ? defaultFrontendSettings_EN : defaultFrontendSettings_BN;
-    const storageKey = activeLang === 'EN' ? STORAGE_KEYS.FRONTEND_EN : STORAGE_KEYS.FRONTEND_BN;
-
+  // --- FRONTEND LANDING PAGE CMS SETTINGS (Single Unified Content Store) ---
+  getFrontendSettings() {
+    const defaults = defaultFrontendSettings_BN;
     try {
-      let data = localStorage.getItem(storageKey);
-      // Fallback for BN if user saved settings before under legacy STORAGE_KEYS.FRONTEND
-      if (!data && activeLang === 'BN') {
-        data = localStorage.getItem(STORAGE_KEYS.FRONTEND);
+      let data = localStorage.getItem(STORAGE_KEYS.FRONTEND);
+      if (!data) {
+        data = localStorage.getItem(STORAGE_KEYS.FRONTEND_BN);
       }
 
       if (data) {
@@ -903,10 +899,8 @@ export const dataStore = {
     return JSON.parse(JSON.stringify(defaults));
   },
 
-  saveFrontendSettings(newSettings, lang) {
-    const activeLang = (lang || this.getLanguage()) === 'EN' ? 'EN' : 'BN';
-    const storageKey = activeLang === 'EN' ? STORAGE_KEYS.FRONTEND_EN : STORAGE_KEYS.FRONTEND_BN;
-    const current = this.getFrontendSettings(activeLang);
+  saveFrontendSettings(newSettings) {
+    const current = this.getFrontendSettings();
     const updated = {
       ...current,
       ...newSettings,
@@ -935,10 +929,8 @@ export const dataStore = {
       faq: Array.isArray(newSettings.faq) ? newSettings.faq : current.faq
     };
     try {
-      localStorage.setItem(storageKey, JSON.stringify(updated));
-      if (activeLang === 'BN') {
-        localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(updated));
-      }
+      localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(updated));
+      localStorage.setItem(STORAGE_KEYS.FRONTEND_BN, JSON.stringify(updated));
     } catch (e) {
       console.error('[dataStore] Failed to save frontend settings', e);
     }
@@ -946,15 +938,11 @@ export const dataStore = {
     return updated;
   },
 
-  resetFrontendSettings(lang) {
-    const activeLang = (lang || this.getLanguage()) === 'EN' ? 'EN' : 'BN';
-    const storageKey = activeLang === 'EN' ? STORAGE_KEYS.FRONTEND_EN : STORAGE_KEYS.FRONTEND_BN;
-    const defaults = activeLang === 'EN' ? defaultFrontendSettings_EN : defaultFrontendSettings_BN;
+  resetFrontendSettings() {
+    const defaults = defaultFrontendSettings_BN;
     try {
-      localStorage.setItem(storageKey, JSON.stringify(defaults));
-      if (activeLang === 'BN') {
-        localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(defaults));
-      }
+      localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(defaults));
+      localStorage.setItem(STORAGE_KEYS.FRONTEND_BN, JSON.stringify(defaults));
     } catch (e) {
       console.error('[dataStore] Failed to reset frontend settings', e);
     }

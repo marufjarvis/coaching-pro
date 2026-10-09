@@ -31,26 +31,20 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
   const { lang, setLang } = useTranslation(propLang);
   const isEn = lang === 'EN';
 
-  const [settings, setSettings] = useState(() => dataStore.getFrontendSettings(lang));
+  const [settings, setSettings] = useState(() => dataStore.getFrontendSettings());
   const [activeSubTab, setActiveSubTab] = useState('notice');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [isSaved, setIsSaved] = useState(true);
 
-  // Sync settings when language changes
-  useEffect(() => {
-    setSettings(dataStore.getFrontendSettings(lang));
-    setIsSaved(true);
-  }, [lang]);
-
   // Sync if updated from elsewhere
   useEffect(() => {
     const handleSync = () => {
-      setSettings(dataStore.getFrontendSettings(lang));
+      setSettings(dataStore.getFrontendSettings());
     };
     window.addEventListener('coaching-data-change', handleSync);
     return () => window.removeEventListener('coaching-data-change', handleSync);
-  }, [lang]);
+  }, []);
 
   const triggerToast = (msg) => {
     setToastMessage(msg);
@@ -60,7 +54,7 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
 
   // Save changes
   const handleSave = () => {
-    dataStore.saveFrontendSettings(settings, lang);
+    dataStore.saveFrontendSettings(settings);
     setIsSaved(true);
     triggerToast(isEn ? 'Landing page settings saved successfully!' : 'ল্যান্ডিং পেজ সেটিংস সফলভাবে সংরক্ষিত হয়েছে!');
   };
@@ -72,7 +66,7 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
       : 'আপনি কি নিশ্চিত যে ল্যান্ডিং পেজের সকল ডিফল্ট লেখা পুনরুদ্ধার করতে চান? পূর্বের পরিবর্তনগুলো মুছে যাবে।';
     
     if (window.confirm(confirmText)) {
-      const def = dataStore.resetFrontendSettings(lang);
+      const def = dataStore.resetFrontendSettings();
       setSettings(def);
       setIsSaved(true);
       triggerToast(isEn ? 'Restored default settings!' : 'ডিফল্ট তথ্য সফলভাবে পুনরুদ্ধার করা হয়েছে!');

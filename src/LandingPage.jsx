@@ -128,26 +128,20 @@ function LandingPage({
   const { lang, setLang } = useTranslation();
   const isEn = lang === 'EN';
 
-  // Dynamic Frontend CMS Data (syncs with language selection)
-  const [frontendData, setFrontendData] = useState(() => dataStore.getFrontendSettings(lang));
-
-  useEffect(() => {
-    setFrontendData(dataStore.getFrontendSettings(lang));
-  }, [lang]);
+  // Dynamic Frontend CMS Data (Single Unified Content Store)
+  const [frontendData, setFrontendData] = useState(() => dataStore.getFrontendSettings());
 
   useEffect(() => {
     const handleSync = () => {
-      setFrontendData(dataStore.getFrontendSettings(lang));
+      setFrontendData(dataStore.getFrontendSettings());
     };
     window.addEventListener('coaching-data-change', handleSync);
     window.addEventListener('storage', handleSync);
-    window.addEventListener('coaching-language-change', handleSync);
     return () => {
       window.removeEventListener('coaching-data-change', handleSync);
       window.removeEventListener('storage', handleSync);
-      window.removeEventListener('coaching-language-change', handleSync);
     };
-  }, [lang]);
+  }, []);
 
   const {
     notice = {},
