@@ -7,7 +7,7 @@ import { Phone, ArrowRight, ArrowLeft, AlertCircle, Sparkles, Smartphone, Shield
 import { api } from './api';
 import { dataStore } from './dataStore';
 
-function StudentLogin({ onStudentLogin, onSwitchToAdmin }) {
+function StudentLogin({ onStudentLogin, onSwitchToAdmin, onBackToHome }) {
   const [phone, setPhone] = useState('01723619524');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -48,21 +48,32 @@ function StudentLogin({ onStudentLogin, onSwitchToAdmin }) {
   return (
     <div className="layout">
       <header className="header">
-        <div className="logo-container">
+        <div className="logo-container" onClick={() => { if (onBackToHome) onBackToHome(); else window.location.hash = '#/'; }} style={{ cursor: 'pointer' }} title="মূল ওয়েবসাইটে যান">
           <div className="logo-icon">
             <img src="/logo.png" alt="Maruf's ICT Care Logo" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
           </div>
           <span className="logo-text">Maruf's ICT Care</span>
         </div>
-        <button 
-          type="button" 
-          onClick={onSwitchToAdmin} 
-          className="back-link"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
-        >
-          <ShieldCheck size={16} strokeWidth={2.5} />
-          এডমিন পোর্টাল
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button 
+            type="button" 
+            onClick={() => { if (onBackToHome) onBackToHome(); else window.location.hash = '#/'; }} 
+            className="back-link"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', color: '#64748b' }}
+          >
+            <ArrowLeft size={16} strokeWidth={2.5} />
+            মূল ওয়েবসাইট
+          </button>
+          <button 
+            type="button" 
+            onClick={onSwitchToAdmin} 
+            className="back-link"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+          >
+            <ShieldCheck size={16} strokeWidth={2.5} />
+            এডমিন পোর্টাল
+          </button>
+        </div>
       </header>
 
       <main className="main-content">

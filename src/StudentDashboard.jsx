@@ -21,7 +21,8 @@ import {
   TrendingUp,
   MapPin,
   Calendar,
-  Wallet
+  Wallet,
+  Globe
 } from 'lucide-react';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
@@ -128,6 +129,27 @@ function StudentDashboard({ student: initialStudent, onLogout, lang: propLang })
         </div>
 
         <div className="student-dash-header-actions">
+          <button 
+            type="button" 
+            onClick={() => { window.location.hash = '#/'; }}
+            style={{
+              background: 'rgba(2, 132, 199, 0.1)',
+              border: '1px solid rgba(2, 132, 199, 0.3)',
+              color: '#0284c7',
+              borderRadius: '8px',
+              padding: '0.45rem 0.85rem',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}
+            title="কোচিং এর মূল ওয়েবসাইট দেখুন"
+          >
+            <Globe size={15} /> <span>মূল ওয়েবসাইট</span>
+          </button>
+
           <div className="student-dash-user-badge">
             <div className="student-dash-user-avatar">
               {student.name ? student.name.substring(0, 2).toUpperCase() : 'ST'}

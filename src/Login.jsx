@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Smartphone, ArrowLeft, AlertCircle, ShieldCheck, GraduationCap } from 'lucide-react';
 import { api } from './api';
 
-function Login({ onLogin, onSwitchToStudent }) {
+function Login({ onLogin, onSwitchToStudent, onBackToHome }) {
   const [email, setEmail] = useState('marufjarvis@gmail.com');
   const [password, setPassword] = useState('12345678');
   const [showPassword, setShowPassword] = useState(false);
@@ -44,21 +44,32 @@ function Login({ onLogin, onSwitchToStudent }) {
   return (
     <div className="layout">
       <header className="header">
-        <div className="logo-container">
+        <div className="logo-container" onClick={() => { if (onBackToHome) onBackToHome(); else window.location.hash = '#/'; }} style={{ cursor: 'pointer' }} title="মূল ওয়েবসাইটে যান">
           <div className="logo-icon">
             <img src="/logo.png" alt="Maruf's ICT Care Logo" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
           </div>
           <span className="logo-text">Maruf's ICT Care</span>
         </div>
-        <button 
-          type="button" 
-          onClick={onSwitchToStudent} 
-          className="back-link"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
-        >
-          <GraduationCap size={16} strokeWidth={2.5} />
-          শিক্ষার্থী পোর্টাল
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <button 
+            type="button" 
+            onClick={() => { if (onBackToHome) onBackToHome(); else window.location.hash = '#/'; }} 
+            className="back-link"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', color: '#64748b' }}
+          >
+            <ArrowLeft size={16} strokeWidth={2.5} />
+            মূল ওয়েবসাইট
+          </button>
+          <button 
+            type="button" 
+            onClick={onSwitchToStudent} 
+            className="back-link"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+          >
+            <GraduationCap size={16} strokeWidth={2.5} />
+            শিক্ষার্থী পোর্টাল
+          </button>
+        </div>
       </header>
 
       <main className="main-content">

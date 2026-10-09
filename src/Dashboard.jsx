@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, BookOpen, Users, Link, CalendarCheck, FileText, UserPlus, 
   CreditCard, Inbox, Receipt, BarChart3, Bell, Settings as SettingsIcon, Crown, 
-  Search, LogOut, Download, Calendar, ArrowRight, Wallet, UserCheck, AlertCircle, X, CheckCircle2, Smartphone, Menu, Printer
+  Search, LogOut, Download, Calendar, ArrowRight, Wallet, UserCheck, AlertCircle, X, CheckCircle2, Smartphone, Menu, Printer, Globe
 } from 'lucide-react';
 import Batches from './Batches';
 import Students from './Students';
@@ -259,6 +259,15 @@ function Dashboard({ onLogout }) {
           </div>
 
           <div className="header-right">
+            <button 
+              type="button"
+              onClick={() => { window.location.hash = '#/'; }} 
+              className="btn-outline"
+              style={{ padding: '0.4rem 0.75rem', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '5px', borderColor: '#0284c7', color: '#0284c7', fontWeight: 600 }}
+              title="কোচিং এর মূল ওয়েবসাইট দেখুন"
+            >
+              <Globe size={15} /> {lang === 'EN' ? 'View Website' : 'মূল ওয়েবসাইট'}
+            </button>
             <div className="lang-toggle">
               <span className={`lang ${lang === 'EN' ? 'active' : ''}`} onClick={() => handleLangToggle('EN')}>EN</span>
               <span className={`lang ${lang === 'BN' ? 'active' : ''}`} onClick={() => handleLangToggle('BN')}>BN</span>
