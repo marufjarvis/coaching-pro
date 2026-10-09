@@ -19,7 +19,6 @@ function AdmissionForm({ batch: initialBatch }) {
     name: '',
     phone: '',
     guardianPhone: '',
-    college: '',
     selectedBatch: initialBatch || (batchOptions.length > 0 ? batchOptions[0] : 'HSC 2026 রেগুলার ব্যাচ')
   });
   const [submitted, setSubmitted] = useState(false);
@@ -44,7 +43,7 @@ function AdmissionForm({ batch: initialBatch }) {
       name: formData.name.trim(),
       phone: formData.phone.trim(),
       guardianPhone: formData.guardianPhone.trim(),
-      college: formData.college.trim(),
+      college: '',
       preferredBatch: finalBatch,
       batch: finalBatch,
       date: new Date().toLocaleDateString('en-GB')
@@ -152,16 +151,6 @@ function AdmissionForm({ batch: initialBatch }) {
               required
               value={formData.name}
               onChange={(e) => setFormData({...formData, name: e.target.value})}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>কলেজের নাম</label>
-            <input 
-              type="text" 
-              placeholder="যেমন: কুষ্টিয়া সরকারি কলেজ"
-              value={formData.college}
-              onChange={(e) => setFormData({...formData, college: e.target.value})}
             />
           </div>
           
