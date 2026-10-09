@@ -100,13 +100,14 @@ function App() {
   // --- NAVIGATION HELPER SHORTCUTS ---
   const navigateTo = (hash) => {
     window.location.hash = hash;
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   // --- ROUTING LOGIC ---
 
   // 1. Online Admission Form (#/enroll or #/enroll/<batchName>)
   if (currentHash.startsWith('#/enroll')) {
-    const rawBatch = currentHash.replace('#/enroll/', '').replace('#/enroll', '');
+    const rawBatch = currentHash.replace(/^#\/enroll\/?/, '');
     const batchName = rawBatch ? decodeURIComponent(rawBatch) : '';
     return <AdmissionForm batch={batchName} />;
   }

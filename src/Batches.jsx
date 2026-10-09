@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Plus, Layers, Users, MoreVertical, X, Pencil, Trash2, Clock } from 'lucide-react';
+import { BookOpen, Plus, Layers, Users, MoreVertical, X, Pencil, Trash2, Clock, Link as LinkIcon, Check, ExternalLink } from 'lucide-react';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './batches.css';
@@ -17,6 +17,7 @@ function Batches({ lang: propLang }) {
   const { t } = useTranslation(propLang);
   const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [students, setStudents] = useState(() => dataStore.getStudents());
+  const [copiedBatchId, setCopiedBatchId] = useState(null);
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newBatchForm, setNewBatchForm] = useState(defaultBatchState);
@@ -161,6 +162,29 @@ function Batches({ lang: propLang }) {
                   </button>
                   {openDropdown === idx && (
                     <div className="batch-dropdown">
+                      <button 
+                        className="dropdown-item" 
+                        onClick={() => {
+                          const url = batch.enrollUrl || dataStore.getEnrollmentUrl(batch.name);
+                          navigator.clipboard.writeText(url);
+                          setCopiedBatchId(batch.id || batch.name);
+                          setTimeout(() => setCopiedBatchId(null), 2000);
+                          setOpenDropdown(null);
+                        }}
+                      >
+                        {copiedBatchId === (batch.id || batch.name) ? <Check size={14} color="#16a34a" /> : <LinkIcon size={14} />}
+                        {copiedBatchId === (batch.id || batch.name) ? 'লিংক কপি হয়েছে!' : 'ভর্তি লিংক কপি করুন'}
+                      </button>
+                      <a 
+                        href={batch.enrollUrl || dataStore.getEnrollmentUrl(batch.name)} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="dropdown-item"
+                        style={{ textDecoration: 'none' }}
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        <ExternalLink size={14} /> ভর্তি ফর্ম দেখুন
+                      </a>
                       <button className="dropdown-item" onClick={() => { handleEditClick(batch); setOpenDropdown(null); }}>
                         <Pencil size={14} /> {t.edit}
                       </button>

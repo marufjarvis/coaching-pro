@@ -1,7 +1,7 @@
 // src/AdmissionForm.jsx
 // Public Admission Form for HSC ICT Coaching
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './admission.css';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { dataStore } from './dataStore';
@@ -23,6 +23,16 @@ function AdmissionForm({ batch: initialBatch }) {
     selectedBatch: initialBatch || (batchOptions.length > 0 ? batchOptions[0] : 'HSC 2026 রেগুলার ব্যাচ')
   });
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  useEffect(() => {
+    if (initialBatch) {
+      setFormData(prev => ({ ...prev, selectedBatch: initialBatch }));
+    }
+  }, [initialBatch]);
 
   const isFormValid = formData.name.trim() !== '' && formData.phone.trim() !== '' && formData.guardianPhone.trim() !== '';
 
@@ -111,6 +121,25 @@ function AdmissionForm({ batch: initialBatch }) {
         <p className="admission-subtitle">
           Maruf's ICT Care &middot; {formData.selectedBatch || 'নতুন শিক্ষাবর্ষ'}
         </p>
+        
+        {formData.selectedBatch && (
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            backgroundColor: '#ecfdf5',
+            border: '1px solid #a7f3d0',
+            color: '#065f46',
+            padding: '4px 12px',
+            borderRadius: '20px',
+            fontSize: '0.82rem',
+            fontWeight: '600',
+            marginTop: '0.5rem'
+          }}>
+            <CheckCircle2 size={15} color="#10b981" />
+            <span>নির্বাচিত ব্যাচ: <strong>{formData.selectedBatch}</strong></span>
+          </div>
+        )}
         
         <div className="admission-divider"></div>
         

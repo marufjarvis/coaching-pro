@@ -17,6 +17,7 @@ const STORAGE_KEYS = {
   FRONTEND_BN: 'coachingFrontendSettings_BN',
   FRONTEND_EN: 'coachingFrontendSettings_EN',
   PENDING_ADMISSIONS: 'pendingAdmissions',
+  ENROLLMENT_LINKS: 'coachingEnrollmentLinks',
   LANGUAGE: 'coachingLanguage',
   DISMISSED_GUIDE: 'coachingDismissedGuide'
 };
@@ -652,28 +653,43 @@ export const dataStore = {
   },
 
   // --- BATCHES ---
+  getEnrollmentUrl(batchName) {
+    if (!batchName) return '';
+    const origin = typeof window !== 'undefined' && window.location && window.location.origin 
+      ? window.location.origin 
+      : 'http://localhost:5173';
+    return `${origin}/#/enroll/${encodeURIComponent(batchName.trim())}`;
+  },
+
   getBatches() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.BATCHES);
       if (data) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((b, idx) => ({
-            id: b.id || `BAT-${Math.random().toString().slice(2, 6)}`,
-            name: typeof b === 'string' ? b.trim() : (b.name ? b.name.trim() : ''),
-            days: (b && b.days) || (idx % 2 === 0 ? 'শনি, সোম, বুধ' : 'রবি, মঙ্গল, বৃহস্পতি'),
-            time: (b && b.time) || (idx === 0 ? 'সকাল ৮:০০ ও বিকাল ৪:০০ (২টি স্লট)' : 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)'),
-            tagline: (b && b.tagline) || 'সম্পূর্ণ সিলেবাস বেসিক থেকে বোর্ড A+ প্রস্তুতি',
-            seatLimit: Number(b && b.seatLimit) || 50,
-            seatsLeft: (b && b.seatsLeft) || '',
-            status: (b && b.status) || 'ভর্তি চলছে',
-            coverage: (b && b.coverage) || 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
-            featured: b && b.featured !== undefined ? Boolean(b.featured) : (idx === 0)
-          }));
+          return parsed.map((b, idx) => {
+            const name = typeof b === 'string' ? b.trim() : (b.name ? b.name.trim() : '');
+            return {
+              id: b.id || `BAT-${Math.random().toString().slice(2, 6)}`,
+              name,
+              enrollUrl: this.getEnrollmentUrl(name),
+              days: (b && b.days) || (idx % 2 === 0 ? 'শনি, সোম, বুধ' : 'রবি, মঙ্গল, বৃহস্পতি'),
+              time: (b && b.time) || (idx === 0 ? 'সকাল ৮:০০ ও বিকাল ৪:০০ (২টি স্লট)' : 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)'),
+              tagline: (b && b.tagline) || 'সম্পূর্ণ সিলেবাস বেসিক থেকে বোর্ড A+ প্রস্তুতি',
+              seatLimit: Number(b && b.seatLimit) || 50,
+              seatsLeft: (b && b.seatsLeft) || '',
+              status: (b && b.status) || 'ভর্তি চলছে',
+              coverage: (b && b.coverage) || 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
+              featured: b && b.featured !== undefined ? Boolean(b.featured) : (idx === 0)
+            };
+          });
         }
       }
     } catch (e) {}
-    return DEFAULT_INITIAL_BATCHES;
+    return DEFAULT_INITIAL_BATCHES.map(b => ({
+      ...b,
+      enrollUrl: this.getEnrollmentUrl(b.name)
+    }));
   },
 
   saveBatches(batches) {
@@ -758,10 +774,91 @@ export const dataStore = {
 
   deleteBatch(id) {
     const batches = this.getBatches();
+    const target = batches.find(b => b.id === id || b.name === id);
     const updated = batches.filter(b => b.id !== id && b.name !== id);
     this.saveBatches(updated);
 
+    if (target) {
+      this.deleteEnrollmentLink(target.id);
+      this.deleteEnrollmentLink(target.name);
+    }
+
     api.deleteBatch(id).catch(e => console.error('[API Batch Delete Error]', e));
+  },
+
+  // --- ENROLLMENT LINKS ---
+  getEnrollmentLinks() {
+    const batches = this.getBatches();
+    const origin = typeof window !== 'undefined' && window.location && window.location.origin 
+      ? window.location.origin 
+      : 'http://localhost:5173';
+
+    let customLinks = [];
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.ENROLLMENT_LINKS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) customLinks = parsed;
+      }
+    } catch (e) {}
+
+    // Every batch in dataStore ALWAYS has an auto-generated active enrollment link
+    const autoLinks = batches.map((b, idx) => ({
+      id: b.id || `link-${idx}-${b.name}`,
+      batch: b.name,
+      url: `${origin}/#/enroll/${encodeURIComponent(b.name)}`,
+      isAuto: true
+    }));
+
+    // Merge: maintain unique batch entries, keeping batch autoLinks primary
+    const map = new Map();
+    autoLinks.forEach(l => map.set(l.batch, l));
+    customLinks.forEach(c => {
+      if (c && c.batch && !map.has(c.batch)) {
+        map.set(c.batch, c);
+      }
+    });
+
+    return Array.from(map.values());
+  },
+
+  saveEnrollmentLinks(links) {
+    localStorage.setItem(STORAGE_KEYS.ENROLLMENT_LINKS, JSON.stringify(links));
+    notifyChange();
+  },
+
+  createEnrollmentLink(batchName) {
+    if (!batchName || !batchName.trim()) return null;
+    const origin = typeof window !== 'undefined' && window.location && window.location.origin 
+      ? window.location.origin 
+      : 'http://localhost:5173';
+    const name = batchName.trim();
+    const url = `${origin}/#/enroll/${encodeURIComponent(name)}`;
+    const current = this.getEnrollmentLinks();
+    const existing = current.find(l => l.batch === name);
+    if (existing) return existing;
+
+    const newLink = {
+      id: `link-${Date.now()}`,
+      batch: name,
+      url,
+      isAuto: false
+    };
+    const updated = [newLink, ...current];
+    this.saveEnrollmentLinks(updated);
+    return newLink;
+  },
+
+  deleteEnrollmentLink(id) {
+    let current = [];
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.ENROLLMENT_LINKS);
+      if (saved) current = JSON.parse(saved);
+      if (!Array.isArray(current)) current = [];
+    } catch (e) {}
+    const filtered = current.filter(l => l.id !== id && l.batch !== id);
+    localStorage.setItem(STORAGE_KEYS.ENROLLMENT_LINKS, JSON.stringify(filtered));
+    notifyChange();
   },
 
   // --- STUDENTS ---

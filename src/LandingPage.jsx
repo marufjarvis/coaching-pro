@@ -448,10 +448,13 @@ function LandingPage({
       }
     }
 
+    const enrollUrl = b.enrollUrl || dataStore.getEnrollmentUrl(title);
+
     return {
       id: b.id || `batch-${i}`,
       title: title,
       name: title,
+      enrollLink: enrollUrl,
       tagline: b.tagline || (isEn ? 'Complete syllabus from basics to board A+ preparation' : 'সম্পূর্ণ সিলেবাস বেসিক থেকে বোর্ড A+ প্রস্তুতি'),
       days: b.days || (i % 2 === 0 ? (isEn ? 'Sat, Mon, Wed' : 'শনি, সোম, বুধ') : (isEn ? 'Sun, Tue, Thu' : 'রবি, মঙ্গল, বৃহস্পতি')),
       time: b.time || (i === 0 ? (isEn ? '8:00 AM & 4:00 PM (2 slots)' : 'সকাল ৮:০০ ও বিকাল ৪:০০ (২টি স্লট)') : (isEn ? '9:00 AM & 5:00 PM (2 slots)' : 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)')),
@@ -1266,13 +1269,22 @@ function LandingPage({
                   </li>
                 </ul>
 
-                <button 
-                  type="button" 
-                  onClick={() => onGoToEnroll(batch.title)}
+                <a 
+                  href={batch.enrollLink || `#/enroll/${encodeURIComponent(batch.name || batch.title)}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (onGoToEnroll) {
+                      onGoToEnroll(batch.name || batch.title);
+                    } else {
+                      window.location.hash = `#/enroll/${encodeURIComponent(batch.name || batch.title)}`;
+                    }
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                  }}
                   className="btn-batch-enroll"
+                  style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                 >
                   <Sparkles size={16} /> {isEn ? 'Apply for Admission in This Batch' : 'এই ব্যাচে ভর্তি আবেদন করুন'}
-                </button>
+                </a>
               </div>
             ))}
           </div>

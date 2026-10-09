@@ -7,38 +7,28 @@ import './enrollment.css';
 function EnrollmentLinks({ lang: propLang }) {
   const { t } = useTranslation(propLang);
   const [batches, setBatches] = useState(() => dataStore.getBatches());
-  const [links, setLinks] = useState(() => {
-    try {
-      const saved = localStorage.getItem('coachingEnrollmentLinks');
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return [
-      { id: 1, batch: 'Sat-6:45am', url: `${window.location.origin}/#/enroll/Sat-6:45am` },
-      { id: 2, batch: 'Sun-8am', url: `${window.location.origin}/#/enroll/Sun-8am` }
-    ];
-  });
+  const [links, setLinks] = useState(() => dataStore.getEnrollmentLinks());
 
   const [selectedBatch, setSelectedBatch] = useState('');
   const [copiedId, setCopiedId] = useState(null);
 
   useEffect(() => {
-    const handleSync = () => setBatches(dataStore.getBatches());
+    const handleSync = () => {
+      setBatches(dataStore.getBatches());
+      setLinks(dataStore.getEnrollmentLinks());
+    };
     window.addEventListener('coaching-data-change', handleSync);
-    return () => window.removeEventListener('coaching-data-change', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('coaching-data-change', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
   }, []);
 
   const handleCreateLink = () => {
     if (!selectedBatch) return;
-    
-    const newLink = {
-      id: Date.now(),
-      batch: selectedBatch,
-      url: `${window.location.origin}/#/enroll/${encodeURIComponent(selectedBatch)}`
-    };
-    
-    const updated = [newLink, ...links];
-    setLinks(updated);
-    localStorage.setItem('coachingEnrollmentLinks', JSON.stringify(updated));
+    dataStore.createEnrollmentLink(selectedBatch);
+    setLinks(dataStore.getEnrollmentLinks());
     setSelectedBatch('');
   };
 
@@ -49,9 +39,8 @@ function EnrollmentLinks({ lang: propLang }) {
   };
 
   const handleDelete = (id) => {
-    const updated = links.filter(link => link.id !== id);
-    setLinks(updated);
-    localStorage.setItem('coachingEnrollmentLinks', JSON.stringify(updated));
+    dataStore.deleteEnrollmentLink(id);
+    setLinks(dataStore.getEnrollmentLinks());
   };
 
   return (
