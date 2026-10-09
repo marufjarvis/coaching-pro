@@ -266,26 +266,6 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
         </div>
 
         <div className="frontend-header-actions">
-          {/* Direct Language Switcher in Header */}
-          <div className="lang-toggle" style={{ marginRight: '0.35rem' }}>
-            <span 
-              className={`lang ${lang === 'EN' ? 'active' : ''}`} 
-              onClick={() => setLang('EN')}
-              style={{ cursor: 'pointer' }}
-              title="Switch to English"
-            >
-              EN
-            </span>
-            <span 
-              className={`lang ${lang === 'BN' ? 'active' : ''}`} 
-              onClick={() => setLang('BN')}
-              style={{ cursor: 'pointer' }}
-              title="বাংলায় পরিবর্তন করুন"
-            >
-              BN
-            </span>
-          </div>
-
           <a 
             href="#/" 
             target="_blank" 

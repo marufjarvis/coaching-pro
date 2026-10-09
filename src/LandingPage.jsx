@@ -519,28 +519,8 @@ function LandingPage({
               <li><a href="#contact" className="nav-link-item">{isEn ? 'Contact' : 'যোগাযোগ'}</a></li>
             </ul>
 
-            {/* Header Action Buttons & Language Switcher */}
+            {/* Header Action Buttons */}
             <div className="nav-actions">
-              {/* Language Switcher [EN | BN] */}
-              <div className="landing-lang-toggle">
-                <button 
-                  type="button" 
-                  className={`lang-pill-btn ${lang === 'EN' ? 'active' : ''}`}
-                  onClick={() => setLang('EN')}
-                  title="Switch to English"
-                >
-                  EN
-                </button>
-                <button 
-                  type="button" 
-                  className={`lang-pill-btn ${lang === 'BN' ? 'active' : ''}`}
-                  onClick={() => setLang('BN')}
-                  title="বাংলায় পরিবর্তন করুন"
-                >
-                  BN
-                </button>
-              </div>
-
               {/* If Admin is Logged In */}
               {isAdminLoggedIn && (
                 <button 
@@ -594,25 +574,6 @@ function LandingPage({
           {/* Mobile Navigation Drawer */}
           {mobileMenuOpen && (
             <div className="mobile-nav-drawer">
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem' }}>
-                <div className="landing-lang-toggle">
-                  <button 
-                    type="button" 
-                    className={`lang-pill-btn ${lang === 'EN' ? 'active' : ''}`}
-                    onClick={() => { setLang('EN'); setMobileMenuOpen(false); }}
-                  >
-                    English (EN)
-                  </button>
-                  <button 
-                    type="button" 
-                    className={`lang-pill-btn ${lang === 'BN' ? 'active' : ''}`}
-                    onClick={() => { setLang('BN'); setMobileMenuOpen(false); }}
-                  >
-                    বাংলা (BN)
-                  </button>
-                </div>
-              </div>
-
               <a href="#hero" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>{isEn ? 'Home' : 'হোম'}</a>
               <a href="#courses" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>{isEn ? 'Courses' : 'কোর্স'}</a>
               <a href="#batches" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>{isEn ? 'Batches' : 'ব্যাচ'}</a>
