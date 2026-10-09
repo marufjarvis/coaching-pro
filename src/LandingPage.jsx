@@ -517,7 +517,7 @@ function LandingPage({
                     {/* Inner Circular Avatar Container with Dark Navy Backdrop */}
                     <div className="hero-circle-avatar-box">
                       <img 
-                        src="/maruf_transparent.png" 
+                        src="/m2.png" 
                         alt="মারুফ হোসেন - HSC ICT মেন্টর" 
                         className="hero-mentor-circle-img"
                         loading="eager"
@@ -1325,7 +1325,7 @@ function LandingPage({
                   <div className="mentor-arch-ring-border">
                     <div className="mentor-arch-inner-box">
                       <img 
-                        src="/maruf_transparent.png" 
+                        src="/m2.png" 
                         alt="মারুফ হোসেন - প্রধান প্রশিক্ষক ও মেন্টর" 
                         className="mentor-arch-cutout-img"
                         loading="lazy"
