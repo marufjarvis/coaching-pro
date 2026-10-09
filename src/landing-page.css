@@ -717,7 +717,7 @@
   font-size: 0.95rem;
   color: #38bdf8;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.75rem;
 }
 
 .mentor-cred-quote {
@@ -731,18 +731,28 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
 .mentor-chip {
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  padding: 0.25rem 0.65rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 9999px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #cbd5e1;
+  transition: all 0.25s ease;
 }
+
+.mentor-chip:hover {
+  transform: translateY(-2px);
+}
+
+.mentor-chip.chip-ai { border-color: rgba(56, 189, 248, 0.45); color: #38bdf8; background: rgba(56, 189, 248, 0.08); }
+.mentor-chip.chip-blockchain { border-color: rgba(245, 158, 11, 0.45); color: #fbbf24; background: rgba(245, 158, 11, 0.08); }
+.mentor-chip.chip-quantum { border-color: rgba(168, 85, 247, 0.45); color: #c084fc; background: rgba(168, 85, 247, 0.08); }
+.mentor-chip.chip-ml { border-color: rgba(52, 211, 153, 0.45); color: #34d399; background: rgba(52, 211, 153, 0.08); }
 
 .mentor-chip.chip-c { border-color: rgba(236, 72, 153, 0.3); color: #f472b6; }
 .mentor-chip.chip-gate { border-color: rgba(245, 158, 11, 0.3); color: #fbbf24; }

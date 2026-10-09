@@ -538,28 +538,6 @@ function LandingPage({
                   </div>
                 </div>
 
-                {/* Floating Badge 3: Bottom-Left 1200+ A+ Students */}
-                <div className="hero-float-badge hero-float-bottom-left">
-                  <div className="float-badge-icon badge-accent-amber">
-                    <GraduationCap size={20} />
-                  </div>
-                  <div>
-                    <div className="float-badge-title">১,২০০+ শিক্ষার্থী A+</div>
-                    <div className="float-badge-rating">
-                      <span>★★★★★</span> <small>৫.০ রেটিং</small>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Badge 4: Bottom-Right Live Lab Pulse */}
-                <div className="hero-float-badge hero-float-bottom-right">
-                  <span className="pulse-indicator"></span>
-                  <div>
-                    <div className="float-badge-title" style={{ color: '#34d399' }}>সরাসরি ল্যাব ক্লাস</div>
-                    <div className="float-badge-sub">ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস</div>
-                  </div>
-                </div>
-
                 {/* Open Mentor Credentials (Directly on Page Background, No Boxy Card) */}
                 <div className="hero-mentor-credentials">
                   <div className="mentor-cred-name-row">
@@ -571,14 +549,11 @@ function LandingPage({
                   <div className="mentor-cred-role">
                     AI Engineer | Blockchain Developer | Quantum Expert
                   </div>
-                  <div className="mentor-cred-quote">
-                    "Don't Memorize, Come To Learn"
-                  </div>
                   <div className="mentor-cred-chips">
-                    <span className="mentor-chip chip-c">💻 C Programming</span>
-                    <span className="mentor-chip chip-gate">⚡ Logic Gates</span>
-                    <span className="mentor-chip chip-html">🌐 HTML5 Web</span>
-                    <span className="mentor-chip chip-db">🗄️ SQL Database</span>
+                    <span className="mentor-chip chip-ai">🤖 Artificial Intelligence</span>
+                    <span className="mentor-chip chip-blockchain">⛓️ Blockchain & Web3</span>
+                    <span className="mentor-chip chip-quantum">⚛️ Quantum Computing</span>
+                    <span className="mentor-chip chip-ml">🧠 Deep Learning & LLMs</span>
                   </div>
                 </div>
               </div>
@@ -1340,10 +1315,10 @@ function LandingPage({
                 </div>
                 <div className="mentor-designation">AI Engineer | Blockchain Developer | Quantum Expert</div>
                 <div className="mentor-skill-pills">
-                  <span className="mentor-pill-item">💻 সি প্রোগ্রামিং</span>
-                  <span className="mentor-pill-item">⚡ লজিক গেইট</span>
-                  <span className="mentor-pill-item">🌐 ওয়েব ডিজাইন</span>
-                  <span className="mentor-pill-item">🗄️ ডেটাবেজ</span>
+                  <span className="mentor-pill-item">🤖 Artificial Intelligence</span>
+                  <span className="mentor-pill-item">⛓️ Blockchain & Web3</span>
+                  <span className="mentor-pill-item">⚛️ Quantum Computing</span>
+                  <span className="mentor-pill-item">🧠 Deep Learning & LLMs</span>
                 </div>
               </div>
             </div>
