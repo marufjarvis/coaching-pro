@@ -463,12 +463,38 @@
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .student-dash-header {
-    padding: 0.6rem 1rem;
+    padding: 0.6rem 0.85rem;
+    gap: 0.5rem;
+  }
+  .student-dash-header-actions {
+    gap: 0.35rem;
+  }
+  .student-dash-user-badge {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.78rem;
+  }
+  .student-dash-user-badge span {
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .btn-student-logout span {
+    display: none;
+  }
+  .btn-student-logout {
+    padding: 0.45rem;
   }
   .student-hero-title {
     font-size: 1.3rem;
   }
   .student-kpi-grid {
     grid-template-columns: 1fr;
+  }
+  .student-dash-main {
+    padding: 1rem 0.85rem;
+  }
+  .student-section-card {
+    padding: 1rem;
   }
 }

@@ -123,3 +123,20 @@
   background-color: #d1d5db;
   cursor: not-allowed;
 }
+
+@media (max-width: 480px) {
+  .admission-wrapper {
+    padding: 12px;
+  }
+  .admission-card {
+    padding: 24px 18px;
+    border-radius: 18px;
+  }
+  .admission-title {
+    font-size: 1.6rem;
+  }
+  .btn-submit {
+    padding: 14px;
+    font-size: 1rem;
+  }
+}

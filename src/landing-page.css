@@ -34,7 +34,7 @@ html {
   color: var(--lp-text-primary);
   min-height: 100vh;
   position: relative;
-  overflow-x: clip;
+  overflow-x: hidden;
   line-height: 1.6;
 }
 
