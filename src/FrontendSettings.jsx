@@ -21,7 +21,8 @@ import {
   Image, 
   Code,
   TrendingUp,
-  FileText
+  FileText,
+  BookOpen
 } from 'lucide-react';
 import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
@@ -173,6 +174,69 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
     }
   };
 
+  // Curriculum & Chapters management
+  const handleAddChapter = () => {
+    setIsSaved(false);
+    const chaptersList = settings.curriculum?.chapters || [];
+    const nextIdx = chaptersList.length + 1;
+    const newCh = {
+      id: `ch-${Date.now()}`,
+      num: nextIdx < 10 ? `০${nextIdx}` : `${nextIdx}`,
+      title: isEn ? `Chapter ${nextIdx} Title` : `অধ্যায় ${nextIdx} শিরোনাম`,
+      subtitle: isEn ? `Chapter ${nextIdx} Subtitle` : `সাবটাইটেল বা ইংরেজি শিরোনাম`,
+      iconName: 'BookOpen',
+      color: '#38bdf8',
+      bgGrad: 'rgba(56, 189, 248, 0.15)',
+      cqMarks: isEn ? '1 Full Board CQ' : '১টি পূর্ণাঙ্গ CQ প্রশ্ন',
+      topics: [
+        isEn ? 'Key Topic 1' : 'গুরুত্বপূর্ণ বিষয় ১',
+        isEn ? 'Key Topic 2' : 'গুরুত্বপূর্ণ বিষয় ২',
+        isEn ? 'Key Topic 3' : 'গুরুত্বপূর্ণ বিষয় ৩'
+      ],
+      practical: isEn ? 'Classroom lab practice highlights' : 'ল্যাব প্র্যাকটিস ও অ্যানিমেশন সাপোর্ট',
+      tips: isEn ? 'Board exam preparation strategy & tips' : 'বোর্ড পরীক্ষার টিপস ও স্ট্র্যাটেজি'
+    };
+    setSettings(prev => ({
+      ...prev,
+      curriculum: {
+        ...prev.curriculum,
+        chapters: [...(prev.curriculum?.chapters || []), newCh]
+      }
+    }));
+  };
+
+  const handleUpdateChapter = (index, key, value) => {
+    setIsSaved(false);
+    setSettings(prev => {
+      const list = [...(prev.curriculum?.chapters || [])];
+      list[index] = { ...list[index], [key]: value };
+      return {
+        ...prev,
+        curriculum: {
+          ...prev.curriculum,
+          chapters: list
+        }
+      };
+    });
+  };
+
+  const handleDeleteChapter = (index) => {
+    if (window.confirm(isEn ? 'Delete this chapter?' : 'এই অধ্যায়টি মুছে ফেলতে চান?')) {
+      setIsSaved(false);
+      setSettings(prev => {
+        const list = [...(prev.curriculum?.chapters || [])];
+        list.splice(index, 1);
+        return {
+          ...prev,
+          curriculum: {
+            ...prev.curriculum,
+            chapters: list
+          }
+        };
+      });
+    }
+  };
+
   return (
     <div className="frontend-cms-wrapper">
       {/* 1. Header Banner */}
@@ -282,6 +346,15 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
         >
           <Sparkles size={16} />
           <span>{isEn ? 'Hero Section & Stats' : 'হিরো সেকশন ও স্ট্যাটস'}</span>
+        </button>
+
+        <button 
+          type="button"
+          className={`cms-tab-btn ${activeSubTab === 'curriculum' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('curriculum')}
+        >
+          <BookOpen size={16} />
+          <span>{isEn ? `Syllabus (${settings.curriculum?.chapters?.length || 6})` : `পাঠ্যসূচি ও অধ্যায়সমূহ (${settings.curriculum?.chapters?.length || 6})`}</span>
         </button>
 
         <button 
@@ -608,7 +681,199 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
         </div>
       )}
 
-      {/* TAB 3: MENTOR PROFILE & FLOATING BADGES */}
+      {/* TAB 3: CURRICULUM & CHAPTERS */}
+      {activeSubTab === 'curriculum' && (
+        <div className="cms-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <h3 className="cms-section-title">
+                <BookOpen size={20} color="#0284c7" /> {isEn ? 'HSC ICT Curriculum & Chapters (1 - 6)' : 'HSC ICT সম্পূর্ণ পাঠ্যসূচি ও অধ্যায়সমূহ'}
+              </h3>
+              <p className="cms-section-subtitle" style={{ marginBottom: 0 }}>
+                {isEn 
+                  ? 'Customize chapter titles, subheadings, board CQ marks, topics, and practical guidelines.' 
+                  : 'বোর্ড সিলেবাসের অধ্যায়ের নাম, সাবটাইটেল, CQ মার্কস, গুরুত্বপূর্ণ বিষয় ও ল্যাব সুবিধা নিয়ন্ত্রণ করুন।'}
+              </p>
+            </div>
+
+            <button 
+              type="button" 
+              className="cms-add-btn" 
+              style={{ width: 'auto', margin: 0, padding: '0.5rem 1rem' }}
+              onClick={handleAddChapter}
+            >
+              <Plus size={16} /> {isEn ? 'Add Chapter' : 'নতুন অধ্যায় যোগ করুন'}
+            </button>
+          </div>
+
+          {/* Section Header Settings */}
+          <div className="cms-subbox" style={{ marginTop: '1rem' }}>
+            <div className="cms-subbox-title">
+              <FileText size={16} /> {isEn ? 'Section Header & Subtitle' : 'সেকশন শিরোনাম ও সাবটাইটেল'}
+            </div>
+            <div className="cms-grid-2">
+              <div className="cms-field-group">
+                <label>{isEn ? 'Section Pill Badge:' : 'সেকশন পিল ব্যাজ:'}</label>
+                <input 
+                  type="text" 
+                  className="cms-input" 
+                  value={settings.curriculum?.badge ?? ''} 
+                  onChange={(e) => updateField('curriculum', 'badge', e.target.value)} 
+                  placeholder={isEn ? 'Complete Board Curriculum' : 'পূর্ণাঙ্গ বোর্ড কারিকুলাম'}
+                />
+              </div>
+
+              <div className="cms-field-group">
+                <label>{isEn ? 'Section Title:' : 'সেকশন প্রধান শিরোনাম:'}</label>
+                <input 
+                  type="text" 
+                  className="cms-input" 
+                  value={settings.curriculum?.title ?? ''} 
+                  onChange={(e) => updateField('curriculum', 'title', e.target.value)} 
+                  placeholder={isEn ? 'HSC ICT Complete Syllabus (Chapters 1 - 6)' : 'HSC ICT সম্পূর্ণ পাঠ্যসূচি (অধ্যায় ১ - ৬)'}
+                />
+              </div>
+            </div>
+
+            <div className="cms-field-group" style={{ marginBottom: 0 }}>
+              <label>{isEn ? 'Section Subtitle Description:' : 'সেকশন সাবটাইটেল বিবরণ:'}</label>
+              <textarea 
+                className="cms-textarea" 
+                rows={2}
+                value={settings.curriculum?.subtitle ?? ''} 
+                onChange={(e) => updateField('curriculum', 'subtitle', e.target.value)} 
+                placeholder={isEn 
+                  ? 'Complex concepts in each chapter are thoroughly prepared through intuitive and comprehensive analysis.' 
+                  : 'প্রতিটি অধ্যায়ের জটিল টপিকগুলোকে সহজবোধ্য বিশ্লেষণের মাধ্যমে পূর্ণাঙ্গ প্রস্তুত করা হয়।'}
+              />
+            </div>
+          </div>
+
+          {/* Chapters Cards List */}
+          <div style={{ marginTop: '1.25rem' }}>
+            {(settings.curriculum?.chapters || []).map((chItem, index) => (
+              <div key={chItem.id || index} className="cms-item-card">
+                <div className="cms-item-header">
+                  <span className="cms-item-badge">
+                    {isEn ? `Chapter ${chItem.num || index + 1}` : `অধ্যায় ${chItem.num || index + 1}`}: {chItem.title}
+                  </span>
+                  <button 
+                    type="button" 
+                    className="cms-delete-btn" 
+                    onClick={() => handleDeleteChapter(index)}
+                  >
+                    <Trash2 size={13} /> {isEn ? 'Delete' : 'মুছে ফেলুন'}
+                  </button>
+                </div>
+
+                <div className="cms-grid-3">
+                  <div className="cms-field-group">
+                    <label>{isEn ? 'Chapter Number (e.g., 01 or ০১):' : 'অধ্যায় নম্বর (যেমন: ০১):'}</label>
+                    <input 
+                      type="text" 
+                      className="cms-input" 
+                      value={chItem.num || ''} 
+                      onChange={(e) => handleUpdateChapter(index, 'num', e.target.value)} 
+                    />
+                  </div>
+
+                  <div className="cms-field-group">
+                    <label>{isEn ? 'Board Exam CQ Marks Badge:' : 'বোর্ড CQ মার্কস ব্যাজ:'}</label>
+                    <input 
+                      type="text" 
+                      className="cms-input" 
+                      value={chItem.cqMarks || ''} 
+                      onChange={(e) => handleUpdateChapter(index, 'cqMarks', e.target.value)} 
+                      placeholder={isEn ? '1 Full Board CQ Guaranteed' : '১টি পূর্ণাঙ্গ CQ প্রশ্ন'}
+                    />
+                  </div>
+
+                  <div className="cms-field-group">
+                    <label>{isEn ? 'Icon Style:' : 'আইকন:'}</label>
+                    <select
+                      className="cms-input"
+                      value={chItem.iconName || 'BookOpen'}
+                      onChange={(e) => handleUpdateChapter(index, 'iconName', e.target.value)}
+                    >
+                      <option value="Globe">Globe (বিশ্ব ও প্রেক্ষিত)</option>
+                      <option value="Cpu">Cpu / Chip (নেটওয়ার্কিং)</option>
+                      <option value="Binary">Binary (সংখ্যা পদ্ধতি ও গেইট)</option>
+                      <option value="Code">Code (HTML ও ওয়েব)</option>
+                      <option value="Terminal">Terminal (C Programming)</option>
+                      <option value="Database">Database (ডেটাবেজ ও SQL)</option>
+                      <option value="BookOpen">BookOpen (বই/সিলেবাস)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="cms-grid-2">
+                  <div className="cms-field-group">
+                    <label>{isEn ? 'Chapter Title (Main):' : 'অধ্যায়ের মূল নাম:'}</label>
+                    <input 
+                      type="text" 
+                      className="cms-input" 
+                      value={chItem.title || ''} 
+                      onChange={(e) => handleUpdateChapter(index, 'title', e.target.value)} 
+                    />
+                  </div>
+
+                  <div className="cms-field-group">
+                    <label>{isEn ? 'English / Sub-Title:' : 'ইংরেজি / সাব-টাইটেল:'}</label>
+                    <input 
+                      type="text" 
+                      className="cms-input" 
+                      value={chItem.subtitle || ''} 
+                      onChange={(e) => handleUpdateChapter(index, 'subtitle', e.target.value)} 
+                    />
+                  </div>
+                </div>
+
+                <div className="cms-field-group">
+                  <label>
+                    {isEn ? 'Curriculum Key Topics (Enter one topic per line):' : 'গুরুত্বপূর্ণ টপিকসমূহ (প্রতি লাইনে একটি করে টপিক লিখুন):'}
+                  </label>
+                  <textarea 
+                    className="cms-textarea" 
+                    rows={4}
+                    value={(chItem.topics || []).join('\n')} 
+                    onChange={(e) => {
+                      const newTopics = e.target.value.split('\n');
+                      handleUpdateChapter(index, 'topics', newTopics);
+                    }} 
+                    placeholder={isEn ? "Topic 1\nTopic 2\nTopic 3" : "টপিক ১\nটপিক ২\nটপিক ৩"}
+                  />
+                </div>
+
+                <div className="cms-grid-2">
+                  <div className="cms-field-group">
+                    <label>{isEn ? 'Classroom Practical Advantage:' : 'ক্লাসরুম প্র্যাকটিক্যাল সুবিধা:'}</label>
+                    <input 
+                      type="text" 
+                      className="cms-input" 
+                      value={chItem.practical || ''} 
+                      onChange={(e) => handleUpdateChapter(index, 'practical', e.target.value)} 
+                      placeholder={isEn ? 'Hands-on practical advantages' : 'ল্যাপটপ ও প্রজেক্টরে সরাসরি প্র্যাকটিস'}
+                    />
+                  </div>
+
+                  <div className="cms-field-group">
+                    <label>{isEn ? 'Board Exam Strategy & Tips:' : 'বোর্ড পরীক্ষার কৌশল ও টিপস:'}</label>
+                    <input 
+                      type="text" 
+                      className="cms-input" 
+                      value={chItem.tips || ''} 
+                      onChange={(e) => handleUpdateChapter(index, 'tips', e.target.value)} 
+                      placeholder={isEn ? 'Board exam strategy and tips' : 'পরীক্ষার বিশেষ কৌশল ও পূর্ণাঙ্গ প্রস্তুতি'}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: MENTOR PROFILE & FLOATING BADGES */}
       {activeSubTab === 'mentor' && (
         <div className="cms-card">
           <h3 className="cms-section-title">

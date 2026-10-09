@@ -147,6 +147,7 @@ function LandingPage({
     notice = {},
     brand = {},
     hero = {},
+    curriculum = {},
     mentorHero = {},
     mentorSection = {},
     testimonials: customTestimonials,
@@ -156,6 +157,22 @@ function LandingPage({
 
   // Expanded Chapter Modal/Details
   const [selectedChapter, setSelectedChapter] = useState(null);
+
+  const getChapterIcon = (icon) => {
+    if (typeof icon === 'function' || (typeof icon === 'object' && icon !== null && icon.$$typeof)) {
+      return icon;
+    }
+    switch (icon) {
+      case 'Cpu': return Cpu;
+      case 'Binary': return Binary;
+      case 'Code': return Code;
+      case 'Terminal': return Terminal;
+      case 'Database': return Database;
+      case 'BookOpen': return BookOpen;
+      case 'Globe':
+      default: return Globe;
+    }
+  };
 
   // HSC ICT 6 Chapters Data (Bilingual)
   const chapters = [
@@ -812,38 +829,44 @@ function LandingPage({
         <div className="lp-container">
           <div className="lp-section-header">
             <div className="lp-section-pill">
-              <BookOpen size={14} /> {isEn ? 'Complete Board Curriculum' : 'পূর্ণাঙ্গ বোর্ড কারিকুলাম'}
+              <BookOpen size={14} /> {curriculum.badge || (isEn ? 'Complete Board Curriculum' : 'পূর্ণাঙ্গ বোর্ড কারিকুলাম')}
             </div>
             <h2 className="lp-section-title">
-              {isEn ? 'HSC ICT Complete Syllabus (Chapters 1 - 6)' : 'HSC ICT সম্পূর্ণ পাঠ্যসূচি (অধ্যায় ১ - ৬)'}
+              {curriculum.title || (isEn ? 'HSC ICT Complete Syllabus (Chapters 1 - 6)' : 'HSC ICT সম্পূর্ণ পাঠ্যসূচি (অধ্যায় ১ - ৬)')}
             </h2>
             <p className="lp-section-subtitle">
-              {isEn 
+              {curriculum.subtitle || (isEn 
                 ? 'Complex concepts in each chapter are thoroughly prepared through intuitive and comprehensive analysis.'
-                : 'প্রতিটি অধ্যায়ের জটিল টপিকগুলোকে সহজবোধ্য বিশ্লেষণের মাধ্যমে পূর্ণাঙ্গ প্রস্তুত করা হয়।'}
+                : 'প্রতিটি অধ্যায়ের জটিল টপিকগুলোকে সহজবোধ্য বিশ্লেষণের মাধ্যমে পূর্ণাঙ্গ প্রস্তুত করা হয়।')}
             </p>
           </div>
 
           <div className="chapters-grid">
-            {chapters.map((ch, idx) => {
-              const IconComp = ch.icon;
-              const chNum = isEn ? ch.numEn : ch.numBn;
-              const chTitle = isEn ? ch.titleEn : ch.titleBn;
-              const chSub = isEn ? ch.titleBn : ch.titleEn;
-              const chTopics = isEn ? ch.topicsEn : ch.topicsBn;
-              const chCqMarks = isEn ? ch.cqMarksEn : ch.cqMarksBn;
+            {((curriculum.chapters && curriculum.chapters.length > 0) ? curriculum.chapters : chapters).map((ch, idx) => {
+              const IconComp = getChapterIcon(ch.iconName || ch.icon);
+              const chNum = ch.num || (isEn ? ch.numEn || `0${idx + 1}` : ch.numBn || `০${idx + 1}`);
+              const chTitle = ch.title || (isEn ? ch.titleEn : ch.titleBn);
+              const chSub = ch.subtitle || (isEn ? ch.titleBn : ch.titleEn);
+              const chTopics = Array.isArray(ch.topics) && ch.topics.length > 0 
+                ? ch.topics 
+                : (isEn ? ch.topicsEn || [] : ch.topicsBn || []);
+              const chCqMarks = ch.cqMarks || (isEn ? ch.cqMarksEn : ch.cqMarksBn);
+              const chColor = ch.color || '#38bdf8';
+              const chBgGrad = ch.bgGrad || 'rgba(56, 189, 248, 0.15)';
+              const chPractical = ch.practical || (isEn ? ch.practicalEn : ch.practicalBn);
+              const chTips = ch.tips || (isEn ? ch.tipsEn : ch.tipsBn);
 
               return (
-                <div key={idx} className="chapter-card">
+                <div key={ch.id || idx} className="chapter-card">
                   <div className="chapter-card-top">
                     <span className="chapter-num-badge">{isEn ? `Chapter ${chNum}` : `অধ্যায় ${chNum}`}</span>
-                    <div className="chapter-icon-box" style={{ background: ch.bgGrad, color: ch.color }}>
+                    <div className="chapter-icon-box" style={{ background: chBgGrad, color: chColor }}>
                       <IconComp size={22} />
                     </div>
                   </div>
 
                   <h3 className="chapter-title">{chTitle}</h3>
-                  <div className="chapter-eng">{chSub}</div>
+                  {chSub && <div className="chapter-eng">{chSub}</div>}
 
                   <ul className="chapter-topics-list">
                     {chTopics.map((t, tIdx) => (
@@ -858,7 +881,19 @@ function LandingPage({
                     <span className="chapter-cq-badge">{chCqMarks}</span>
                     <button 
                       type="button"
-                      onClick={() => setSelectedChapter(ch)}
+                      onClick={() => setSelectedChapter({
+                        ...ch,
+                        IconComp,
+                        chNum,
+                        chTitle,
+                        chSub,
+                        chTopics,
+                        chCqMarks,
+                        chColor,
+                        chBgGrad,
+                        practical: chPractical,
+                        tips: chTips
+                      })}
                       style={{
                         background: 'transparent',
                         border: 'none',
@@ -906,22 +941,24 @@ function LandingPage({
                   width: '44px',
                   height: '44px',
                   borderRadius: '12px',
-                  background: selectedChapter.bgGrad,
-                  color: selectedChapter.color,
+                  background: selectedChapter.chBgGrad || selectedChapter.bgGrad,
+                  color: selectedChapter.chColor || selectedChapter.color,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0
                 }}
               >
-                <selectedChapter.icon size={22} />
+                {selectedChapter.IconComp ? <selectedChapter.IconComp size={22} /> : (selectedChapter.icon && <selectedChapter.icon size={22} />)}
               </div>
               <div>
-                <span style={{ fontSize: '0.8rem', color: selectedChapter.color, fontWeight: 700 }}>
-                  {isEn ? `Chapter ${selectedChapter.numEn} Special Guidelines` : `অধ্যায় ${selectedChapter.numBn} স্পেশাল গাইডলাইন`}
+                <span style={{ fontSize: '0.8rem', color: selectedChapter.chColor || selectedChapter.color, fontWeight: 700 }}>
+                  {isEn 
+                    ? `Chapter ${selectedChapter.chNum || selectedChapter.numEn} Special Guidelines` 
+                    : `অধ্যায় ${selectedChapter.chNum || selectedChapter.numBn} স্পেশাল গাইডলাইন`}
                 </span>
                 <h3 style={{ fontSize: '1.25rem', color: '#ffffff', fontWeight: 800, lineHeight: 1.3 }}>
-                  {isEn ? selectedChapter.titleEn : selectedChapter.titleBn}
+                  {selectedChapter.chTitle || (isEn ? selectedChapter.titleEn : selectedChapter.titleBn)}
                 </h3>
               </div>
             </div>
@@ -931,7 +968,7 @@ function LandingPage({
                 {isEn ? '🔬 Classroom Practical Lab Advantage:' : '🔬 ক্লাসরুম প্র্যাকটিক্যাল সুবিধা:'}
               </h4>
               <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.5 }}>
-                {isEn ? selectedChapter.practicalEn : selectedChapter.practicalBn}
+                {selectedChapter.practical || (isEn ? selectedChapter.practicalEn : selectedChapter.practicalBn)}
               </p>
             </div>
 
@@ -940,7 +977,7 @@ function LandingPage({
                 {isEn ? '💡 Board Exam Strategy & Tips:' : '💡 বোর্ড পরীক্ষার কৌশল ও টিপস:'}
               </h4>
               <p style={{ fontSize: '0.85rem', color: '#e2e8f0', lineHeight: 1.5 }}>
-                {isEn ? selectedChapter.tipsEn : selectedChapter.tipsBn}
+                {selectedChapter.tips || (isEn ? selectedChapter.tipsEn : selectedChapter.tipsBn)}
               </p>
             </div>
 

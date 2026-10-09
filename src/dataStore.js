@@ -66,7 +66,130 @@ export const defaultFrontendSettings_BN = {
     stat3: { number: 100, suffix: '%', label: 'প্র্যাকটিক্যাল ল্যাব সাপোর্ট' }
   },
 
-  // 4. Mentor Hero Showcase & Badges
+  // 4. Curriculum & Chapters (HSC ICT 1 - 6)
+  curriculum: {
+    badge: 'পূর্ণাঙ্গ বোর্ড কারিকুলাম',
+    title: 'HSC ICT সম্পূর্ণ পাঠ্যসূচি (অধ্যায় ১ - ৬)',
+    subtitle: 'প্রতিটি অধ্যায়ের জটিল টপিকগুলোকে সহজবোধ্য বিশ্লেষণের মাধ্যমে পূর্ণাঙ্গ প্রস্তুত করা হয়।',
+    chapters: [
+      {
+        id: 'ch-1',
+        num: '০১',
+        title: 'তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত',
+        subtitle: 'Global & Bangladesh Perspective',
+        iconName: 'Globe',
+        color: '#38bdf8',
+        bgGrad: 'rgba(56, 189, 248, 0.15)',
+        cqMarks: 'বোর্ডে ১০-১৫ মার্কস নিশ্চিত',
+        topics: [
+          'ভার্চুয়াল রিয়েলিটি (VR) ও অগমেন্টেড রিয়েলিটি (AR)',
+          'কৃত্রিম বুদ্ধিমত্তা (AI) ও রোবটিক্স প্রযুক্তি',
+          'ক্রায়োসার্জারি ও চিকিৎসা ক্ষেত্রে ICT প্রয়োগ',
+          'বায়োমেট্রিক্স, বায়োইনফরমেটিক্স ও জেনেটিক ইঞ্জিনিয়ারিং',
+          'ন্যানোটেকনোলজি ও সাইবার ক্রাইম / তথ্যপ্রযুক্তি নিরাপত্তা'
+        ],
+        practical: 'আধুনিক টেকনোলজি ভিডিও ডেমো ও প্রজেক্টর ভিজ্যুয়ালাইজেশন',
+        tips: 'বোর্ড পরীক্ষায় অনুধাবনমূলক ও প্রয়োগমূলক প্রশ্নে বাস্তব প্রয়োগভিত্তিক ব্যাখ্যা প্রয়োজন।'
+      },
+      {
+        id: 'ch-2',
+        num: '০২',
+        title: 'কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং',
+        subtitle: 'Communication Systems & Networking',
+        iconName: 'Cpu',
+        color: '#a855f7',
+        bgGrad: 'rgba(168, 85, 247, 0.15)',
+        cqMarks: '১টি পূর্ণাঙ্গ CQ প্রশ্ন আসবেই',
+        topics: [
+          'ডেটা ট্রান্সমিশন মেথড (সিনক্রোনাস, অ্যাসিনক্রোনাস, আইসোক্রোনাস)',
+          'ডেটা ট্রান্সমিশন মোড (সিমপ্লেক্স, হাফ-ডুপ্লেক্স, ফুল-ডুপ্লেক্স)',
+          'কমিউনিকেশন মাধ্যম (টুইস্টেড পেয়ার, কো-অ্যাক্সিয়াল ও ফাইবার অপটিক)',
+          'ওয়্যারলেস মিডিয়া (WiFi, WiMAX, Bluetooth, মাইক্রোওয়েভ)',
+          'নেটওয়ার্ক টপোলজি (স্টার, বাস, রিং, ট্রি, মেশ, হাইব্রিড) ও ক্লাউড কম্পিউটিং'
+        ],
+        practical: 'ল্যান কেবল, রাউটার ও নেটওয়ার্ক টপোলজি প্র্যাকটিক্যাল ল্যাব ডেমো',
+        tips: 'টপোলজি থেকে চিত্রভিত্তিক সৃজনশীল প্রশ্ন প্রতি বছর সব বোর্ডে কমন থাকে।'
+      },
+      {
+        id: 'ch-3',
+        num: '০৩',
+        title: 'সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস',
+        subtitle: 'Number Systems & Digital Logic Gates',
+        iconName: 'Binary',
+        color: '#f59e0b',
+        bgGrad: 'rgba(245, 158, 11, 0.15)',
+        cqMarks: '২টি CQ (২০ মার্কস) সম্ভাব্য',
+        topics: [
+          'পজিশনাল সংখ্যা পদ্ধতি রূপান্তর (বাইনারি, অক্টাল, ডেসিমাল, হেক্সাডেসিমাল)',
+          'চিহ্নযুক্ত সংখ্যা ও ২-এর পরিপূরক (2\'s Complement) যোগ-বিয়োগ',
+          'মৌলিক লজিক গেইট (AND, OR, NOT) ও সার্বজনীন গেইট (NAND, NOR)',
+          'বিশেষ গেইট (XOR, XNOR) ও বুলিয়ান অ্যালজেবরা সরলীকরণ',
+          'এনকোডার, ডিকোডার, হাফ এডার ও ফুল এডার সার্কিট ডিজাইন'
+        ],
+        practical: 'লজিক সার্কিট ড্রয়িং ও লাইভ টুথ-টেবিল ভেরিফিকেশন',
+        tips: 'সংখ্যা পদ্ধতির শর্টকাট টেকনিক ও লজিক গেইটের সত্যক সারণী শতভাগ আয়ত্ত করানো হয়।'
+      },
+      {
+        id: 'ch-4',
+        num: '০৪',
+        title: 'ওয়েব ডিজাইন পরিচিতি এবং HTML',
+        subtitle: 'Web Design & HTML5 Structure',
+        iconName: 'Code',
+        color: '#10b981',
+        bgGrad: 'rgba(16, 185, 129, 0.15)',
+        cqMarks: '১টি পূর্ণাঙ্গ CQ (১০ মার্কস)',
+        topics: [
+          'ওয়েবপেজের ধারণা, ডোমেন নেম, ওয়েব হোস্টিং ও ওয়েবসাইট কাঠামো',
+          'HTML বেসিক কাঠামো, ট্যাগ, অ্যাট্রিবিউট ও এলিমেন্ট',
+          'টেবিল ডিজাইন (<table>, <tr>, <td>, colspan, rowspan)',
+          'হাইপারলিংক (<a> ট্যাগ), ইমেজ ইনসার্ট (<img>) ও অর্ডার্ড/আন-অর্ডার্ড লিস্ট',
+          'ফর্ম উপাদান (ইনপুট, রেডিও, চেকবক্স, সাবমিট বাটন)'
+        ],
+        practical: 'কম্পিউটার ল্যাবে প্রতিটি শিক্ষার্থীর নিজস্ব এইচটিএমএল পেজ তৈরি',
+        tips: 'বোর্ড পরীক্ষায় সাধারণত টেবিল কোডিং অথবা লিস্ট/ইমেজ সংযোগের প্রশ্ন আসে।'
+      },
+      {
+        id: 'ch-5',
+        num: '০৫',
+        title: 'প্রোগ্রামিং ভাষা (C Programming)',
+        subtitle: 'Programming Languages & C Language',
+        iconName: 'Terminal',
+        color: '#ec4899',
+        bgGrad: 'rgba(236, 72, 153, 0.15)',
+        cqMarks: '১টি পূর্ণাঙ্গ CQ (১০ মার্কস)',
+        topics: [
+          'প্রোগ্রামিং ভাষার স্তর, অনুবাদক প্রোগ্রাম (কম্পাইলার, ইন্টারপ্রেটার)',
+          'অ্যালগরিদম ও ফ্লোচার্ট (ধারাবাহিকতা, সিদ্ধান্ত ও লুপ)',
+          'সি ভাষার ডেটা টাইপ, চলক, ধ্রুবক ও ইনপুট/আউটপুট (printf, scanf)',
+          'কন্ডিশনাল স্টেটমেন্ট (if-else, switch-case) ও লিপ ইয়ার লজিক',
+          'লুপ কন্ট্রোল (for, while, do-while), অ্যারে (Array) ও ফাংশন'
+        ],
+        practical: 'ল্যাপটপে Code::Blocks / GCC দিয়ে লাইভ সি কোড কম্পাইলেশন ও রান',
+        tips: 'প্রোগ্রামিং মুখস্ত করা অসম্ভব; ক্লাসে লজিক বিল্ড-আপের মাধ্যমে কোড তৈরি শেখানো হয়।'
+      },
+      {
+        id: 'ch-6',
+        num: '০৬',
+        title: 'ডেটাবেজ ম্যানেজমেন্ট সিস্টেম (DBMS)',
+        subtitle: 'Database Management Systems & SQL',
+        iconName: 'Database',
+        color: '#6366f1',
+        bgGrad: 'rgba(99, 102, 241, 0.15)',
+        cqMarks: '১টি পূর্ণাঙ্গ CQ প্রশ্ন',
+        topics: [
+          'ডেটাবেজ কনসেপ্ট, ফিল্ড, রেকর্ড, টেবিল ও ফাইল রিলেশন',
+          'প্রাইমারি কি (Primary Key), কম্পোজিট কি ও ফরেন কি',
+          'ডেটাবেজ রিলেশনশিপ (1:1, 1:Many, Many:Many)',
+          'SQL কোয়েরি কমান্ড (SELECT, WHERE, ORDER BY, UPDATE, DELETE)',
+          'ডেটা সিকিউরিটি, এনক্রিপশন ও ইনডেক্সিং এর গুরুত্ব'
+        ],
+        practical: 'প্র্যাকটিক্যাল SQL কুয়েরি ও রিলেশনাল ডেটা টেবিল প্র্যাকটিস',
+        tips: 'SQL কুয়েরি লেখার নিয়ম এবং ডেটাবেজ রিলেশনের চিত্র আঁকা শিখলে পুরো নম্বর পাওয়া যায়।'
+      }
+    ]
+  },
+
+  // 5. Mentor Hero Showcase & Badges
   mentorHero: {
     image: '/m2.png',
     name: 'মারুফ হোসেন',
@@ -199,7 +322,130 @@ export const defaultFrontendSettings_EN = {
     stat3: { number: 100, suffix: '%', label: 'Practical Lab Support' }
   },
 
-  // 4. Mentor Hero Showcase & Badges
+  // 4. Curriculum & Chapters (HSC ICT 1 - 6)
+  curriculum: {
+    badge: 'Complete Board Curriculum',
+    title: 'HSC ICT Complete Syllabus (Chapters 1 - 6)',
+    subtitle: 'Complex concepts in each chapter are thoroughly prepared through intuitive and comprehensive analysis.',
+    chapters: [
+      {
+        id: 'ch-1',
+        num: '01',
+        title: 'Information & Communication Technology: World & BD Perspective',
+        subtitle: 'Global & Bangladesh Perspective',
+        iconName: 'Globe',
+        color: '#38bdf8',
+        bgGrad: 'rgba(56, 189, 248, 0.15)',
+        cqMarks: '10-15 Marks in Board Exam',
+        topics: [
+          'Virtual Reality (VR) & Augmented Reality (AR)',
+          'Artificial Intelligence (AI) & Robotics Technology',
+          'Cryosurgery & ICT Applications in Healthcare',
+          'Biometrics, Bioinformatics & Genetic Engineering',
+          'Nanotechnology & Cyber Security / Cyber Crime'
+        ],
+        practical: 'Modern Technology Video Demos & Projector Visualization',
+        tips: 'Analytical and application-based board questions require real-world practical explanations.'
+      },
+      {
+        id: 'ch-2',
+        num: '02',
+        title: 'Communication Systems & Networking',
+        subtitle: 'Communication Systems & Networking',
+        iconName: 'Cpu',
+        color: '#a855f7',
+        bgGrad: 'rgba(168, 85, 247, 0.15)',
+        cqMarks: '1 Full Board CQ Guaranteed',
+        topics: [
+          'Data Transmission Methods (Sync, Async, Isochronous)',
+          'Data Transmission Modes (Simplex, Half-Duplex, Full-Duplex)',
+          'Communication Media (Twisted Pair, Coaxial & Fiber Optic)',
+          'Wireless Media (WiFi, WiMAX, Bluetooth, Microwave)',
+          'Network Topologies (Star, Bus, Ring, Tree, Mesh) & Cloud Computing'
+        ],
+        practical: 'LAN Cables, Routers & Network Topology Practical Lab Demo',
+        tips: 'Diagram-based questions on network topologies are common in board exams every year.'
+      },
+      {
+        id: 'ch-3',
+        num: '03',
+        title: 'Number Systems & Digital Logic Gates',
+        subtitle: 'Number Systems & Digital Logic Gates',
+        iconName: 'Binary',
+        color: '#f59e0b',
+        bgGrad: 'rgba(245, 158, 11, 0.15)',
+        cqMarks: '2 Full CQs (20 Marks) Expected',
+        topics: [
+          'Positional Number Conversions (Binary, Octal, Decimal, Hex)',
+          'Signed Numbers & 2\'s Complement Arithmetic',
+          'Basic Logic Gates (AND, OR, NOT) & Universal Gates (NAND, NOR)',
+          'Special Gates (XOR, XNOR) & Boolean Algebra Simplification',
+          'Encoders, Decoders, Half Adder & Full Adder Circuit Design'
+        ],
+        practical: 'Logic Circuit Drawing & Live Truth-Table Verification',
+        tips: 'Number conversion shortcut techniques and truth tables are thoroughly practiced.'
+      },
+      {
+        id: 'ch-4',
+        num: '04',
+        title: 'Web Design & HTML5 Structure',
+        subtitle: 'Web Design & HTML5 Structure',
+        iconName: 'Code',
+        color: '#10b981',
+        bgGrad: 'rgba(16, 185, 129, 0.15)',
+        cqMarks: '1 Full Board CQ (10 Marks)',
+        topics: [
+          'Web Concepts, Domain Names, Web Hosting & Website Structure',
+          'HTML Structure, Tags, Attributes & Elements',
+          'Table Design (<table>, <tr>, <td>, colspan, rowspan)',
+          'Hyperlinks (<a> tag), Images (<img>) & Ordered/Unordered Lists',
+          'HTML Form Elements (input, radio, checkbox, submit button)'
+        ],
+        practical: 'Each student codes and builds their own HTML webpage in computer lab',
+        tips: 'Board exams almost always test Table coding or List/Image linking.'
+      },
+      {
+        id: 'ch-5',
+        num: '05',
+        title: 'Programming Languages & C Language',
+        subtitle: 'Programming Languages & C Language',
+        iconName: 'Terminal',
+        color: '#ec4899',
+        bgGrad: 'rgba(236, 72, 153, 0.15)',
+        cqMarks: '1 Full Board CQ (10 Marks)',
+        topics: [
+          'Programming Paradigms & Translators (Compiler, Interpreter)',
+          'Algorithms & Flowcharts (Sequential, Decision & Loop)',
+          'C Data Types, Variables, Constants & I/O (printf, scanf)',
+          'Conditional Statements (if-else, switch-case) & Leap Year Logic',
+          'Loop Control (for, while, do-while), Arrays & Functions'
+        ],
+        practical: 'Live C Code Compilation & Execution with Code::Blocks / GCC on Laptops',
+        tips: 'Programming cannot be memorized; code generation is taught via logic building.'
+      },
+      {
+        id: 'ch-6',
+        num: '06',
+        title: 'Database Management Systems & SQL',
+        subtitle: 'Database Management Systems & SQL',
+        iconName: 'Database',
+        color: '#6366f1',
+        bgGrad: 'rgba(99, 102, 241, 0.15)',
+        cqMarks: '1 Full Board CQ Guaranteed',
+        topics: [
+          'Database Concepts, Fields, Records, Tables & File Relationships',
+          'Primary Key, Composite Key & Foreign Key',
+          'Database Relationships (1:1, 1:Many, Many:Many)',
+          'SQL Query Commands (SELECT, WHERE, ORDER BY, UPDATE, DELETE)',
+          'Data Security, Encryption & Indexing Importance'
+        ],
+        practical: 'Hands-on SQL Queries & Relational Data Table Practice in Lab',
+        tips: 'Full marks are guaranteed by mastering SQL syntax and drawing relationship diagrams.'
+      }
+    ]
+  },
+
+  // 5. Mentor Hero Showcase & Badges
   mentorHero: {
     image: '/m2.png',
     name: 'Maruf Hossain',
@@ -883,6 +1129,13 @@ export const dataStore = {
               ...(parsed.mentorSection || {}),
               bullets: Array.isArray(parsed.mentorSection?.bullets) ? parsed.mentorSection.bullets : defaults.mentorSection.bullets
             },
+            curriculum: {
+              ...defaults.curriculum,
+              ...(parsed.curriculum || {}),
+              chapters: Array.isArray(parsed.curriculum?.chapters) && parsed.curriculum.chapters.length > 0
+                ? parsed.curriculum.chapters
+                : defaults.curriculum.chapters
+            },
             contact: { ...defaults.contact, ...(parsed.contact || {}) },
             testimonials: Array.isArray(parsed.testimonials) && parsed.testimonials.length > 0 
               ? parsed.testimonials 
@@ -913,6 +1166,13 @@ export const dataStore = {
         stat1: { ...current.hero.stat1, ...(newSettings.hero?.stat1 || {}) },
         stat2: { ...current.hero.stat2, ...(newSettings.hero?.stat2 || {}) },
         stat3: { ...current.hero.stat3, ...(newSettings.hero?.stat3 || {}) }
+      },
+      curriculum: {
+        ...current.curriculum,
+        ...(newSettings.curriculum || {}),
+        chapters: Array.isArray(newSettings.curriculum?.chapters)
+          ? newSettings.curriculum.chapters
+          : current.curriculum.chapters
       },
       mentorHero: { 
         ...current.mentorHero, 
