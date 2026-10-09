@@ -300,16 +300,14 @@ function LandingPage({
           {/* Desktop Nav Links */}
           <ul className="nav-links-desktop">
             <li><a href="#hero" className="nav-link-item">হোম</a></li>
-            <li><a href="#syllabus" className="nav-link-item">সিলেবাস (১-৬)</a></li>
-            <li><a href="#lab-demo" className="nav-link-item">লাইভ ল্যাব</a></li>
-            <li><a href="#features" className="nav-link-item">কেন সেরা</a></li>
-            <li><a href="#batches" className="nav-link-item">ব্যাচ শিডিউল</a></li>
+            <li><a href="#courses" className="nav-link-item">কোর্স</a></li>
+            <li><a href="#batches" className="nav-link-item">ব্যাচ</a></li>
             <li><a href="#success" className="nav-link-item">সাফল্য</a></li>
             <li><a href="#mentor" className="nav-link-item">শিক্ষক</a></li>
             <li><a href="#contact" className="nav-link-item">যোগাযোগ</a></li>
           </ul>
 
-          {/* Header Action Buttons */}
+          {/* Header Action Buttons - Only Login Button */}
           <div className="nav-actions">
             {/* If Admin is Logged In */}
             {isAdminLoggedIn && (
@@ -349,16 +347,6 @@ function LandingPage({
               </button>
             )}
 
-            {/* Online Admission Button */}
-            <button 
-              type="button" 
-              onClick={onGoToEnroll} 
-              className="btn-nav-enroll"
-              id="btn-enroll-nav"
-            >
-              <Sparkles size={15} /> ভর্তি আবেদন
-            </button>
-
             {/* Mobile Hamburger Button */}
             <button 
               type="button" 
@@ -375,13 +363,11 @@ function LandingPage({
         {mobileMenuOpen && (
           <div className="mobile-nav-drawer">
             <a href="#hero" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>হোম</a>
-            <a href="#syllabus" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>HSC ICT সিলেবাস</a>
-            <a href="#lab-demo" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>প্র্যাকটিক্যাল ল্যাব ডেমো</a>
-            <a href="#features" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>আমাদের বৈশিষ্ট্যসমূহ</a>
-            <a href="#batches" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>চলমান ব্যাচ ও রুটিন</a>
-            <a href="#success" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>শিক্ষার্থীদের রিভিউ</a>
-            <a href="#mentor" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>মারুফ স্যার পরিচিতি</a>
-            <a href="#contact" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>যোগাযোগ ও লোকেশন</a>
+            <a href="#courses" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>কোর্স</a>
+            <a href="#batches" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>ব্যাচ</a>
+            <a href="#success" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>সাফল্য</a>
+            <a href="#mentor" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>শিক্ষক</a>
+            <a href="#contact" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>যোগাযোগ</a>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.75rem' }}>
               {isAdminLoggedIn && (
@@ -413,18 +399,9 @@ function LandingPage({
                   className="btn-nav-login"
                   style={{ justifyContent: 'center' }}
                 >
-                  <Lock size={16} strokeWidth={2.5} /> লগইন করুন
+                  <Lock size={16} strokeWidth={2.5} /> লগইন
                 </button>
               )}
-
-              <button 
-                type="button" 
-                onClick={() => { setMobileMenuOpen(false); onGoToEnroll(); }} 
-                className="btn-nav-enroll"
-                style={{ justifyContent: 'center' }}
-              >
-                <Sparkles size={16} /> অনলাইন ভর্তি আবেদন
-              </button>
             </div>
           </div>
         )}
@@ -582,8 +559,9 @@ function LandingPage({
         </div>
       </section>
 
-      {/* 4. SYLLABUS SECTION (HSC ICT অধ্যায় ১ - ৬) */}
-      <section id="syllabus" className="curriculum-section">
+      {/* 4. COURSES / SYLLABUS SECTION (HSC ICT অধ্যায় ১ - ৬) */}
+      <section id="courses" className="curriculum-section">
+        <div id="syllabus" style={{ position: 'relative', top: '-80px', visibility: 'hidden' }}></div>
         <div className="lp-container">
           <div className="lp-section-header">
             <div className="lp-section-pill">
