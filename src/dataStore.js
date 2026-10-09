@@ -585,6 +585,396 @@ export const DEFAULT_INITIAL_BATCHES = [
   }
 ];
 
+// 20 Demo Students (10 Course Fee @ 4,000 BDT & 10 Monthly Fee @ 500 BDT)
+export const defaultDemoStudents = [
+  // 10 Students in Course Fee System (Course Fee = 4,000 BDT)
+  {
+    id: 'STU-20001',
+    name: 'তানভীর আহমেদ',
+    initials: 'TA',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01711002201',
+    guardianPhone: '01711002202',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 2,
+    paidAmount: 4000,
+    billingDate: null,
+    nextInstallmentDate: null,
+    admissionDate: '01/09/2026'
+  },
+  {
+    id: 'STU-20002',
+    name: 'সাকিব আল হাসান',
+    initials: 'SH',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01712003301',
+    guardianPhone: '01712003302',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 2,
+    paidAmount: 2000,
+    billingDate: null,
+    nextInstallmentDate: '15/10/2026',
+    admissionDate: '05/09/2026'
+  },
+  {
+    id: 'STU-20003',
+    name: 'ফারহানা হক',
+    initials: 'FH',
+    batch: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ',
+    status: 'Active',
+    phone: '01713004401',
+    guardianPhone: '01713004402',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 1,
+    paidAmount: 4000,
+    billingDate: null,
+    nextInstallmentDate: null,
+    admissionDate: '10/09/2026'
+  },
+  {
+    id: 'STU-20004',
+    name: 'রাকিবুল ইসলাম',
+    initials: 'RI',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01714005501',
+    guardianPhone: '01714005502',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 2,
+    paidAmount: 2000,
+    billingDate: null,
+    nextInstallmentDate: '20/10/2026',
+    admissionDate: '12/09/2026'
+  },
+  {
+    id: 'STU-20005',
+    name: 'মেহেরুন্নেসা আশা',
+    initials: 'MA',
+    batch: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ',
+    status: 'Active',
+    phone: '01715006601',
+    guardianPhone: '01715006602',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 1,
+    paidAmount: 4000,
+    billingDate: null,
+    nextInstallmentDate: null,
+    admissionDate: '15/09/2026'
+  },
+  {
+    id: 'STU-20006',
+    name: 'আদনান সামী',
+    initials: 'AS',
+    batch: 'HSC 2027 ফাউন্ডেশন কোর্স',
+    status: 'Active',
+    phone: '01716007701',
+    guardianPhone: '01716007702',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 2,
+    paidAmount: 2000,
+    billingDate: null,
+    nextInstallmentDate: '25/10/2026',
+    admissionDate: '18/09/2026'
+  },
+  {
+    id: 'STU-20007',
+    name: 'সাদিয়া জাহান',
+    initials: 'SJ',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01717008801',
+    guardianPhone: '01717008802',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 2,
+    paidAmount: 4000,
+    billingDate: null,
+    nextInstallmentDate: null,
+    admissionDate: '20/09/2026'
+  },
+  {
+    id: 'STU-20008',
+    name: 'মাহফুজুর রহমান',
+    initials: 'MR',
+    batch: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ',
+    status: 'Active',
+    phone: '01718009901',
+    guardianPhone: '01718009902',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 2,
+    paidAmount: 2000,
+    billingDate: null,
+    nextInstallmentDate: '28/10/2026',
+    admissionDate: '22/09/2026'
+  },
+  {
+    id: 'STU-20009',
+    name: 'তাসনিয়া তাবাসসুম',
+    initials: 'TT',
+    batch: 'HSC 2027 ফাউন্ডেশন কোর্স',
+    status: 'Active',
+    phone: '01719001101',
+    guardianPhone: '01719001102',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 1,
+    paidAmount: 4000,
+    billingDate: null,
+    nextInstallmentDate: null,
+    admissionDate: '25/09/2026'
+  },
+  {
+    id: 'STU-20010',
+    name: 'জুবায়ের হোসেন',
+    initials: 'ZH',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01720002201',
+    guardianPhone: '01720002202',
+    feeType: 'course',
+    feeAmount: 4000,
+    admissionFee: 0,
+    discount: 0,
+    installments: 2,
+    paidAmount: 2000,
+    billingDate: null,
+    nextInstallmentDate: '30/10/2026',
+    admissionDate: '28/09/2026'
+  },
+
+  // 10 Students in Monthly Fee System (Monthly Fee = 500 BDT)
+  {
+    id: 'STU-20011',
+    name: 'মারুফ হোসেন',
+    initials: 'MH',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01723619524',
+    guardianPhone: '01586232012',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 500,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '01/09/2026'
+  },
+  {
+    id: 'STU-20012',
+    name: 'নাফিসা আক্তার',
+    initials: 'NA',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01721003301',
+    guardianPhone: '01721003302',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 500,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '02/09/2026'
+  },
+  {
+    id: 'STU-20013',
+    name: 'আশরাফুল ইসলাম',
+    initials: 'AI',
+    batch: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ',
+    status: 'Active',
+    phone: '01722004401',
+    guardianPhone: '01722004402',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 0,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '05/09/2026'
+  },
+  {
+    id: 'STU-20014',
+    name: 'সুমাইয়া খানম',
+    initials: 'SK',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01723005501',
+    guardianPhone: '01723005502',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 500,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '08/09/2026'
+  },
+  {
+    id: 'STU-20015',
+    name: 'হাসান মাহমুদ',
+    initials: 'HM',
+    batch: 'HSC 2027 ফাউন্ডেশন কোর্স',
+    status: 'Active',
+    phone: '01724006601',
+    guardianPhone: '01724006602',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 0,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '10/09/2026'
+  },
+  {
+    id: 'STU-20016',
+    name: 'ফারিহা জান্নাত',
+    initials: 'FJ',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01725007701',
+    guardianPhone: '01725007702',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 500,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '12/09/2026'
+  },
+  {
+    id: 'STU-20017',
+    name: 'আরিফুল হক',
+    initials: 'AH',
+    batch: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ',
+    status: 'Active',
+    phone: '01726008801',
+    guardianPhone: '01726008802',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 500,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '15/09/2026'
+  },
+  {
+    id: 'STU-20018',
+    name: 'নিশাত তাসনিম',
+    initials: 'NT',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01727009901',
+    guardianPhone: '01727009902',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 0,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '18/09/2026'
+  },
+  {
+    id: 'STU-20019',
+    name: 'ইমরান হোসেন',
+    initials: 'IH',
+    batch: 'HSC 2027 ফাউন্ডেশন কোর্স',
+    status: 'Active',
+    phone: '01728001101',
+    guardianPhone: '01728001102',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 500,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '20/09/2026'
+  },
+  {
+    id: 'STU-20020',
+    name: 'জান্নাতুল ফেরদৌস',
+    initials: 'JF',
+    batch: 'HSC 2026 রেগুলার ব্যাচ',
+    status: 'Active',
+    phone: '01729002201',
+    guardianPhone: '01729002202',
+    feeType: 'monthly',
+    feeAmount: 500,
+    admissionFee: 200,
+    discount: 0,
+    installments: 1,
+    paidAmount: 0,
+    billingDate: '1st of every month',
+    nextInstallmentDate: null,
+    admissionDate: '22/09/2026'
+  }
+];
+
+export const defaultDemoPayments = [
+  // Course fee payments
+  { id: 'TXN-3001', studentId: 'STU-20001', studentName: 'তানভীর আহমেদ', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 2000, feeType: 'course', method: 'bKash', collectedBy: 'Admin', date: '01/09/2026', time: '10:00 AM', note: '1st Installment Course Fee' },
+  { id: 'TXN-3002', studentId: 'STU-20001', studentName: 'তানভীর আহমেদ', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 2000, feeType: 'course', method: 'Nagad', collectedBy: 'Admin', date: '01/10/2026', time: '11:15 AM', note: 'Final Installment Course Fee' },
+  { id: 'TXN-3003', studentId: 'STU-20002', studentName: 'সাকিব আল হাসান', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 2000, feeType: 'course', method: 'Cash', collectedBy: 'Admin', date: '05/09/2026', time: '04:30 PM', note: '1st Installment Course Fee' },
+  { id: 'TXN-3004', studentId: 'STU-20003', studentName: 'ফারহানা হক', batch: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ', amount: 4000, feeType: 'course', method: 'bKash', collectedBy: 'Admin', date: '10/09/2026', time: '02:00 PM', note: 'Full Course Fee Paid' },
+  { id: 'TXN-3005', studentId: 'STU-20004', studentName: 'রাকিবুল ইসলাম', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 2000, feeType: 'course', method: 'Cash', collectedBy: 'Admin', date: '12/09/2026', time: '09:45 AM', note: '1st Installment Course Fee' },
+  { id: 'TXN-3006', studentId: 'STU-20005', studentName: 'মেহেরুন্নেসা আশা', batch: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ', amount: 4000, feeType: 'course', method: 'bKash', collectedBy: 'Admin', date: '15/09/2026', time: '05:20 PM', note: 'Full Course Fee Paid' },
+  { id: 'TXN-3007', studentId: 'STU-20006', studentName: 'আদনান সামী', batch: 'HSC 2027 ফাউন্ডেশন কোর্স', amount: 2000, feeType: 'course', method: 'Cash', collectedBy: 'Admin', date: '18/09/2026', time: '11:00 AM', note: '1st Installment Course Fee' },
+  { id: 'TXN-3008', studentId: 'STU-20007', studentName: 'সাদিয়া জাহান', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 4000, feeType: 'course', method: 'Nagad', collectedBy: 'Admin', date: '20/09/2026', time: '03:10 PM', note: 'Full Course Fee Paid' },
+  { id: 'TXN-3009', studentId: 'STU-20008', studentName: 'মাহফুজুর রহমান', batch: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ', amount: 2000, feeType: 'course', method: 'bKash', collectedBy: 'Admin', date: '22/09/2026', time: '12:30 PM', note: '1st Installment Course Fee' },
+  { id: 'TXN-3010', studentId: 'STU-20009', studentName: 'তাসনিয়া তাবাসসুম', batch: 'HSC 2027 ফাউন্ডেশন কোর্স', amount: 4000, feeType: 'course', method: 'bKash', collectedBy: 'Admin', date: '25/09/2026', time: '01:15 PM', note: 'Full Course Fee Paid' },
+  { id: 'TXN-3011', studentId: 'STU-20010', studentName: 'জুবায়ের হোসেন', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 2000, feeType: 'course', method: 'Cash', collectedBy: 'Admin', date: '28/09/2026', time: '10:40 AM', note: '1st Installment Course Fee' },
+  
+  // Monthly fee payments
+  { id: 'TXN-3012', studentId: 'STU-20011', studentName: 'মারুফ হোসেন', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 500, feeType: 'monthly', method: 'bKash', collectedBy: 'Admin', date: '01/10/2026', time: '09:00 AM', note: 'October Monthly Fee' },
+  { id: 'TXN-3013', studentId: 'STU-20012', studentName: 'নাফিসা আক্তার', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 500, feeType: 'monthly', method: 'Nagad', collectedBy: 'Admin', date: '02/10/2026', time: '10:15 AM', note: 'October Monthly Fee' },
+  { id: 'TXN-3014', studentId: 'STU-20014', studentName: 'সুমাইয়া খানম', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 500, feeType: 'monthly', method: 'Cash', collectedBy: 'Admin', date: '03/10/2026', time: '11:30 AM', note: 'October Monthly Fee' },
+  { id: 'TXN-3015', studentId: 'STU-20016', studentName: 'ফারিহা জান্নাত', batch: 'HSC 2026 রেগুলার ব্যাচ', amount: 500, feeType: 'monthly', method: 'bKash', collectedBy: 'Admin', date: '04/10/2026', time: '04:00 PM', note: 'October Monthly Fee' },
+  { id: 'TXN-3016', studentId: 'STU-20017', studentName: 'আরিফুল হক', batch: 'HSC 2025 রিভিশন ও টেস্ট পেপার সলভ', amount: 500, feeType: 'monthly', method: 'Cash', collectedBy: 'Admin', date: '05/10/2026', time: '02:45 PM', note: 'October Monthly Fee' },
+  { id: 'TXN-3017', studentId: 'STU-20019', studentName: 'ইমরান হোসেন', batch: 'HSC 2027 ফাউন্ডেশন কোর্স', amount: 500, feeType: 'monthly', method: 'Nagad', collectedBy: 'Admin', date: '06/10/2026', time: '05:30 PM', note: 'October Monthly Fee' }
+];
+
 export const dataStore = {
   // --- BACKEND SYNCHRONIZATION ---
   async syncWithBackend() {
@@ -864,13 +1254,20 @@ export const dataStore = {
   // --- STUDENTS ---
   getStudents() {
     try {
+      const isSeeded = localStorage.getItem('coaching_demo_20_seeded_v2');
+      if (!isSeeded) {
+        localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(defaultDemoStudents));
+        localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(defaultDemoPayments));
+        localStorage.setItem('coaching_demo_20_seeded_v2', 'true');
+        return defaultDemoStudents;
+      }
       const data = localStorage.getItem(STORAGE_KEYS.STUDENTS);
       if (data) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch (e) {}
-    return [];
+    return defaultDemoStudents;
   },
 
   saveStudents(students) {
@@ -953,7 +1350,7 @@ export const dataStore = {
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       }
     } catch (e) {}
-    return [];
+    return defaultDemoPayments;
   },
 
   savePayments(payments) {
