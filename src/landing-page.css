@@ -369,6 +369,7 @@ html {
   color: var(--lp-text-secondary);
   margin-bottom: 2rem;
   line-height: 1.7;
+  max-width: 520px;
 }
 
 .hero-badges-row {
@@ -585,25 +586,25 @@ html {
 
 .hero-float-top-right {
   top: 1.5rem;
-  right: -4.5rem;
+  right: -2rem;
   animation: floatSlow 4.5s ease-in-out infinite alternate;
 }
 
 .hero-float-top-left {
   top: 1rem;
-  left: -4.5rem;
+  left: -2rem;
   animation: floatSlow2 4s ease-in-out infinite alternate;
 }
 
 .hero-float-bottom-left {
-  top: 16rem;
-  left: -6.5rem;
+  top: 17.5rem;
+  left: -2rem;
   animation: floatSlow 5s ease-in-out infinite alternate;
 }
 
 .hero-float-bottom-right {
   top: 17rem;
-  right: -6rem;
+  right: -2rem;
   animation: floatSlow2 4.2s ease-in-out infinite alternate;
 }
 
