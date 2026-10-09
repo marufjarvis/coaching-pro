@@ -308,31 +308,31 @@ function LandingPage({
     {
       numBn: '০৫',
       numEn: '05',
-      titleBn: 'প্রোগ্রামিং ভাষা (C Programming)',
-      titleEn: 'Programming Languages & C Language',
+      titleBn: 'প্রোগ্রামিং ভাষা (Python Programming)',
+      titleEn: 'Programming Languages & Python',
       icon: Terminal,
       color: '#ec4899',
       bgGrad: 'rgba(236, 72, 153, 0.15)',
       cqMarksBn: '১টি পূর্ণাঙ্গ CQ (১০ মার্কস)',
       cqMarksEn: '1 Full Board CQ (10 Marks)',
       topicsBn: [
-        'প্রোগ্রামিং ভাষার স্তর, অনুবাদক প্রোগ্রাম (কম্পাইলার, ইন্টারপ্রেটার)',
-        'অ্যালগরিদম ও ফ্লোচার্ট (ধারাবাহিকতা, সিদ্ধান্ত ও লুপ)',
-        'সি ভাষার ডেটা টাইপ, চলক, ধ্রুবক ও ইনপুট/আউটপুট (printf, scanf)',
-        'কন্ডিশনাল স্টেটমেন্ট (if-else, switch-case) ও লিপ ইয়ার লজিক',
-        'লুপ কন্ট্রোল (for, while, do-while), অ্যারে (Array) ও ফাংশন'
+        'প্রোগ্রামিং ভাষার স্তর ও অনুবাদক প্রোগ্রাম (কম্পাইলার, ইন্টারপ্রেটার)',
+        'অ্যালগরিদম ও ফ্লোচার্ট (ধারাবাহিকতা, সিদ্ধান্ত ও লুপ কাঠামো)',
+        'পাইথন সিনট্যাক্স, চলক (Variable), ডেটা টাইপ ও ইনপুট/আউটপুট (print, input)',
+        'কন্ডিশনাল স্টেটমেন্ট (if, elif, else) ও লজিক্যাল অপারেশন',
+        'লুপ কন্ট্রোল (for, while লুপ), পাইথন লিস্ট (List), স্ট্রিং ও ফাংশন (def)'
       ],
       topicsEn: [
         'Programming Paradigms & Translators (Compiler, Interpreter)',
-        'Algorithms & Flowcharts (Sequential, Decision & Loop)',
-        'C Data Types, Variables, Constants & I/O (printf, scanf)',
-        'Conditional Statements (if-else, switch-case) & Leap Year Logic',
-        'Loop Control (for, while, do-while), Arrays & Functions'
+        'Algorithms & Flowcharts (Sequential, Decision & Loop Structures)',
+        'Python Syntax, Variables, Data Types & I/O (print, input)',
+        'Conditional Statements (if, elif, else) & Logical Operations',
+        'Loop Controls (for, while), Python Lists, Strings & Functions (def)'
       ],
-      practicalBn: 'ল্যাপটপে Code::Blocks / GCC দিয়ে লাইভ সি কোড কম্পাইলেশন ও রান',
-      practicalEn: 'Live C Code Compilation & Execution with Code::Blocks / GCC on Laptops',
-      tipsBn: 'প্রোগ্রামিং মুখস্ত করা অসম্ভব; ক্লাসে লজিক বিল্ড-আপের মাধ্যমে কোড তৈরি শেখানো হয়।',
-      tipsEn: 'Programming cannot be memorized; code generation is taught via logic building.'
+      practicalBn: 'ল্যাপটপে Python IDLE / VS Code দিয়ে লাইভ পাইথন স্ক্রিপ্টিং ও হ্যান্ডস-অন রান',
+      practicalEn: 'Live Python Scripting & Hands-on Code Execution with Python IDLE / VS Code on Laptops',
+      tipsBn: 'পাইথনের সহজ সিনট্যাক্স ও ইন্ডেন্টেশন বুঝে কোডিং লজিক তৈরি করলে পরীক্ষায় ফুল মার্কস নিশ্চিত।',
+      tipsEn: 'Mastering Python\'s intuitive syntax, indentation, and logic guarantees full marks in board exams.'
     },
     {
       numBn: '০৬',
@@ -476,7 +476,7 @@ function LandingPage({
           name: 'Tamim Iqbal',
           college: 'Kushtia Govt. College',
           score: 'ICT: 98/100 (A+)',
-          text: 'Everyone warned me chapters 3 and 5 were difficult to memorize. But after practicing C coding and digital logic gates on laptops with Maruf Sir, all fears vanished. I scored 98 in the board exams!'
+          text: 'Everyone warned me chapters 3 and 5 were difficult to memorize. But after practicing Python coding and digital logic gates on laptops with Maruf Sir, all fears vanished. I scored 98 in the board exams!'
         },
         {
           name: 'Sumaiya Farhana',
@@ -495,7 +495,7 @@ function LandingPage({
           name: 'তামিম ইকবাল',
           college: 'কুষ্টিয়া সরকারি কলেজ',
           score: 'ICT: ৯৮/১০০ (A+)',
-          text: 'ICT-এর ৩য় ও ৫ম অধ্যায় নিয়ে সবাই বলত মুখস্ত করা কঠিন। মারুফ স্যারের ক্লাসে ল্যাপটপে সি কোডিং এবং ডিজিটাল লজিক গেইট প্র্যাকটিক্যালি দেখার পর ভয় একদম কেটে যায়। ফাইনাল পরীক্ষায় ৯৮ পেয়েছি!'
+          text: 'ICT-এর ৩য় ও ৫ম অধ্যায় নিয়ে সবাই বলত মুখস্ত করা কঠিন। মারুফ স্যারের ক্লাসে ল্যাপটপে পাইথন কোডিং এবং ডিজিটাল লজিক গেইট প্র্যাকটিক্যালি দেখার পর ভয় একদম কেটে যায়। ফাইনাল পরীক্ষায় ৯৮ পেয়েছি!'
         },
         {
           name: 'সুমাইয়া ফারহানা',
@@ -677,15 +677,15 @@ function LandingPage({
 
               <p className="hero-subtitle">
                 {hero.subtitle || (isEn 
-                  ? 'Information and Communication Technology is not a subject to memorize! Master C Programming, HTML Tables, Logic Gates, and SQL Database with interactive laptop lab sessions to achieve a full 100/100 on your board exams.'
-                  : 'তথ্য ও যোগাযোগ প্রযুক্তি মুখস্ত করার বিষয় নয়! সি প্রোগ্রামিং, এইচটিএমএল টেবিল, লজিক গেইট এবং ডেটাবেজ ম্যানেজমেন্ট প্রজেক্টর ও ল্যাপটপে হাতে-কলমে প্র্যাকটিক্যাল ল্যাবে আয়ত্ত করে বোর্ড পরীক্ষায় পূর্ণাঙ্গ ১০০ নম্বর অর্জন করো।')}
+                  ? 'Information and Communication Technology is not a subject to memorize! Master Python Programming, HTML Tables, Logic Gates, and SQL Database with interactive laptop lab sessions to achieve a full 100/100 on your board exams.'
+                  : 'তথ্য ও যোগাযোগ প্রযুক্তি মুখস্ত করার বিষয় নয়! পাইথন প্রোগ্রামিং, এইচটিএমএল টেবিল, লজিক গেইট এবং ডেটাবেজ ম্যানেজমেন্ট প্রজেক্টর ও ল্যাপটপে হাতে-কলমে প্র্যাকটিক্যাল ল্যাবে আয়ত্ত করে বোর্ড পরীক্ষায় পূর্ণাঙ্গ ১০০ নম্বর অর্জন করো।')}
               </p>
 
               {/* Subject Chapter Highlights Row */}
               <div className="hero-badges-row">
                 <span className="hero-badge-tag"><Binary size={15} color="#f59e0b" /> {hero.tags?.[0] || (isEn ? 'Number Systems & Logic Gates' : 'সংখ্যা পদ্ধতি ও লজিক গেইট')}</span>
                 <span className="hero-badge-tag"><Code size={15} color="#10b981" /> {hero.tags?.[1] || (isEn ? 'HTML5 Web Design' : 'HTML5 ওয়েব ডিজাইন')}</span>
-                <span className="hero-badge-tag"><Terminal size={15} color="#ec4899" /> {hero.tags?.[2] || (isEn ? 'C Programming Lab' : 'সি প্রোগ্রামিং ল্যাব')}</span>
+                <span className="hero-badge-tag"><Terminal size={15} color="#ec4899" /> {hero.tags?.[2] || (isEn ? 'Python Programming Lab' : 'পাইথন প্রোগ্রামিং ল্যাব')}</span>
                 <span className="hero-badge-tag"><Database size={15} color="#6366f1" /> {hero.tags?.[3] || (isEn ? 'SQL Database' : 'SQL ডেটাবেজ')}</span>
               </div>
 
@@ -1027,8 +1027,8 @@ function LandingPage({
               <h3 className="pillar-title">{isEn ? 'Hands-on Lab Practice' : 'হাতে-কলমে ল্যাব প্র্যাকটিস'}</h3>
               <p className="pillar-desc">
                 {isEn 
-                  ? 'C Programming and HTML are never taught solely on paper. Students compile and run live code on multimedia projectors and laptops.'
-                  : 'সি প্রোগ্রামিং ও এইচটিএমএল কেবল খাতায় লিখে শেখানো হয় না। মাল্টিমিডিয়া প্রজেক্টর ও ল্যাপটপে সরাসরি কোড কম্পাইল ও রান করিয়ে শেখানো হয়।'}
+                  ? 'Python Programming and HTML are never taught solely on paper. Students write and run live code on multimedia projectors and laptops.'
+                  : 'পাইথন প্রোগ্রামিং ও এইচটিএমএল কেবল খাতায় লিখে শেখানো হয় না। মাল্টিমিডিয়া প্রজেক্টর ও ল্যাপটপে সরাসরি কোড রান করিয়ে শেখানো হয়।'}
               </p>
             </div>
 
@@ -1393,8 +1393,8 @@ function LandingPage({
 
               <p className="mentor-bio">
                 {mentorSection.bio || (isEn 
-                  ? '"HSC ICT is the most modern and essential subject for future careers. Yet without proper guidance, many students struggle by attempting to memorize C code or logic gates. In our classroom, every concept comes alive on laptop screens and projectors, empowering every student to achieve an A+ with genuine confidence."'
-                  : '"এইচএসসি পরীক্ষার সবচেয়ে আধুনিক ও গুরুত্বপূর্ণ বিষয় হচ্ছে তথ্য ও যোগাযোগ প্রযুক্তি (ICT)। কিন্তু অনেকেই সঠিক গাইডলাইনের অভাবে সি প্রোগ্রামিং কিংবা লজিক গেইট মুখস্ত করার চেষ্টা করে হতাশ হয়। আমাদের ক্লাসরুমে প্রতিটি টপিক ল্যাপটপ এবং মাল্টিমিডিয়া স্ক্রিনে জীবন্ত করে তোলা হয়, যাতে প্রতিটি শিক্ষার্থী আত্মবিশ্বাসের সাথে A+ অর্জন করতে পারে।"')}
+                  ? '"HSC ICT is the most modern and essential subject for future careers. Yet without proper guidance, many students struggle by attempting to memorize Python code or logic gates. In our classroom, every concept comes alive on laptop screens and projectors, empowering every student to achieve an A+ with genuine confidence."'
+                  : '"এইচএসসি পরীক্ষার সবচেয়ে আধুনিক ও গুরুত্বপূর্ণ বিষয় হচ্ছে তথ্য ও যোগাযোগ প্রযুক্তি (ICT)। কিন্তু অনেকেই সঠিক গাইডলাইনের অভাবে পাইথন প্রোগ্রামিং কিংবা লজিক গেইট মুখস্ত করার চেষ্টা করে হতাশ হয়। আমাদের ক্লাসরুমে প্রতিটি টপিক ল্যাপটপ এবং মাল্টিমিডিয়া স্ক্রিনে জীবন্ত করে তোলা হয়, যাতে প্রতিটি শিক্ষার্থী আত্মবিশ্বাসের সাথে A+ অর্জন করতে পারে।"')}
               </p>
 
               <ul className="mentor-bullet-list">
@@ -1452,7 +1452,7 @@ function LandingPage({
             {(customFaq && customFaq.length > 0 ? customFaq : (isEn ? [
               {
                 question: 'I have no prior computer or coding experience. Can I succeed?',
-                answer: 'Absolutely! Our curriculum starts from ground zero. Algorithms, flowcharts, and C programming are taught with simple real-life examples on live laptop displays so anyone can grasp them easily.'
+                answer: 'Absolutely! Our curriculum starts from ground zero. Algorithms, flowcharts, and Python programming are taught with simple real-life examples on live laptop displays so anyone can grasp them easily.'
               },
               {
                 question: 'How do I log in to the Student Portal?',
@@ -1469,7 +1469,7 @@ function LandingPage({
             ] : [
               {
                 question: 'আমার আগে কোনো কোডিং বা কম্পিউটার অভিজ্ঞতা নেই, আমি কি পারব?',
-                answer: 'অবশ্যই! আমাদের কোর্সটি একদম জিরো লেভেল থেকে শুরু হয়। অ্যালগরিদম, ফ্লোচার্ট ও সি প্রোগ্রামিং এত সহজ উদাহরণ দিয়ে ক্লাসে ল্যাপটপে দেখানো হয় যে কোনো পূর্ব অভিজ্ঞতা ছাড়াই যে কেউ সহজেই বুঝতে পারে।'
+                answer: 'অবশ্যই! আমাদের কোর্সটি একদম জিরো লেভেল থেকে শুরু হয়। অ্যালগরিদম, ফ্লোচার্ট ও পাইথন প্রোগ্রামিং এত সহজ উদাহরণ দিয়ে ক্লাসে ল্যাপটপে দেখানো হয় যে কোনো পূর্ব অভিজ্ঞতা ছাড়াই যে কেউ সহজেই বুঝতে পারে।'
               },
               {
                 question: 'স্টুডেন্ট পোর্টালে লগইন করার নিয়ম কী?',

@@ -779,7 +779,7 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
                       <option value="Cpu">Cpu / Chip (নেটওয়ার্কিং)</option>
                       <option value="Binary">Binary (সংখ্যা পদ্ধতি ও গেইট)</option>
                       <option value="Code">Code (HTML ও ওয়েব)</option>
-                      <option value="Terminal">Terminal (C Programming)</option>
+                      <option value="Terminal">Terminal (Python / প্রোগ্রামিং)</option>
                       <option value="Database">Database (ডেটাবেজ ও SQL)</option>
                       <option value="BookOpen">BookOpen (বই/সিলেবাস)</option>
                     </select>

@@ -53,11 +53,11 @@ export const defaultFrontendSettings_BN = {
     pillBadge: 'কুষ্টিয়ার সেরা HSC ICT লার্নিং সেন্টার',
     titleLine1: 'HSC ICT-তে A+ নিশ্চিত করতে',
     titleHighlight: 'মুখস্ত নয়, এসো প্রযুক্তির সাথে শিখি',
-    subtitle: 'তথ্য ও যোগাযোগ প্রযুক্তি মুখস্ত করার বিষয় নয়! সি প্রোগ্রামিং, এইচটিএমএল টেবিল, লজিক গেইট এবং ডেটাবেজ ম্যানেজমেন্ট প্রজেক্টর ও ল্যাপটপে হাতে-কলমে প্র্যাকটিক্যাল ল্যাবে আয়ত্ত করে বোর্ড পরীক্ষায় পূর্ণাঙ্গ ১০০ নম্বর অর্জন করো।',
+    subtitle: 'তথ্য ও যোগাযোগ প্রযুক্তি মুখস্ত করার বিষয় নয়! পাইথন প্রোগ্রামিং, এইচটিএমএল টেবিল, লজিক গেইট এবং ডেটাবেজ ম্যানেজমেন্ট প্রজেক্টর ও ল্যাপটপে হাতে-কলমে প্র্যাকটিক্যাল ল্যাবে আয়ত্ত করে বোর্ড পরীক্ষায় পূর্ণাঙ্গ ১০০ নম্বর অর্জন করো।',
     tags: [
       'সংখ্যা পদ্ধতি ও লজিক গেইট',
       'HTML5 ওয়েব ডিজাইন',
-      'সি প্রোগ্রামিং ল্যাব',
+      'পাইথন প্রোগ্রামিং ল্যাব',
       'SQL ডেটাবেজ'
     ],
     primaryBtnText: 'লগইন করুন',
@@ -152,21 +152,21 @@ export const defaultFrontendSettings_BN = {
       {
         id: 'ch-5',
         num: '০৫',
-        title: 'প্রোগ্রামিং ভাষা (C Programming)',
-        subtitle: 'Programming Languages & C Language',
+        title: 'প্রোগ্রামিং ভাষা (Python Programming)',
+        subtitle: 'Programming Languages & Python',
         iconName: 'Terminal',
         color: '#ec4899',
         bgGrad: 'rgba(236, 72, 153, 0.15)',
         cqMarks: '১টি পূর্ণাঙ্গ CQ (১০ মার্কস)',
         topics: [
-          'প্রোগ্রামিং ভাষার স্তর, অনুবাদক প্রোগ্রাম (কম্পাইলার, ইন্টারপ্রেটার)',
-          'অ্যালগরিদম ও ফ্লোচার্ট (ধারাবাহিকতা, সিদ্ধান্ত ও লুপ)',
-          'সি ভাষার ডেটা টাইপ, চলক, ধ্রুবক ও ইনপুট/আউটপুট (printf, scanf)',
-          'কন্ডিশনাল স্টেটমেন্ট (if-else, switch-case) ও লিপ ইয়ার লজিক',
-          'লুপ কন্ট্রোল (for, while, do-while), অ্যারে (Array) ও ফাংশন'
+          'প্রোগ্রামিং ভাষার স্তর ও অনুবাদক প্রোগ্রাম (কম্পাইলার, ইন্টারপ্রেটার)',
+          'অ্যালগরিদম ও ফ্লোচার্ট (ধারাবাহিকতা, সিদ্ধান্ত ও লুপ কাঠামো)',
+          'পাইথন সিনট্যাক্স, চলক (Variable), ডেটা টাইপ ও ইনপুট/আউটপুট (print, input)',
+          'কন্ডিশনাল স্টেটমেন্ট (if, elif, else) ও লজিক্যাল অপারেশন',
+          'লুপ কন্ট্রোল (for, while লুপ), পাইথন লিস্ট (List), স্ট্রিং ও ফাংশন (def)'
         ],
-        practical: 'ল্যাপটপে Code::Blocks / GCC দিয়ে লাইভ সি কোড কম্পাইলেশন ও রান',
-        tips: 'প্রোগ্রামিং মুখস্ত করা অসম্ভব; ক্লাসে লজিক বিল্ড-আপের মাধ্যমে কোড তৈরি শেখানো হয়।'
+        practical: 'ল্যাপটপে Python IDLE / VS Code দিয়ে লাইভ পাইথন স্ক্রিপ্টিং ও হ্যান্ডস-অন রান',
+        tips: 'পাইথনের সহজ সিনট্যাক্স ও ইন্ডেন্টেশন বুঝে কোডিং লজিক তৈরি করলে পরীক্ষায় ফুল মার্কস নিশ্চিত।'
       },
       {
         id: 'ch-6',
@@ -215,7 +215,7 @@ export const defaultFrontendSettings_BN = {
   mentorSection: {
     pill: '"ICT মুখস্ত নয়, এসো শিখি"',
     title: 'প্রযুক্তির যুগে মুখস্ত বিদ্যার কোনো স্থান নেই',
-    bio: '"এইচএসসি পরীক্ষার সবচেয়ে আধুনিক ও গুরুত্বপূর্ণ বিষয় হচ্ছে তথ্য ও যোগাযোগ প্রযুক্তি (ICT)। কিন্তু অনেকেই সঠিক গাইডলাইনের অভাবে সি প্রোগ্রামিং কিংবা লজিক গেইট মুখস্ত করার চেষ্টা করে হতাশ হয়। আমাদের ক্লাসরুমে প্রতিটি টপিক ল্যাপটপ এবং মাল্টিমিডিয়া স্ক্রিনে জীবন্ত করে তোলা হয়, যাতে প্রতিটি শিক্ষার্থী আত্মবিশ্বাসের সাথে A+ অর্জন করতে পারে।"',
+    bio: '"এইচএসসি পরীক্ষার সবচেয়ে আধুনিক ও গুরুত্বপূর্ণ বিষয় হচ্ছে তথ্য ও যোগাযোগ প্রযুক্তি (ICT)। কিন্তু অনেকেই সঠিক গাইডলাইনের অভাবে পাইথন প্রোগ্রামিং কিংবা লজিক গেইট মুখস্ত করার চেষ্টা করে হতাশ হয়। আমাদের ক্লাসরুমে প্রতিটি টপিক ল্যাপটপ এবং মাল্টিমিডিয়া স্ক্রিনে জীবন্ত করে তোলা হয়, যাতে প্রতিটি শিক্ষার্থী আত্মবিশ্বাসের সাথে A+ অর্জন করতে পারে।"',
     bullets: [
       '১০+ বছরের অভিজ্ঞ ICT শিক্ষক ও সফটওয়্যার প্রফেশনাল',
       'সহজ ভাষায় লজিক বিল্ড-আপ ও প্রোগ্রামিং প্রশিক্ষণ কৌশল',
@@ -232,7 +232,7 @@ export const defaultFrontendSettings_BN = {
       name: 'তামিম ইকবাল',
       college: 'কুষ্টিয়া সরকারি কলেজ',
       score: 'ICT: ৯৮/১০০ (A+)',
-      text: 'ICT-এর ৩য় ও ৫ম অধ্যায় নিয়ে সবাই বলত মুখস্ত করা কঠিন। মারুফ স্যারের ক্লাসে ল্যাপটপে সি কোডিং এবং ডিজিটাল লজিক গেইট প্র্যাকটিক্যালি দেখার পর ভয় একদম কেটে যায়। ফাইনাল পরীক্ষায় ৯৮ পেয়েছি!'
+      text: 'ICT-এর ৩য় ও ৫ম অধ্যায় নিয়ে সবাই বলত মুখস্ত করা কঠিন। মারুফ স্যারের ক্লাসে ল্যাপটপে পাইথন কোডিং এবং ডিজিটাল লজিক গেইট প্র্যাকটিক্যালি দেখার পর ভয় একদম কেটে যায়। ফাইনাল পরীক্ষায় ৯৮ পেয়েছি!'
     },
     {
       id: 2,
@@ -255,7 +255,7 @@ export const defaultFrontendSettings_BN = {
     {
       id: 1,
       question: 'আমার আগে কোনো কোডিং বা কম্পিউটার অভিজ্ঞতা নেই, আমি কি পারব?',
-      answer: 'অবশ্যই! আমাদের কোর্সটি একদম জিরো লেভেল থেকে শুরু হয়। অ্যালগরিদম, ফ্লোচার্ট ও সি প্রোগ্রামিং এত সহজ উদাহরণ দিয়ে ক্লাসে ল্যাপটপে দেখানো হয় যে কোনো পূর্ব অভিজ্ঞতা ছাড়াই যে কেউ সহজেই বুঝতে পারে।'
+      answer: 'অবশ্যই! আমাদের কোর্সটি একদম জিরো লেভেল থেকে শুরু হয়। অ্যালগরিদম, ফ্লোচার্ট ও পাইথন প্রোগ্রামিং এত সহজ উদাহরণ দিয়ে ক্লাসে ল্যাপটপে দেখানো হয় যে কোনো পূর্ব অভিজ্ঞতা ছাড়াই যে কেউ সহজেই বুঝতে পারে।'
     },
     {
       id: 2,
@@ -309,11 +309,11 @@ export const defaultFrontendSettings_EN = {
     pillBadge: "Kushtia's Premier HSC ICT Learning Center",
     titleLine1: 'To Secure an A+ in HSC ICT',
     titleHighlight: 'Learn with Practical Tech, Not Rote Learning',
-    subtitle: 'Information and Communication Technology is not a subject to memorize! Master C Programming, HTML Tables, Logic Gates, and SQL Database with interactive laptop lab sessions to achieve a full 100/100 on your board exams.',
+    subtitle: 'Information and Communication Technology is not a subject to memorize! Master Python Programming, HTML Tables, Logic Gates, and SQL Database with interactive laptop lab sessions to achieve a full 100/100 on your board exams.',
     tags: [
       'Number Systems & Logic Gates',
       'HTML5 Web Design',
-      'C Programming Lab',
+      'Python Programming Lab',
       'SQL Database'
     ],
     primaryBtnText: 'Login Now',
@@ -408,21 +408,21 @@ export const defaultFrontendSettings_EN = {
       {
         id: 'ch-5',
         num: '05',
-        title: 'Programming Languages & C Language',
-        subtitle: 'Programming Languages & C Language',
+        title: 'Programming Languages & Python',
+        subtitle: 'Programming Languages & Python',
         iconName: 'Terminal',
         color: '#ec4899',
         bgGrad: 'rgba(236, 72, 153, 0.15)',
         cqMarks: '1 Full Board CQ (10 Marks)',
         topics: [
           'Programming Paradigms & Translators (Compiler, Interpreter)',
-          'Algorithms & Flowcharts (Sequential, Decision & Loop)',
-          'C Data Types, Variables, Constants & I/O (printf, scanf)',
-          'Conditional Statements (if-else, switch-case) & Leap Year Logic',
-          'Loop Control (for, while, do-while), Arrays & Functions'
+          'Algorithms & Flowcharts (Sequential, Decision & Loop Structures)',
+          'Python Syntax, Variables, Data Types & I/O (print, input)',
+          'Conditional Logic (if, elif, else) & Logical Operators',
+          'Loop Controls (for, while), Python Lists, Strings & Functions (def)'
         ],
-        practical: 'Live C Code Compilation & Execution with Code::Blocks / GCC on Laptops',
-        tips: 'Programming cannot be memorized; code generation is taught via logic building.'
+        practical: 'Live Python Scripting & Hands-on Code Execution with Python IDLE / VS Code on Laptops',
+        tips: 'Mastering Python\'s intuitive syntax, indentation, and logic guarantees full 10 marks in board exams.'
       },
       {
         id: 'ch-6',
@@ -471,7 +471,7 @@ export const defaultFrontendSettings_EN = {
   mentorSection: {
     pill: '"Do Not Memorize ICT, Learn Practically"',
     title: 'In the Age of Technology, Rote Learning Has No Place',
-    bio: '"HSC ICT is the most modern and essential subject for future careers. Yet without proper guidance, many students struggle by attempting to memorize C code or logic gates. In our classroom, every concept comes alive on laptop screens and projectors, empowering every student to achieve an A+ with genuine confidence."',
+    bio: '"HSC ICT is the most modern and essential subject for future careers. Yet without proper guidance, many students struggle by attempting to memorize Python code or logic gates. In our classroom, every concept comes alive on laptop screens and projectors, empowering every student to achieve an A+ with genuine confidence."',
     bullets: [
       '10+ years experienced ICT mentor & software engineering professional',
       'Intuitive logic-building and practical programming methodologies',
@@ -488,7 +488,7 @@ export const defaultFrontendSettings_EN = {
       name: 'Tamim Iqbal',
       college: 'Kushtia Govt. College',
       score: 'ICT: 98/100 (A+)',
-      text: 'Everyone warned me chapters 3 and 5 were difficult to memorize. But after practicing C coding and digital logic gates on laptops with Maruf Sir, all fears vanished. I scored 98 in the board exams!'
+      text: 'Everyone warned me chapters 3 and 5 were difficult to memorize. But after practicing Python coding and digital logic gates on laptops with Maruf Sir, all fears vanished. I scored 98 in the board exams!'
     },
     {
       id: 2,
@@ -511,7 +511,7 @@ export const defaultFrontendSettings_EN = {
     {
       id: 1,
       question: 'I have no prior computer or coding experience. Can I succeed?',
-      answer: 'Absolutely! Our curriculum starts from ground zero. Algorithms, flowcharts, and C programming are taught with simple real-life examples on live laptop displays so anyone can grasp them easily.'
+      answer: 'Absolutely! Our curriculum starts from ground zero. Algorithms, flowcharts, and Python programming are taught with simple real-life examples on live laptop displays so anyone can grasp them easily.'
     },
     {
       id: 2,
@@ -1291,7 +1291,12 @@ export const dataStore = {
             hero: { 
               ...defaults.hero, 
               ...(parsed.hero || {}),
-              tags: Array.isArray(parsed.hero?.tags) ? parsed.hero.tags : defaults.hero.tags,
+              subtitle: parsed.hero?.subtitle && !parsed.hero.subtitle.includes('সি প্রোগ্রামিং') && !parsed.hero.subtitle.includes('C Programming')
+                ? parsed.hero.subtitle
+                : defaults.hero.subtitle,
+              tags: Array.isArray(parsed.hero?.tags)
+                ? parsed.hero.tags.map(t => (t.includes('সি') || t.includes('C Programming')) ? defaults.hero.tags[2] : t)
+                : defaults.hero.tags,
               stat1: { ...defaults.hero.stat1, ...(parsed.hero?.stat1 || {}) },
               stat2: { ...defaults.hero.stat2, ...(parsed.hero?.stat2 || {}) },
               stat3: { ...defaults.hero.stat3, ...(parsed.hero?.stat3 || {}) }
@@ -1310,15 +1315,32 @@ export const dataStore = {
               ...defaults.curriculum,
               ...(parsed.curriculum || {}),
               chapters: Array.isArray(parsed.curriculum?.chapters) && parsed.curriculum.chapters.length > 0
-                ? parsed.curriculum.chapters
+                ? parsed.curriculum.chapters.map(ch => {
+                    if (ch.id === 'ch-5' && (ch.title?.includes('C Programming') || ch.title?.includes('সি'))) {
+                      return defaults.curriculum.chapters[4] || ch;
+                    }
+                    return ch;
+                  })
                 : defaults.curriculum.chapters
             },
             contact: { ...defaults.contact, ...(parsed.contact || {}) },
             testimonials: Array.isArray(parsed.testimonials) && parsed.testimonials.length > 0 
-              ? parsed.testimonials 
+              ? parsed.testimonials.map(t => {
+                  if (t.text?.includes('সি কোডিং') || t.text?.includes('C coding')) {
+                    const defaultT = defaults.testimonials.find(dt => dt.id === t.id);
+                    return defaultT ? { ...t, text: defaultT.text } : t;
+                  }
+                  return t;
+                })
               : defaults.testimonials,
             faq: Array.isArray(parsed.faq) && parsed.faq.length > 0 
-              ? parsed.faq 
+              ? parsed.faq.map(f => {
+                  if (f.answer?.includes('সি প্রোগ্রামিং') || f.answer?.includes('C programming')) {
+                    const defaultF = defaults.faq.find(df => df.id === f.id);
+                    return defaultF ? { ...f, answer: defaultF.answer } : f;
+                  }
+                  return f;
+                })
               : defaults.faq
           };
         }
