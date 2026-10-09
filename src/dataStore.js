@@ -975,6 +975,21 @@ export const defaultDemoPayments = [
   { id: 'TXN-3017', studentId: 'STU-20019', studentName: 'ইমরান হোসেন', batch: 'HSC 2027 ফাউন্ডেশন কোর্স', amount: 500, feeType: 'monthly', method: 'Nagad', collectedBy: 'Admin', date: '06/10/2026', time: '05:30 PM', note: 'October Monthly Fee' }
 ];
 
+// Natural Numeric Sort for Student IDs (1, 2, 3... or STU-20001, STU-20002...)
+export function sortStudentsById(students) {
+  if (!Array.isArray(students)) return [];
+  return [...students].sort((a, b) => {
+    const strA = String(a?.id || '');
+    const strB = String(b?.id || '');
+    const numA = parseInt(strA.replace(/\D/g, ''), 10);
+    const numB = parseInt(strB.replace(/\D/g, ''), 10);
+    if (!isNaN(numA) && !isNaN(numB) && numA !== numB) {
+      return numA - numB;
+    }
+    return strA.localeCompare(strB, undefined, { numeric: true, sensitivity: 'base' });
+  });
+}
+
 export const dataStore = {
   // --- BACKEND SYNCHRONIZATION ---
   async syncWithBackend() {
@@ -1005,7 +1020,7 @@ export const dataStore = {
         localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(batches));
       }
       if (students && Array.isArray(students)) {
-        localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
+        localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(sortStudentsById(students)));
       }
       if (payments && Array.isArray(payments)) {
         localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(payments));
@@ -1251,32 +1266,65 @@ export const dataStore = {
     notifyChange();
   },
 
+  sortStudentsById(students) {
+    return sortStudentsById(students);
+  },
+
   // --- STUDENTS ---
   getStudents() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.STUDENTS);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length >= 20) return parsed;
+        if (Array.isArray(parsed) && parsed.length >= 20) return sortStudentsById(parsed);
       }
       // Force seed the 20 demo students (10 Course @ 4000 BDT, 10 Monthly @ 500 BDT)
-      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(defaultDemoStudents));
+      const sorted = sortStudentsById(defaultDemoStudents);
+      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(sorted));
       localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(defaultDemoPayments));
-      return defaultDemoStudents;
+      return sorted;
     } catch (e) {}
-    return defaultDemoStudents;
+    return sortStudentsById(defaultDemoStudents);
   },
 
   saveStudents(students) {
-    localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(students));
+    const sorted = sortStudentsById(students);
+    localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(sorted));
     notifyChange();
+  },
+
+  getNextStudentId() {
+    const students = this.getStudents();
+    if (!students || students.length === 0) {
+      return 'STU-20001';
+    }
+    let maxNum = 0;
+    let prefix = 'STU-';
+    let padLength = 0;
+    students.forEach(s => {
+      const idStr = String(s.id || '').trim();
+      const match = idStr.match(/^(.*?)(\d+)$/);
+      if (match) {
+        prefix = match[1] || 'STU-';
+        const num = parseInt(match[2], 10);
+        if (!isNaN(num) && num > maxNum) {
+          maxNum = num;
+          padLength = match[2].length;
+        }
+      }
+    });
+    if (maxNum === 0) return 'STU-20001';
+    const nextNum = maxNum + 1;
+    const nextNumStr = padLength > 0 ? String(nextNum).padStart(padLength, '0') : String(nextNum);
+    return `${prefix}${nextNumStr}`;
   },
 
   addStudent(student) {
     const students = this.getStudents();
     const initials = student.name ? student.name.trim().substring(0, 2).toUpperCase() : 'ST';
+    const nextId = (student.id && student.id.trim()) ? student.id.trim() : this.getNextStudentId();
     const newStudent = {
-      id: student.id || `STU-${Math.floor(10000 + Math.random() * 90000)}`,
+      id: nextId,
       name: student.name.trim(),
       initials,
       batch: student.batch || 'Unassigned',
@@ -1293,7 +1341,7 @@ export const dataStore = {
       nextInstallmentDate: student.feeType === 'course' ? student.nextInstallmentDate || '01/11/2026' : null,
       admissionDate: student.admissionDate || new Date().toLocaleDateString('en-GB')
     };
-    const updated = [newStudent, ...students];
+    const updated = sortStudentsById([...students, newStudent]);
     this.saveStudents(updated);
 
     // Sync to Laravel API

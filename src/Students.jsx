@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Link, Plus, Search, ChevronLeft, ChevronRight, X, Edit, Trash2 } from 'lucide-react';
 import StudentProfile from './StudentProfile';
-import { dataStore } from './dataStore';
+import { dataStore, sortStudentsById } from './dataStore';
 import { useTranslation } from './translations';
 import './students.css';
 
@@ -57,9 +57,9 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
 
   const openAddModal = () => {
     setIsEditMode(false);
-    const randId = `STU-${Math.floor(10000 + Math.random() * 90000)}`;
+    const nextId = dataStore.getNextStudentId();
     setStudentForm({
-      idNumber: randId,
+      idNumber: nextId,
       name: '',
       phone: '',
       guardianPhone: '',
@@ -148,27 +148,29 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
     setIsAddModalOpen(false);
   };
 
-  // Filter students
-  const filteredStudents = (activeTab === 'Pending Approvals' ? pendingStudents : students).filter(student => {
-    const q = searchQuery.toLowerCase().trim();
-    const matchesSearch = !q || 
-      student.name.toLowerCase().includes(q) || 
-      student.id.toLowerCase().includes(q) || 
-      (student.phone && student.phone.includes(q));
+  // Filter students (sorted by ID serial: 1, 2, 3...)
+  const filteredStudents = sortStudentsById(
+    (activeTab === 'Pending Approvals' ? pendingStudents : students).filter(student => {
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch = !q || 
+        student.name.toLowerCase().includes(q) || 
+        student.id.toLowerCase().includes(q) || 
+        (student.phone && student.phone.includes(q));
 
-    let matchesTab = true;
-    if (activeTab === 'Active') matchesTab = student.status === 'Active';
-    else if (activeTab === 'Inactive') matchesTab = student.status === 'Inactive';
+      let matchesTab = true;
+      if (activeTab === 'Active') matchesTab = student.status === 'Active';
+      else if (activeTab === 'Inactive') matchesTab = student.status === 'Inactive';
 
-    const matchesBatch = selectedBatchFilter === 'All batches' || 
-      student.batch === selectedBatchFilter || 
-      student.preferredBatch === selectedBatchFilter;
+      const matchesBatch = selectedBatchFilter === 'All batches' || 
+        student.batch === selectedBatchFilter || 
+        student.preferredBatch === selectedBatchFilter;
 
-    const matchesStatus = selectedStatusFilter === 'All status' || 
-      student.status === selectedStatusFilter;
+      const matchesStatus = selectedStatusFilter === 'All status' || 
+        student.status === selectedStatusFilter;
 
-    return matchesSearch && matchesTab && matchesBatch && matchesStatus;
-  });
+      return matchesSearch && matchesTab && matchesBatch && matchesStatus;
+    })
+  );
 
   const courseStudentsCount = students.filter(s => s.feeType === 'course').length;
   const monthlyStudentsCount = students.filter(s => s.feeType === 'monthly').length;
@@ -346,7 +348,7 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
                                 onClick={() => {
                                   setIsEditMode(false);
                                   setStudentForm({
-                                    idNumber: `STU-${Math.floor(10000 + Math.random() * 90000)}`,
+                                    idNumber: dataStore.getNextStudentId(),
                                     name: student.name,
                                     phone: student.phone || '',
                                     guardianPhone: student.guardianPhone || '',

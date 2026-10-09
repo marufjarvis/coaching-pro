@@ -74,9 +74,18 @@ class StudentController extends Controller
             });
         }
 
-        $students = $query->orderBy('created_at', 'desc')->get()->map(function ($s) {
+        $students = $query->get()->map(function ($s) {
             return $this->formatStudent($s);
-        });
+        })->sort(function ($a, $b) {
+            preg_match('/\d+/', $a['id'] ?? '', $mA);
+            preg_match('/\d+/', $b['id'] ?? '', $mB);
+            $nA = isset($mA[0]) ? (int)$mA[0] : 0;
+            $nB = isset($mB[0]) ? (int)$mB[0] : 0;
+            if ($nA !== $nB) {
+                return $nA <=> $nB;
+            }
+            return strnatcasecmp($a['id'] ?? '', $b['id'] ?? '');
+        })->values();
 
         return response()->json($students);
     }
@@ -103,10 +112,22 @@ class StudentController extends Controller
 
         $id = $request->input('id');
         if (!$id) {
-            $id = 'STU-' . mt_rand(10000, 99999);
-            while (Student::where('id', $id)->exists()) {
-                $id = 'STU-' . mt_rand(10000, 99999);
+            $existingIds = Student::pluck('id')->toArray();
+            $maxNum = 0;
+            $padLength = 5;
+            $prefix = 'STU-';
+            foreach ($existingIds as $exId) {
+                if (preg_match('/^(.*?)(\d+)$/', trim($exId), $m)) {
+                    $prefix = $m[1] ?: 'STU-';
+                    $val = (int)$m[2];
+                    if ($val > $maxNum) {
+                        $maxNum = $val;
+                        $padLength = strlen($m[2]);
+                    }
+                }
             }
+            $nextNum = $maxNum > 0 ? ($maxNum + 1) : 20001;
+            $id = $prefix . str_pad($nextNum, $padLength, '0', STR_PAD_LEFT);
         }
 
         $feeAmount = (float) ($request->input('feeAmount') ?? $request->input('fee_amount') ?? 0);

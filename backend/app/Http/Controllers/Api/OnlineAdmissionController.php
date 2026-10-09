@@ -68,9 +68,24 @@ class OnlineAdmissionController extends Controller
             return response()->json(['message' => 'Application not found'], 404);
         }
 
-        $studentId = 'STU-' . mt_rand(10000, 99999);
-        while (Student::where('id', $studentId)->exists()) {
-            $studentId = 'STU-' . mt_rand(10000, 99999);
+        $studentId = $request->input('id') ?? $request->input('studentId');
+        if (!$studentId) {
+            $existingIds = Student::pluck('id')->toArray();
+            $maxNum = 0;
+            $padLength = 5;
+            $prefix = 'STU-';
+            foreach ($existingIds as $exId) {
+                if (preg_match('/^(.*?)(\d+)$/', trim($exId), $m)) {
+                    $prefix = $m[1] ?: 'STU-';
+                    $val = (int)$m[2];
+                    if ($val > $maxNum) {
+                        $maxNum = $val;
+                        $padLength = strlen($m[2]);
+                    }
+                }
+            }
+            $nextNum = $maxNum > 0 ? ($maxNum + 1) : 20001;
+            $studentId = $prefix . str_pad($nextNum, $padLength, '0', STR_PAD_LEFT);
         }
 
         $feeAmount = (float) ($request->input('feeAmount') ?? 500);
