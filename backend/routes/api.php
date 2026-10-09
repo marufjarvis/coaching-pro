@@ -13,6 +13,10 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\OnlineAdmissionController;
 use App\Http\Controllers\Api\EnrollmentLinkController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\AuthController;
+
+// Authentication (Admin & Manager)
+Route::post('/login', [AuthController::class, 'login']);
 
 // Dashboard Stats
 Route::get('/dashboard-stats', [DashboardController::class, 'stats']);

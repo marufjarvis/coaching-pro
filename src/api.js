@@ -25,6 +25,14 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
+  // --- AUTHENTICATION ---
+  async login({ email, password }) {
+    return request('/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+  },
+
   // --- BATCHES ---
   async getBatches() {
     return request('/batches');

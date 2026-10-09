@@ -14,11 +14,36 @@ use App\Models\Staff;
 use App\Models\CoachingSetting;
 use App\Models\OnlineAdmission;
 use App\Models\EnrollmentLink;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // =========================================================================
+        // 🔐 ADMIN & MANAGER CREDENTIALS (এডমিন ও ম্যানেজারের লগইন তথ্য)
+        // এগুলো পরিবর্তন করতে হলে সরাসরি কোডের এই অংশ অথবা ডেটাবেজ থেকে পরিবর্তন করতে হবে।
+        // (To change credentials, modify directly in this code or in the database)
+        // =========================================================================
+        User::updateOrCreate(
+            ['email' => 'marufjarvis@gmail.com'],
+            [
+                'name' => 'Maruf Hossain (Admin)',
+                'password' => Hash::make('12345678'),
+                'role' => 'admin',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'manager@gmail.com'],
+            [
+                'name' => 'Center Manager',
+                'password' => Hash::make('12345678'),
+                'role' => 'manager',
+            ]
+        );
+
         // 1. Coaching Settings
         CoachingSetting::firstOrCreate(
             ['id' => 1],

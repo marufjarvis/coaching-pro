@@ -22,13 +22,17 @@ function App() {
     return <AdmissionForm batch={batchName} />;
   }
 
-  const handleLogin = () => {
+  const handleLogin = (user) => {
     localStorage.setItem('coachingLoggedIn', 'true');
+    if (user) {
+      localStorage.setItem('coachingUser', JSON.stringify(user));
+    }
     setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
     localStorage.setItem('coachingLoggedIn', 'false');
+    localStorage.removeItem('coachingUser');
     setIsLoggedIn(false);
   };
 

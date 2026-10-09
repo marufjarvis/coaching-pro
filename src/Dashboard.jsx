@@ -166,10 +166,33 @@ function Dashboard({ onLogout }) {
 
         <div className="sidebar-footer">
           <div className="profile-widget">
-            <div className="profile-avatar">MH</div>
+            <div className="profile-avatar">
+              {(() => {
+                try {
+                  const u = JSON.parse(localStorage.getItem('coachingUser') || 'null');
+                  if (u && u.role === 'manager') return 'CM';
+                  return 'MH';
+                } catch (e) { return 'MH'; }
+              })()}
+            </div>
             <div className="profile-info">
-              <div className="profile-name">Maruf Hossain</div>
-              <div className="profile-role">{t.coachingAdmin}</div>
+              <div className="profile-name">
+                {(() => {
+                  try {
+                    const u = JSON.parse(localStorage.getItem('coachingUser') || 'null');
+                    return u?.name || 'Maruf Hossain';
+                  } catch (e) { return 'Maruf Hossain'; }
+                })()}
+              </div>
+              <div className="profile-role">
+                {(() => {
+                  try {
+                    const u = JSON.parse(localStorage.getItem('coachingUser') || 'null');
+                    if (u && u.role === 'manager') return lang === 'EN' ? 'Manager' : 'ম্যানেজার';
+                    return t.coachingAdmin;
+                  } catch (e) { return t.coachingAdmin; }
+                })()}
+              </div>
             </div>
             <button 
               className="logout-btn" 
