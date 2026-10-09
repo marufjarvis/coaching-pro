@@ -475,8 +475,9 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
               <input 
                 type="text" 
                 className="cms-input" 
-                value={settings.hero?.primaryBtnText || (isEn ? 'Login' : 'লগইন করুন')} 
+                value={settings.hero?.primaryBtnText ?? ''} 
                 onChange={(e) => updateField('hero', 'primaryBtnText', e.target.value)} 
+                placeholder={isEn ? 'Login' : 'লগইন করুন'}
               />
             </div>
             <div className="cms-field-group">
@@ -484,8 +485,9 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
               <input 
                 type="text" 
                 className="cms-input" 
-                value={settings.hero?.enrollBtnText || (isEn ? 'Online Admission Form' : 'অনলাইন ভর্তি আবেদন')} 
+                value={settings.hero?.enrollBtnText ?? ''} 
                 onChange={(e) => updateField('hero', 'enrollBtnText', e.target.value)} 
+                placeholder={isEn ? 'Online Admission Form' : 'অনলাইন ভর্তি আবেদন'}
               />
             </div>
           </div>
