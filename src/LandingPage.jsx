@@ -498,236 +498,90 @@ function LandingPage({
               </div>
             </div>
 
-            {/* Right Hero Interactive Lab Playground */}
-            <div id="lab-demo">
-              <div className="hero-terminal-card">
-                <div className="terminal-header">
-                  <div className="terminal-dots">
-                    <span className="dot dot-red"></span>
-                    <span className="dot dot-yellow"></span>
-                    <span className="dot dot-green"></span>
+            {/* Right Hero: Maruf Sir Featured Portrait Showcase */}
+            <div className="hero-portrait-col">
+              <div className="hero-portrait-card">
+                <div className="hero-portrait-stage">
+                  {/* Atmospheric Glow Halo & Circuit Pattern */}
+                  <div className="hero-portrait-halo"></div>
+                  <div className="hero-portrait-pattern"></div>
+
+                  {/* Floating Badge 1: Top-Right Verified Lead Instructor */}
+                  <div className="hero-float-badge hero-float-top-right">
+                    <div className="float-badge-icon badge-accent-blue">
+                      <Award size={18} />
+                    </div>
+                    <div>
+                      <div className="float-badge-title">মারুফ হোসেন</div>
+                      <div className="float-badge-sub">প্রধান শিক্ষক ও প্রতিষ্ঠাতা</div>
+                    </div>
                   </div>
 
-                  <div className="terminal-tabs">
-                    <button 
-                      type="button" 
-                      onClick={() => { setActiveTab('c_program'); setCodeRunOutput(false); }}
-                      className={`terminal-tab-btn ${activeTab === 'c_program' ? 'active' : ''}`}
-                    >
-                      <Terminal size={13} /> C প্রোগ্রামিং
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => setActiveTab('logic_gate')}
-                      className={`terminal-tab-btn ${activeTab === 'logic_gate' ? 'active' : ''}`}
-                    >
-                      <Cpu size={13} /> লজিক গেইট
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => setActiveTab('number_converter')}
-                      className={`terminal-tab-btn ${activeTab === 'number_converter' ? 'active' : ''}`}
-                    >
-                      <Binary size={13} /> সংখ্যা পদ্ধতি
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => setActiveTab('html')}
-                      className={`terminal-tab-btn ${activeTab === 'html' ? 'active' : ''}`}
-                    >
-                      <Code size={13} /> HTML5 ওয়েব
-                    </button>
+                  {/* Floating Badge 2: Top-Left Experience & Specialist */}
+                  <div className="hero-float-badge hero-float-top-left">
+                    <div className="float-badge-icon badge-accent-green">
+                      <Sparkles size={18} />
+                    </div>
+                    <div>
+                      <div className="float-badge-title">HSC ICT স্পেশালিস্ট</div>
+                      <div className="float-badge-sub">১০+ বছর সফল পাঠদান</div>
+                    </div>
+                  </div>
+
+                  {/* Main Portrait Photo */}
+                  <img 
+                    src="/maruf1.png" 
+                    alt="মারুফ হোসেন - HSC ICT মেন্টর, Maruf's ICT Care" 
+                    className="hero-mentor-img"
+                    loading="eager"
+                  />
+
+                  {/* Smooth Gradient Fade at Bottom */}
+                  <div className="hero-portrait-fade"></div>
+
+                  {/* Floating Badge 3: Bottom-Left 1200+ A+ Students */}
+                  <div className="hero-float-badge hero-float-bottom-left">
+                    <div className="float-badge-icon badge-accent-amber">
+                      <GraduationCap size={20} />
+                    </div>
+                    <div>
+                      <div className="float-badge-title">১,২০০+ শিক্ষার্থী A+</div>
+                      <div className="float-badge-rating">
+                        <span>★★★★★</span> <small>৫.০ রেটিং</small>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Floating Badge 4: Bottom-Right Live Lab Pulse */}
+                  <div className="hero-float-badge hero-float-bottom-right">
+                    <span className="pulse-indicator"></span>
+                    <div>
+                      <div className="float-badge-title" style={{ color: '#34d399' }}>সরাসরি ল্যাব ক্লাস</div>
+                      <div className="float-badge-sub">ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস</div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="terminal-body">
-                  {/* Tab 1: C Programming Interactive Simulator */}
-                  {activeTab === 'c_program' && (
-                    <div>
-                      <div className="code-box">
-                        <span className="code-comment">// HSC ICT অধ্যায় ৫: লিপ ইয়ার নির্ণয় প্রোগ্রাম</span><br />
-                        <span className="code-keyword">#include</span> &lt;stdio.h&gt;<br />
-                        <span className="code-keyword">int</span> <span className="code-fn">main</span>() &#123;<br />
-                        &nbsp;&nbsp;<span className="code-keyword">int</span> year = <span className="code-num">2026</span>;<br />
-                        &nbsp;&nbsp;<span className="code-keyword">if</span> ((year % <span className="code-num">4</span> == <span className="code-num">0</span> &amp;&amp; year % <span className="code-num">100</span> != <span className="code-num">0</span>) || (year % <span className="code-num">400</span> == <span className="code-num">0</span>)) &#123;<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="code-fn">printf</span>(<span className="code-string">"ICT Care: %d is a Leap Year!\n"</span>, year);<br />
-                        &nbsp;&nbsp;&#125; <span className="code-keyword">else</span> &#123;<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span className="code-fn">printf</span>(<span className="code-string">"ICT Care: %d is Not a Leap Year.\n"</span>, year);<br />
-                        &nbsp;&nbsp;&#125;<br />
-                        &nbsp;&nbsp;<span className="code-keyword">return</span> <span className="code-num">0</span>;<br />
-                        &#125;
-                      </div>
-
-                      <div className="code-run-bar">
-                        <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>ল্যাপটপ কোড এডিটর সিমুলেশন</span>
-                        <button 
-                          type="button" 
-                          onClick={() => setCodeRunOutput(true)} 
-                          className="btn-code-run"
-                        >
-                          <Play size={14} /> কোড রান করুন
-                        </button>
-                      </div>
-
-                      {codeRunOutput ? (
-                        <div className="terminal-output">
-                          &gt; gcc leap_year.c -o main &amp;&amp; ./main<br />
-                          <span style={{ color: '#38bdf8' }}>[Compiler Success 0.04s]</span><br />
-                          ICT Care: 2026 is Not a Leap Year. (পরবর্তী লিপ ইয়ার: ২০২৮)
-                        </div>
-                      ) : (
-                        <div style={{ fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic', textAlign: 'center', padding: '0.5rem' }}>
-                          "কোড রান করুন" বাটনে ক্লিক করে আউটপুট পরীক্ষা করো
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Tab 2: Logic Gate Lab Simulator */}
-                  {activeTab === 'logic_gate' && (
-                    <div className="gate-lab-container">
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600 }}>HSC ICT অধ্যায় ৩: ডিজিটাল লজিক গেইট</span>
-                        <div style={{ display: 'flex', gap: '0.35rem' }}>
-                          {['AND', 'OR', 'XOR'].map((type) => (
-                            <button
-                              key={type}
-                              type="button"
-                              onClick={() => setGateType(type)}
-                              style={{
-                                background: gateType === type ? '#0284c7' : 'rgba(255,255,255,0.06)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                color: '#ffffff',
-                                borderRadius: '6px',
-                                padding: '0.2rem 0.5rem',
-                                fontSize: '0.75rem',
-                                fontWeight: 700,
-                                cursor: 'pointer'
-                              }}
-                            >
-                              {type} গেইট
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="gate-controls">
-                        {/* Switch A */}
-                        <button 
-                          type="button" 
-                          onClick={() => setGateA(!gateA)} 
-                          className={`gate-switch-btn ${gateA ? 'on' : ''}`}
-                        >
-                          <span>ইনপুট A</span>
-                          <span style={{ fontSize: '1.25rem' }}>{gateA ? '1 (HIGH)' : '0 (LOW)'}</span>
-                          <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>সুইচ ক্লিক করুন</span>
-                        </button>
-
-                        <div style={{ color: '#38bdf8', fontWeight: 800, fontSize: '1.2rem' }}>
-                          {gateType}
-                        </div>
-
-                        {/* Switch B */}
-                        <button 
-                          type="button" 
-                          onClick={() => setGateB(!gateB)} 
-                          className={`gate-switch-btn ${gateB ? 'on' : ''}`}
-                        >
-                          <span>ইনপুট B</span>
-                          <span style={{ fontSize: '1.25rem' }}>{gateB ? '1 (HIGH)' : '0 (LOW)'}</span>
-                          <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>সুইচ ক্লিক করুন</span>
-                        </button>
-
-                        {/* Output Bulb */}
-                        <div className="gate-bulb-display">
-                          <div className={`gate-bulb ${gateOutput ? 'glowing' : ''}`}>
-                            <Lightbulb size={24} />
-                          </div>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: gateOutput ? '#facc15' : '#94a3b8' }}>
-                            আউটপুট: {gateOutput ? '1 (বাতি জ্বলছে)' : '0 (বন্ধ)'}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div style={{ background: '#080c16', padding: '0.75rem', borderRadius: '8px', fontSize: '0.82rem', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.06)' }}>
-                        💡 <strong>সত্যক সারণী সূত্র ({gateType}):</strong>{' '}
-                        {gateType === 'AND' && 'উভয় ইনপুট ১ হলেই কেবল আউটপুট ১ হবে।'}
-                        {gateType === 'OR' && 'যেকোনো একটি ইনপুট ১ হলেই আউটপুট ১ হবে।'}
-                        {gateType === 'XOR' && 'উভয় ইনপুটের মান অসমান হলে আউটপুট ১ হবে।'}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Tab 3: Interactive Number Converter */}
-                  {activeTab === 'number_converter' && (
-                    <div className="num-converter-box">
-                      <div className="num-converter-input-wrap">
-                        <label>HSC ICT অধ্যায় ৩: ডেসিমাল সংখ্যা লিখুন (সংখ্যা পদ্ধতি জাদু)</label>
-                        <input 
-                          type="number" 
-                          value={decInput} 
-                          onChange={(e) => setDecInput(e.target.value)} 
-                          className="num-converter-input"
-                          placeholder="যেকোনো সংখ্যা লিখুন..."
-                        />
-                      </div>
-
-                      <div className="num-converter-results">
-                        <div className="num-res-card">
-                          <div className="label">বাইনারি (ভিত্তি ২)</div>
-                          <div className="val">{convertedNums.bin}₂</div>
-                        </div>
-                        <div className="num-res-card">
-                          <div className="label">অক্টাল (ভিত্তি ৮)</div>
-                          <div className="val">{convertedNums.oct}₈</div>
-                        </div>
-                        <div className="num-res-card">
-                          <div className="label">হেক্সাডেসিমাল (ভিত্তি ১৬)</div>
-                          <div className="val">{convertedNums.hex}₁₆</div>
-                        </div>
-                      </div>
-
-                      <div style={{ background: '#080c16', padding: '0.75rem', borderRadius: '8px', fontSize: '0.82rem', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.2)' }}>
-                        ✨ <strong>ম্যাজিক ট্রিক:</strong> বোর্ডে ২-এর পরিপূরক ও সংখ্যা পদ্ধতির জটিল রূপান্তরগুলো ক্লাসে ক্যালকুলেটর শর্টকাট ও হ্যান্ড ক্যালকুলেশনে সহজ নিয়মে শেখানো হয়।
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Tab 4: HTML5 Web Preview */}
-                  {activeTab === 'html' && (
-                    <div>
-                      <div className="code-box">
-                        <span className="code-keyword">&lt;table</span> <span className="code-fn">border</span>=<span className="code-string">"1"</span> <span className="code-fn">style</span>=<span className="code-string">"width:100%"</span>&gt;<br />
-                        &nbsp;&nbsp;&lt;tr&gt;<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;th&gt;রোল&lt;/th&gt;&lt;th&gt;নাম&lt;/th&gt;&lt;th&gt;ICT গ্রেড&lt;/th&gt;<br />
-                        &nbsp;&nbsp;&lt;/tr&gt;<br />
-                        &nbsp;&nbsp;&lt;tr&gt;<br />
-                        &nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;১০১&lt;/td&gt;&lt;td&gt;মারুফ হোসেন&lt;/td&gt;&lt;td <span className="code-fn">style</span>=<span className="code-string">"color:lime"</span>&gt;A+&lt;/td&gt;<br />
-                        &nbsp;&nbsp;&lt;/tr&gt;<br />
-                        <span className="code-keyword">&lt;/table&gt;</span>
-                      </div>
-
-                      <div style={{ background: '#090f1d', border: '1px solid #1e293b', padding: '0.85rem', borderRadius: '8px' }}>
-                        <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.35rem' }}>ব্রাউজার রেন্ডার প্রিভিউ:</div>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '0.85rem', color: '#ffffff' }}>
-                          <thead>
-                            <tr style={{ background: '#1e293b', borderBottom: '1px solid #334155' }}>
-                              <th style={{ padding: '6px' }}>রোল</th>
-                              <th style={{ padding: '6px' }}>নাম</th>
-                              <th style={{ padding: '6px' }}>ICT গ্রেড</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
-                              <td style={{ padding: '6px' }}>১০১</td>
-                              <td style={{ padding: '6px' }}>মারুফ হোসেন</td>
-                              <td style={{ padding: '6px', color: '#34d399', fontWeight: 'bold' }}>A+</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  )}
+                {/* Portrait Card Footer */}
+                <div className="hero-portrait-footer">
+                  <div className="mentor-footer-name-row">
+                    <span className="mentor-footer-name">মারুফ হোসেন</span>
+                    <span className="mentor-verified-badge" title="সার্টিফাইড ICT শিক্ষক">
+                      <CheckCircle2 size={16} color="#38bdf8" />
+                    </span>
+                  </div>
+                  <div className="mentor-footer-role">
+                    Founder & Lead ICT Mentor — Maruf's ICT Care, কুষ্টিয়া
+                  </div>
+                  <div className="mentor-footer-quote">
+                    "Don't Memorize, Come To Learn"
+                  </div>
+                  <div className="mentor-footer-chips">
+                    <span className="mentor-chip chip-c">💻 C Programming</span>
+                    <span className="mentor-chip chip-gate">⚡ Logic Gates</span>
+                    <span className="mentor-chip chip-html">🌐 HTML5 Web</span>
+                    <span className="mentor-chip chip-db">🗄️ SQL Database</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -913,7 +767,257 @@ function LandingPage({
         </div>
       )}
 
-      {/* 5. WHY MARUF'S ICT CARE SECTION */}
+      {/* 5. INTERACTIVE LIVE LAB SIMULATOR SECTION */}
+      <section id="lab-demo" className="interactive-lab-section">
+        <div className="lp-container">
+          <div className="lp-section-header">
+            <div className="lp-section-pill">
+              <Terminal size={14} /> ইন্টারঅ্যাক্টিভ লাইভ ল্যাব
+            </div>
+            <h2 className="lp-section-title">
+              ক্লাসরুমের মতো লাইভ ল্যাব সিমুলেটর
+            </h2>
+            <p className="lp-section-subtitle">
+              তথ্য ও যোগাযোগ প্রযুক্তি প্র্যাকটিক্যাল ল্যাবে হাতে-কলমে শেখার বিষয়। নিজেই কোড রান করো, লজিক গেইট সুইচ অন-অফ করো ও সংখ্যা পদ্ধতির ম্যাজিক রূপান্তর পরীক্ষা করো।
+            </p>
+          </div>
+
+          <div className="lab-demo-wrapper">
+            <div className="hero-terminal-card lab-card-full">
+              <div className="terminal-header">
+                <div className="terminal-dots">
+                  <span className="dot dot-red"></span>
+                  <span className="dot dot-yellow"></span>
+                  <span className="dot dot-green"></span>
+                </div>
+
+                <div className="terminal-tabs">
+                  <button 
+                    type="button" 
+                    onClick={() => { setActiveTab('c_program'); setCodeRunOutput(false); }}
+                    className={`terminal-tab-btn ${activeTab === 'c_program' ? 'active' : ''}`}
+                  >
+                    <Terminal size={13} /> C প্রোগ্রামিং
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setActiveTab('logic_gate')}
+                    className={`terminal-tab-btn ${activeTab === 'logic_gate' ? 'active' : ''}`}
+                  >
+                    <Cpu size={13} /> লজিক গেইট
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setActiveTab('number_converter')}
+                    className={`terminal-tab-btn ${activeTab === 'number_converter' ? 'active' : ''}`}
+                  >
+                    <Binary size={13} /> সংখ্যা পদ্ধতি
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setActiveTab('html')}
+                    className={`terminal-tab-btn ${activeTab === 'html' ? 'active' : ''}`}
+                  >
+                    <Code size={13} /> HTML5 ওয়েব
+                  </button>
+                </div>
+              </div>
+
+              <div className="terminal-body">
+                {/* Tab 1: C Programming Interactive Simulator */}
+                {activeTab === 'c_program' && (
+                  <div>
+                    <div className="code-box">
+                      <span className="code-comment">// HSC ICT অধ্যায় ৫: লিপ ইয়ার নির্ণয় প্রোগ্রাম</span><br />
+                      <span className="code-keyword">#include</span> &lt;stdio.h&gt;<br />
+                      <span className="code-keyword">int</span> <span className="code-fn">main</span>() &#123;<br />
+                      &nbsp;&nbsp;<span className="code-keyword">int</span> year = <span className="code-num">2026</span>;<br />
+                      &nbsp;&nbsp;<span className="code-keyword">if</span> ((year % <span className="code-num">4</span> == <span className="code-num">0</span> &amp;&amp; year % <span className="code-num">100</span> != <span className="code-num">0</span>) || (year % <span className="code-num">400</span> == <span className="code-num">0</span>)) &#123;<br />
+                      &nbsp;&nbsp;&nbsp;&nbsp;<span className="code-fn">printf</span>(<span className="code-string">"ICT Care: %d is a Leap Year!\n"</span>, year);<br />
+                      &nbsp;&nbsp;&#125; <span className="code-keyword">else</span> &#123;<br />
+                      &nbsp;&nbsp;&nbsp;&nbsp;<span className="code-fn">printf</span>(<span className="code-string">"ICT Care: %d is Not a Leap Year.\n"</span>, year);<br />
+                      &nbsp;&nbsp;&#125;<br />
+                      &nbsp;&nbsp;<span className="code-keyword">return</span> <span className="code-num">0</span>;<br />
+                      &#125;
+                    </div>
+
+                    <div className="code-run-bar">
+                      <span style={{ fontSize: '0.82rem', color: '#94a3b8' }}>ল্যাপটপ কোড এডিটর সিমুলেশন</span>
+                      <button 
+                        type="button" 
+                        onClick={() => setCodeRunOutput(true)} 
+                        className="btn-code-run"
+                      >
+                        <Play size={14} /> কোড রান করুন
+                      </button>
+                    </div>
+
+                    {codeRunOutput ? (
+                      <div className="terminal-output">
+                        &gt; gcc leap_year.c -o main &amp;&amp; ./main<br />
+                        <span style={{ color: '#38bdf8' }}>[Compiler Success 0.04s]</span><br />
+                        ICT Care: 2026 is Not a Leap Year. (পরবর্তী লিপ ইয়ার: ২০২৮)
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic', textAlign: 'center', padding: '0.5rem' }}>
+                        "কোড রান করুন" বাটনে ক্লিক করে আউটপুট পরীক্ষা করো
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Tab 2: Logic Gate Lab Simulator */}
+                {activeTab === 'logic_gate' && (
+                  <div className="gate-lab-container">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.85rem', color: '#94a3b8', fontWeight: 600 }}>HSC ICT অধ্যায় ৩: ডিজিটাল লজিক গেইট</span>
+                      <div style={{ display: 'flex', gap: '0.35rem' }}>
+                        {['AND', 'OR', 'XOR'].map((type) => (
+                          <button
+                            key={type}
+                            type="button"
+                            onClick={() => setGateType(type)}
+                            style={{
+                              background: gateType === type ? '#0284c7' : 'rgba(255,255,255,0.06)',
+                              border: '1px solid rgba(255,255,255,0.1)',
+                              color: '#ffffff',
+                              borderRadius: '6px',
+                              padding: '0.2rem 0.5rem',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {type} গেইট
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="gate-controls">
+                      {/* Switch A */}
+                      <button 
+                        type="button" 
+                        onClick={() => setGateA(!gateA)} 
+                        className={`gate-switch-btn ${gateA ? 'on' : ''}`}
+                      >
+                        <span>ইনপুট A</span>
+                        <span style={{ fontSize: '1.25rem' }}>{gateA ? '1 (HIGH)' : '0 (LOW)'}</span>
+                        <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>সুইচ ক্লিক করুন</span>
+                      </button>
+
+                      <div style={{ color: '#38bdf8', fontWeight: 800, fontSize: '1.2rem' }}>
+                        {gateType}
+                      </div>
+
+                      {/* Switch B */}
+                      <button 
+                        type="button" 
+                        onClick={() => setGateB(!gateB)} 
+                        className={`gate-switch-btn ${gateB ? 'on' : ''}`}
+                      >
+                        <span>ইনপুট B</span>
+                        <span style={{ fontSize: '1.25rem' }}>{gateB ? '1 (HIGH)' : '0 (LOW)'}</span>
+                        <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>সুইচ ক্লিক করুন</span>
+                      </button>
+
+                      {/* Output Bulb */}
+                      <div className="gate-bulb-display">
+                        <div className={`gate-bulb ${gateOutput ? 'glowing' : ''}`}>
+                          <Lightbulb size={24} />
+                        </div>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: gateOutput ? '#facc15' : '#94a3b8' }}>
+                          আউটপুট: {gateOutput ? '1 (বাতি জ্বলছে)' : '0 (বন্ধ)'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ background: '#080c16', padding: '0.75rem', borderRadius: '8px', fontSize: '0.82rem', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      💡 <strong>সত্যক সারণী সূত্র ({gateType}):</strong>{' '}
+                      {gateType === 'AND' && 'উভয় ইনপুট ১ হলেই কেবল আউটপুট ১ হবে।'}
+                      {gateType === 'OR' && 'যেকোনো একটি ইনপুট ১ হলেই আউটপুট ১ হবে।'}
+                      {gateType === 'XOR' && 'উভয় ইনপুটের মান অসমান হলে আউটপুট ১ হবে।'}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab 3: Interactive Number Converter */}
+                {activeTab === 'number_converter' && (
+                  <div className="num-converter-box">
+                    <div className="num-converter-input-wrap">
+                      <label>HSC ICT অধ্যায় ৩: ডেসিমাল সংখ্যা লিখুন (সংখ্যা পদ্ধতি জাদু)</label>
+                      <input 
+                        type="number" 
+                        value={decInput} 
+                        onChange={(e) => setDecInput(e.target.value)} 
+                        className="num-converter-input"
+                        placeholder="যেকোনো সংখ্যা লিখুন..."
+                      />
+                    </div>
+
+                    <div className="num-converter-results">
+                      <div className="num-res-card">
+                        <div className="label">বাইনারি (ভিত্তি ২)</div>
+                        <div className="val">{convertedNums.bin}₂</div>
+                      </div>
+                      <div className="num-res-card">
+                        <div className="label">অক্টাল (ভিত্তি ৮)</div>
+                        <div className="val">{convertedNums.oct}₈</div>
+                      </div>
+                      <div className="num-res-card">
+                        <div className="label">হেক্সাডেসিমাল (ভিত্তি ১৬)</div>
+                        <div className="val">{convertedNums.hex}₁₆</div>
+                      </div>
+                    </div>
+
+                    <div style={{ background: '#080c16', padding: '0.75rem', borderRadius: '8px', fontSize: '0.82rem', color: '#38bdf8', border: '1px solid rgba(56,189,248,0.2)' }}>
+                      ✨ <strong>ম্যাজিক ট্রিক:</strong> বোর্ডে ২-এর পরিপূরক ও সংখ্যা পদ্ধতির জটিল রূপান্তরগুলো ক্লাসে ক্যালকুলেটর শর্টকাট ও হ্যান্ড ক্যালকুলেশনে সহজ নিয়মে শেখানো হয়।
+                    </div>
+                  </div>
+                )}
+
+                {/* Tab 4: HTML5 Web Preview */}
+                {activeTab === 'html' && (
+                  <div>
+                    <div className="code-box">
+                      <span className="code-keyword">&lt;table</span> <span className="code-fn">border</span>=<span className="code-string">"1"</span> <span className="code-fn">style</span>=<span className="code-string">"width:100%"</span>&gt;<br />
+                      &nbsp;&nbsp;&lt;tr&gt;<br />
+                      &nbsp;&nbsp;&nbsp;&nbsp;&lt;th&gt;রোল&lt;/th&gt;&lt;th&gt;নাম&lt;/th&gt;&lt;th&gt;ICT গ্রেড&lt;/th&gt;<br />
+                      &nbsp;&nbsp;&lt;/tr&gt;<br />
+                      &nbsp;&nbsp;&lt;tr&gt;<br />
+                      &nbsp;&nbsp;&nbsp;&nbsp;&lt;td&gt;১০১&lt;/td&gt;&lt;td&gt;মারুফ হোসেন&lt;/td&gt;&lt;td <span className="code-fn">style</span>=<span className="code-string">"color:lime"</span>&gt;A+&lt;/td&gt;<br />
+                      &nbsp;&nbsp;&lt;/tr&gt;<br />
+                      <span className="code-keyword">&lt;/table&gt;</span>
+                    </div>
+
+                    <div style={{ background: '#090f1d', border: '1px solid #1e293b', padding: '0.85rem', borderRadius: '8px' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.35rem' }}>ব্রাউজার রেন্ডার প্রিভিউ:</div>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'center', fontSize: '0.85rem', color: '#ffffff' }}>
+                        <thead>
+                          <tr style={{ background: '#1e293b', borderBottom: '1px solid #334155' }}>
+                            <th style={{ padding: '6px' }}>রোল</th>
+                            <th style={{ padding: '6px' }}>নাম</th>
+                            <th style={{ padding: '6px' }}>ICT গ্রেড</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
+                            <td style={{ padding: '6px' }}>১০১</td>
+                            <td style={{ padding: '6px' }}>মারুফ হোসেন</td>
+                            <td style={{ padding: '6px', color: '#34d399', fontWeight: 'bold' }}>A+</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. WHY MARUF'S ICT CARE SECTION */}
       <section id="features" className="why-section">
         <div className="lp-container">
           <div className="lp-section-header">
@@ -1200,15 +1304,11 @@ function LandingPage({
           <div className="mentor-card">
             <div className="mentor-photo-wrap">
               <div className="mentor-photo-frame">
-                <div className="mentor-img-placeholder">
-                  <img 
-                    src="/logo.png" 
-                    alt="Maruf Hossain Mentor" 
-                    style={{ width: '90px', height: '90px', objectFit: 'contain', marginBottom: '0.5rem' }} 
-                  />
-                  <span style={{ fontSize: '1.1rem', fontWeight: 800 }}>মারুফ হোসেন</span>
-                  <span style={{ fontSize: '0.75rem', color: '#38bdf8' }}>ICT Mentor & Developer</span>
-                </div>
+                <img 
+                  src="/maruf1.png" 
+                  alt="মারুফ হোসেন" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', borderRadius: '20px' }} 
+                />
               </div>
               <h3 className="mentor-name">মারুফ হোসেন</h3>
               <div className="mentor-designation">প্রধান প্রশিক্ষক ও মেন্টর, Maruf's ICT Care</div>
