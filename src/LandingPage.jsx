@@ -1234,11 +1234,7 @@ function LandingPage({
 
           <div className="batches-grid">
             {currentBatches.map((batch, bIdx) => (
-              <div key={batch.id || bIdx} className={`batch-card ${batch.featured ? 'featured' : ''}`}>
-                {batch.featured && (
-                  <span className="batch-featured-tag">{isEn ? 'Most Popular' : 'সর্বাধিক চাহিদাসম্পন্ন'}</span>
-                )}
-
+              <div key={batch.id || bIdx} className="batch-card">
                 <div className="batch-header">
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
                     <h3 className="batch-title" style={{ margin: 0 }}>{batch.title}</h3>
