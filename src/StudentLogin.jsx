@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Smartphone, ArrowLeft, AlertCircle, ShieldCheck, GraduationCap } from 'lucide-react';
-import { api } from './api';
+// src/StudentLogin.jsx
+// Dedicated Student Portal Login Screen for Coaching Pro
 
-function Login({ onLogin, onSwitchToStudent }) {
-  const [email, setEmail] = useState('marufjarvis@gmail.com');
-  const [password, setPassword] = useState('12345678');
+import React, { useState } from 'react';
+import { User, Phone, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, AlertCircle, Sparkles, Smartphone, ShieldCheck } from 'lucide-react';
+import { api } from './api';
+import { dataStore } from './dataStore';
+
+function StudentLogin({ onStudentLogin, onSwitchToAdmin }) {
+  const [loginId, setLoginId] = useState('STU-66115');
+  const [password, setPassword] = useState('01723619524');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -15,26 +19,41 @@ function Login({ onLogin, onSwitchToStudent }) {
     setLoading(true);
 
     try {
-      // 1. Authenticate against MySQL Database via Laravel REST API (/api/login)
-      const res = await api.login({ email: email.trim(), password });
-      if (res && res.success && res.user) {
-        onLogin(res.user);
+      // 1. Authenticate against MySQL Database via Laravel REST API
+      const res = await api.studentLogin({ loginId: loginId.trim(), password: password.trim() });
+      if (res && res.success && res.student) {
+        onStudentLogin(res.student);
       } else {
-        setError(res?.message || 'ভুল ইমেইল অথবা পাসওয়ার্ড! সঠিক এডমিন বা ম্যানেজার তথ্য দিন।');
+        setError(res?.message || 'ভুল শিক্ষার্থী আইডি অথবা পাসওয়ার্ড!');
       }
     } catch (err) {
-      // 2. Offline / Server fallback: verify default seeded credentials if offline
-      const cleanEmail = email.trim().toLowerCase();
-      if (
-        (cleanEmail === 'marufjarvis@gmail.com' && password === '12345678') ||
-        (cleanEmail === 'manager@gmail.com' && password === '12345678')
-      ) {
-        const fallbackUser = cleanEmail === 'marufjarvis@gmail.com'
-          ? { id: 1, name: 'Maruf Hossain (Admin)', email: cleanEmail, role: 'admin' }
-          : { id: 2, name: 'Center Manager', email: cleanEmail, role: 'manager' };
-        onLogin(fallbackUser);
+      // 2. Offline / Server fallback: verify from local dataStore students
+      const cleanId = loginId.trim();
+      const cleanPass = password.trim();
+      const allStudents = dataStore.getStudents();
+      const matchedStudent = allStudents.find(s => 
+        s.id.toLowerCase() === cleanId.toLowerCase() || 
+        (s.phone && s.phone === cleanId) ||
+        (s.guardianPhone && s.guardianPhone === cleanId)
+      );
+
+      if (matchedStudent) {
+        // Verify password against phone, student ID, guardian phone, or 12345678
+        const isMatch = (
+          cleanPass === '12345678' ||
+          cleanPass === matchedStudent.phone ||
+          cleanPass === matchedStudent.guardianPhone ||
+          cleanPass === matchedStudent.id ||
+          (matchedStudent.phone && matchedStudent.phone.endsWith(cleanPass))
+        );
+
+        if (isMatch) {
+          onStudentLogin(matchedStudent);
+        } else {
+          setError('পাসওয়ার্ড অথবা মোবাইল নম্বর সঠিক নয়! ভর্তি ফর্মে দেওয়া মোবাইল নম্বর বা 12345678 দিয়ে চেষ্টা করুন।');
+        }
       } else {
-        setError(err.message || 'ভুল ইমেইল অথবা পাসওয়ার্ড! এডমিন বা ম্যানেজারের সঠিক তথ্য দিন।');
+        setError(err.message || 'শিক্ষার্থী আইডি অথবা মোবাইল নম্বর পাওয়া যায়নি!');
       }
     } finally {
       setLoading(false);
@@ -52,12 +71,12 @@ function Login({ onLogin, onSwitchToStudent }) {
         </div>
         <button 
           type="button" 
-          onClick={onSwitchToStudent} 
+          onClick={onSwitchToAdmin} 
           className="back-link"
           style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
         >
-          <GraduationCap size={16} strokeWidth={2.5} />
-          শিক্ষার্থী পোর্টাল
+          <ShieldCheck size={16} strokeWidth={2.5} />
+          এডমিন পোর্টাল
         </button>
       </header>
 
@@ -75,13 +94,13 @@ function Login({ onLogin, onSwitchToStudent }) {
 
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-              <span className="welcome-badge">
-                <ShieldCheck size={13} style={{ marginRight: '4px', display: 'inline', verticalAlign: 'middle' }} />
-                এডমিন ও ম্যানেজার পোর্টাল
+              <span className="welcome-badge" style={{ backgroundColor: '#e0f2fe', color: '#0369a1' }}>
+                <Sparkles size={13} style={{ marginRight: '4px', display: 'inline', verticalAlign: 'middle' }} />
+                শিক্ষার্থী পোর্টাল (Student Portal)
               </span>
             </div>
-            <h1 className="login-title">লগইন করুন</h1>
-            <p className="login-desc">শিক্ষার্থী, ফি, হাজিরা ও পরীক্ষার তথ্য দেখতে লগইন করুন।</p>
+            <h1 className="login-title">শিক্ষার্থী লগইন</h1>
+            <p className="login-desc">আপনার ক্লাস রুটিন, ফি, হাজিরা ও পরীক্ষার ফলাফল দেখতে লগইন করুন।</p>
           </div>
 
           {error && (
@@ -105,28 +124,28 @@ function Login({ onLogin, onSwitchToStudent }) {
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label className="form-label">ইমেইল</label>
+              <label className="form-label">শিক্ষার্থী আইডি অথবা মোবাইল নম্বর</label>
               <div className="input-wrapper">
-                <Mail size={18} className="input-icon" />
+                <User size={18} className="input-icon" />
                 <input 
-                  type="email" 
+                  type="text" 
                   className="form-input" 
-                  placeholder="marufjarvis@gmail.com" 
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError(null); }}
+                  placeholder="যেমন: STU-66115 বা 01723619524" 
+                  value={loginId}
+                  onChange={(e) => { setLoginId(e.target.value); setError(null); }}
                   required
                 />
               </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label">পাসওয়ার্ড</label>
+              <label className="form-label">পাসওয়ার্ড অথবা নিবন্ধিত মোবাইল নম্বর</label>
               <div className="input-wrapper">
                 <Lock size={18} className="input-icon" />
                 <input 
                   type={showPassword ? "text" : "password"} 
                   className="form-input" 
-                  placeholder="••••••••••"
+                  placeholder="মোবাইল নম্বর অথবা 12345678"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setError(null); }}
                   required
@@ -148,15 +167,15 @@ function Login({ onLogin, onSwitchToStudent }) {
               disabled={loading}
               style={{ opacity: loading ? 0.75 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
             >
-              {loading ? 'যাচাই করা হচ্ছে...' : 'লগইন করুন'} {!loading && <ArrowRight size={18} strokeWidth={2.5} />}
+              {loading ? 'যাচাই করা হচ্ছে...' : 'শিক্ষার্থী ড্যাশবোর্ডে প্রবেশ করুন'} {!loading && <ArrowRight size={18} strokeWidth={2.5} />}
             </button>
           </form>
 
-          {/* Switch to Student Login */}
+          {/* Switch to Admin Login */}
           <div style={{ textAlign: 'center', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9' }}>
             <button
               type="button"
-              onClick={onSwitchToStudent}
+              onClick={onSwitchToAdmin}
               style={{
                 background: 'none',
                 border: 'none',
@@ -166,10 +185,10 @@ function Login({ onLogin, onSwitchToStudent }) {
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '4px'
               }}
             >
-              <GraduationCap size={16} /> আপনি কি শিক্ষার্থী? শিক্ষার্থী পোর্টালে লগইন করুন
+              <ShieldCheck size={16} /> এডমিন বা ম্যানেজার হিসেবে লগইন করুন
             </button>
           </div>
 
@@ -185,4 +204,4 @@ function Login({ onLogin, onSwitchToStudent }) {
   );
 }
 
-export default Login;
+export default StudentLogin;

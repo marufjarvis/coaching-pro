@@ -32,6 +32,12 @@ export const api = {
       body: JSON.stringify({ email, password })
     });
   },
+  async studentLogin({ loginId, password }) {
+    return request('/student-login', {
+      method: 'POST',
+      body: JSON.stringify({ login_id: loginId, password })
+    });
+  },
 
   // --- BATCHES ---
   async getBatches() {

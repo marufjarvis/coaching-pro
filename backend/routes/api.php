@@ -15,8 +15,9 @@ use App\Http\Controllers\Api\EnrollmentLinkController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\AuthController;
 
-// Authentication (Admin & Manager)
+// Authentication (Admin & Manager & Student)
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/student-login', [AuthController::class, 'studentLogin']);
 
 // Dashboard Stats
 Route::get('/dashboard-stats', [DashboardController::class, 'stats']);
