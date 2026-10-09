@@ -504,26 +504,16 @@ function LandingPage({
                 {/* Atmospheric Glow Halo */}
                 <div className="hero-circle-ambient-halo"></div>
 
-                {/* Circular Avatar Frame with Animated Glowing Multi-Color Ring */}
-                <div className="hero-circle-frame-wrap">
-                  {/* Animated Rotating Conic Glow Ring */}
-                  <div className="hero-circle-conic-glow"></div>
-
-                  {/* Secondary Ambient Pulse Ring */}
-                  <div className="hero-circle-pulse-ring"></div>
-
-                  {/* Outer Gradient Border Ring */}
-                  <div className="hero-circle-ring-border">
-                    {/* Inner Circular Avatar Container with Dark Navy Backdrop */}
-                    <div className="hero-circle-avatar-box">
-                      <img 
-                        src="/m2.png" 
-                        alt="মারুফ হোসেন - HSC ICT মেন্টর" 
-                        className="hero-mentor-circle-img"
-                        loading="eager"
-                      />
-                    </div>
-                  </div>
+                {/* Natural Image Presentation (No Circle Frame) */}
+                <div className="hero-natural-img-box">
+                  <img 
+                    src="/m2.png" 
+                    alt="মারুফ হোসেন - HSC ICT মেন্টর" 
+                    className="hero-mentor-natural-img"
+                    loading="eager"
+                  />
+                  {/* Subtle Natural Bottom Fade */}
+                  <div className="hero-natural-bottom-fade"></div>
                 </div>
 
                 {/* Floating Badge 1: Top-Right Verified Lead Instructor */}
@@ -1312,40 +1302,31 @@ function LandingPage({
           <div className="mentor-card">
             {/* Left Mentor Showcase Column with Grand Arch Portrait Showcase */}
             <div className="mentor-photo-wrap">
-              <div className="mentor-spotlight-box">
-                {/* Atmospheric Glow Halo */}
-                <div className="mentor-spotlight-halo"></div>
+              <div className="mentor-natural-showcase-box">
+                {/* Atmospheric Glow */}
+                <div className="mentor-natural-ambient-glow"></div>
 
-                {/* Grand Arch Portrait Frame with Glowing Neon Border */}
-                <div className="mentor-arch-frame-wrap">
-                  {/* Animated Rotating Conic Glow */}
-                  <div className="mentor-arch-conic-glow"></div>
+                <div className="mentor-natural-img-wrapper">
+                  <img 
+                    src="/m2.png" 
+                    alt="মারুফ হোসেন - প্রধান প্রশিক্ষক ও মেন্টর" 
+                    className="mentor-natural-img"
+                    loading="lazy"
+                  />
+                  {/* Smooth Bottom Fade */}
+                  <div className="mentor-natural-bottom-fade"></div>
+                </div>
 
-                  {/* Outer Gradient Border Ring */}
-                  <div className="mentor-arch-ring-border">
-                    <div className="mentor-arch-inner-box">
-                      <img 
-                        src="/m2.png" 
-                        alt="মারুফ হোসেন - প্রধান প্রশিক্ষক ও মেন্টর" 
-                        className="mentor-arch-cutout-img"
-                        loading="lazy"
-                      />
-                      {/* Smooth Bottom Fade */}
-                      <div className="mentor-arch-bottom-fade"></div>
-                    </div>
-                  </div>
+                {/* Floating Badge 1: Top-Left Experience */}
+                <div className="mentor-float-badge mentor-float-top-left">
+                  <Sparkles size={16} color="#34d399" />
+                  <span>১০+ বছর অভিজ্ঞতা</span>
+                </div>
 
-                  {/* Floating Badge 1: Top-Left Experience */}
-                  <div className="mentor-float-badge mentor-float-top-left">
-                    <Sparkles size={16} color="#34d399" />
-                    <span>১০+ বছর অভিজ্ঞতা</span>
-                  </div>
-
-                  {/* Floating Badge 2: Bottom-Right A+ Rating */}
-                  <div className="mentor-float-badge mentor-float-bottom-right">
-                    <Award size={16} color="#38bdf8" />
-                    <span>১,২০০+ সফল শিক্ষার্থী</span>
-                  </div>
+                {/* Floating Badge 2: Bottom-Right A+ Rating */}
+                <div className="mentor-float-badge mentor-float-bottom-right">
+                  <Award size={16} color="#38bdf8" />
+                  <span>১,২০০+ সফল শিক্ষার্থী</span>
                 </div>
               </div>
 

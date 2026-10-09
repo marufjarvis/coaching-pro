@@ -515,103 +515,46 @@
 }
 
 /* ====================================================
-   CIRCULAR AVATAR WITH MULTI-COLOR GLOWING RING
+   NATURAL MENTOR CUTOUT PRESENTATION (NO CIRCLE FRAME)
    ==================================================== */
-.hero-circle-frame-wrap {
+.hero-natural-img-box {
   position: relative;
-  width: 340px;
-  height: 340px;
+  width: 100%;
+  max-width: 420px;
+  height: 480px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   z-index: 4;
+  margin-bottom: 1.5rem;
 }
 
-/* 1. Animated Rotating Conic Glow */
-.hero-circle-conic-glow {
-  position: absolute;
-  inset: -14px;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg, 
-    #38bdf8 0%, 
-    #818cf8 22%, 
-    #ec4899 48%, 
-    #f59e0b 72%, 
-    #10b981 88%, 
-    #38bdf8 100%
-  );
-  filter: blur(18px);
-  opacity: 0.95;
-  animation: rotateConicGlow 6.5s linear infinite;
-  z-index: 1;
-}
-
-@keyframes rotateConicGlow {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* 2. Soft Ambient Pulse Aura */
-.hero-circle-pulse-ring {
-  position: absolute;
-  inset: -24px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.55) 0%, rgba(129, 140, 248, 0.35) 50%, transparent 75%);
-  filter: blur(28px);
-  animation: circlePulseAura 4s ease-in-out infinite alternate;
-  z-index: 0;
-}
-
-@keyframes circlePulseAura {
-  0% { transform: scale(0.92); opacity: 0.6; }
-  100% { transform: scale(1.15); opacity: 1; }
-}
-
-/* 3. Outer Gradient Border Ring */
-.hero-circle-ring-border {
-  position: relative;
-  z-index: 2;
+.hero-mentor-natural-img {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  padding: 6px;
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 30%, #ec4899 65%, #34d399 100%);
-  box-shadow: 
-    0 0 35px rgba(56, 189, 248, 0.75),
-    0 0 70px rgba(129, 140, 248, 0.5),
-    inset 0 0 16px rgba(255, 255, 255, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 4. Inner Circular Avatar Box */
-.hero-circle-avatar-box {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  background: radial-gradient(circle at 50% 35%, #1e3a8a 0%, #0c152a 65%, #050b16 100%);
-  border: 4px solid #070d19;
-  position: relative;
-  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(56, 189, 248, 0.25);
-}
-
-/* 5. Circular Image Object */
-.hero-mentor-circle-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  max-height: 480px;
+  object-fit: contain;
+  object-position: bottom center;
   display: block;
-  transform: scale(1.22) translateY(8px);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 35px rgba(56, 189, 248, 0.28));
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
+  will-change: transform, filter;
 }
 
-.hero-portrait-card:hover .hero-mentor-circle-img {
-  transform: scale(1.28) translateY(4px);
+.hero-natural-img-box:hover .hero-mentor-natural-img {
+  transform: scale(1.03) translateY(-4px);
+  filter: drop-shadow(0 25px 50px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 50px rgba(56, 189, 248, 0.45));
+}
+
+.hero-natural-bottom-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 75px;
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 13, 26, 0.8) 65%, #080d1a 100%);
+  pointer-events: none;
+  z-index: 5;
 }
 
 /* Floating Badges */
@@ -632,26 +575,26 @@
 }
 
 .hero-float-top-right {
-  top: 1rem;
-  right: -1.25rem;
+  top: 2.5rem;
+  right: -1.5rem;
   animation: floatSlow 4.5s ease-in-out infinite alternate;
 }
 
 .hero-float-top-left {
-  top: 1rem;
-  left: -1.25rem;
+  top: 1.5rem;
+  left: -1.5rem;
   animation: floatSlow2 4s ease-in-out infinite alternate;
 }
 
 .hero-float-bottom-left {
-  top: 16rem;
-  left: -1.25rem;
+  top: 17rem;
+  left: -1.75rem;
   animation: floatSlow 5s ease-in-out infinite alternate;
 }
 
 .hero-float-bottom-right {
-  top: 16rem;
-  right: -1rem;
+  top: 19rem;
+  right: -1.25rem;
   animation: floatSlow2 4.2s ease-in-out infinite alternate;
 }
 
@@ -826,19 +769,19 @@
 
 /* Responsive adjustments for open hero showcase */
 @media (max-width: 992px) {
-  .hero-circle-frame-wrap { width: 300px; height: 300px; margin-bottom: 1.5rem; }
-  .hero-float-top-left { top: 0.5rem; left: 0; }
-  .hero-float-top-right { top: 0.5rem; right: 0; }
-  .hero-float-bottom-left { top: 13.5rem; left: 0; }
-  .hero-float-bottom-right { top: 13.5rem; right: 0; }
+  .hero-natural-img-box { height: 400px; margin-bottom: 1.25rem; }
+  .hero-float-top-left { top: 1rem; left: 0; }
+  .hero-float-top-right { top: 2rem; right: 0; }
+  .hero-float-bottom-left { top: 14rem; left: 0; }
+  .hero-float-bottom-right { top: 15.5rem; right: 0; }
 }
 
 @media (max-width: 640px) {
-  .hero-circle-frame-wrap { width: 240px; height: 240px; margin-bottom: 1.25rem; }
-  .hero-float-top-left { top: 0.25rem; left: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-float-top-right { top: 0.25rem; right: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-float-bottom-left { top: 11rem; left: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
-  .hero-float-bottom-right { top: 11rem; right: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
+  .hero-natural-img-box { height: 330px; margin-bottom: 1rem; }
+  .hero-float-top-left { top: 0.5rem; left: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
+  .hero-float-top-right { top: 1.5rem; right: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
+  .hero-float-bottom-left { top: 11.5rem; left: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
+  .hero-float-bottom-right { top: 13rem; right: -0.25rem; padding: 0.4rem 0.65rem; font-size: 0.8rem; }
   .mentor-cred-name { font-size: 1.4rem; }
 }
 
@@ -1622,89 +1565,66 @@
   animation: haloPulse 5s ease-in-out infinite alternate;
 }
 
-/* Grand Arch Portrait Frame for Mentor Section */
-.mentor-arch-frame-wrap {
+/* Natural Cutout Portrait Showcase for Mentor Section */
+.mentor-natural-showcase-box {
   position: relative;
-  width: 330px;
-  height: 440px;
+  width: 100%;
+  max-width: 420px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 3;
+  margin-bottom: 1.5rem;
 }
 
-.mentor-arch-conic-glow {
+.mentor-natural-ambient-glow {
   position: absolute;
-  inset: -14px;
-  border-radius: 40px;
-  background: conic-gradient(
-    from 0deg, 
-    #38bdf8 0%, 
-    #818cf8 22%, 
-    #ec4899 48%, 
-    #f59e0b 72%, 
-    #10b981 88%, 
-    #38bdf8 100%
-  );
-  filter: blur(20px);
-  opacity: 0.9;
-  animation: rotateConicGlow 8s linear infinite;
-  z-index: 1;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.45) 0%, rgba(99, 102, 241, 0.28) 50%, transparent 75%);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 0;
+  animation: haloPulse 5s ease-in-out infinite alternate;
 }
 
-.mentor-arch-ring-border {
+.mentor-natural-img-wrapper {
   position: relative;
-  z-index: 2;
   width: 100%;
-  height: 100%;
-  border-radius: 36px;
-  padding: 6px;
-  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 30%, #ec4899 65%, #34d399 100%);
-  box-shadow: 
-    0 0 35px rgba(56, 189, 248, 0.75),
-    0 0 70px rgba(129, 140, 248, 0.45),
-    inset 0 0 16px rgba(255, 255, 255, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mentor-arch-inner-box {
-  width: 100%;
-  height: 100%;
-  border-radius: 30px;
-  overflow: hidden;
-  background: radial-gradient(circle at 50% 30%, #1e3a8a 0%, #0c152a 70%, #050b16 100%);
-  border: 4px solid #070d19;
-  position: relative;
+  height: 440px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.8);
+  z-index: 2;
 }
 
-.mentor-arch-cutout-img {
+.mentor-natural-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  max-height: 440px;
+  object-fit: contain;
+  object-position: bottom center;
   display: block;
-  transform: scale(1.12) translateY(8px);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 35px rgba(56, 189, 248, 0.3));
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
 }
 
-.mentor-card:hover .mentor-arch-cutout-img {
-  transform: scale(1.16) translateY(4px);
+.mentor-card:hover .mentor-natural-img {
+  transform: scale(1.04) translateY(-4px);
+  filter: drop-shadow(0 25px 45px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 45px rgba(56, 189, 248, 0.45));
 }
 
-.mentor-arch-bottom-fade {
+.mentor-natural-bottom-fade {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 90px;
-  background: linear-gradient(180deg, transparent 0%, rgba(5, 11, 22, 0.85) 75%, #050b16 100%);
+  height: 80px;
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.85) 75%, #0f172a 100%);
   pointer-events: none;
   z-index: 3;
 }
@@ -2048,16 +1968,14 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  .mentor-arch-frame-wrap {
-    width: 290px;
+  .mentor-natural-img-wrapper {
     height: 380px;
   }
 }
 
 @media (max-width: 640px) {
-  .mentor-arch-frame-wrap {
-    width: 260px;
-    height: 340px;
+  .mentor-natural-img-wrapper {
+    height: 320px;
   }
   .mentor-float-top-left {
     top: 0.5rem;
