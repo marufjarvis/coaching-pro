@@ -1,5 +1,5 @@
 // src/FrontendSettings.jsx
-// Complete Frontend CMS Manager for Coaching Pro
+// Complete Bilingual (EN/BN) Frontend CMS Manager for Coaching Pro
 // Allows administrators to dynamically customize all text, stats, banners, teacher bio, reviews & FAQs
 
 import React, { useState, useEffect } from 'react';
@@ -24,23 +24,33 @@ import {
   FileText
 } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { useTranslation } from './translations';
 import './frontend-settings.css';
 
-function FrontendSettings({ lang = 'BN' }) {
-  const [settings, setSettings] = useState(() => dataStore.getFrontendSettings());
-  const [activeSubTab, setActiveSubTab] = useState('hero');
+function FrontendSettings({ lang: propLang = 'BN' }) {
+  const { lang, setLang } = useTranslation(propLang);
+  const isEn = lang === 'EN';
+
+  const [settings, setSettings] = useState(() => dataStore.getFrontendSettings(lang));
+  const [activeSubTab, setActiveSubTab] = useState('notice');
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [isSaved, setIsSaved] = useState(true);
 
+  // Sync settings when language changes
+  useEffect(() => {
+    setSettings(dataStore.getFrontendSettings(lang));
+    setIsSaved(true);
+  }, [lang]);
+
   // Sync if updated from elsewhere
   useEffect(() => {
     const handleSync = () => {
-      setSettings(dataStore.getFrontendSettings());
+      setSettings(dataStore.getFrontendSettings(lang));
     };
     window.addEventListener('coaching-data-change', handleSync);
     return () => window.removeEventListener('coaching-data-change', handleSync);
-  }, []);
+  }, [lang]);
 
   const triggerToast = (msg) => {
     setToastMessage(msg);
@@ -50,22 +60,22 @@ function FrontendSettings({ lang = 'BN' }) {
 
   // Save changes
   const handleSave = () => {
-    dataStore.saveFrontendSettings(settings);
+    dataStore.saveFrontendSettings(settings, lang);
     setIsSaved(true);
-    triggerToast(lang === 'EN' ? 'Landing page updated successfully!' : 'ল্যান্ডিং পেজ সেটিংস সফলভাবে সংরক্ষিত হয়েছে!');
+    triggerToast(isEn ? 'Landing page settings saved successfully!' : 'ল্যান্ডিং পেজ সেটিংস সফলভাবে সংরক্ষিত হয়েছে!');
   };
 
   // Reset to original defaults
   const handleReset = () => {
-    const confirmText = lang === 'EN' 
+    const confirmText = isEn 
       ? 'Are you sure you want to restore the default landing page content? Any customized text will be replaced.'
       : 'আপনি কি নিশ্চিত যে ল্যান্ডিং পেজের সকল ডিফল্ট লেখা পুনরুদ্ধার করতে চান? পূর্বের পরিবর্তনগুলো মুছে যাবে।';
     
     if (window.confirm(confirmText)) {
-      const def = dataStore.resetFrontendSettings();
+      const def = dataStore.resetFrontendSettings(lang);
       setSettings(def);
       setIsSaved(true);
-      triggerToast(lang === 'EN' ? 'Restored default settings!' : 'ডিফল্ট তথ্য সফলভাবে পুনরুদ্ধার করা হয়েছে!');
+      triggerToast(isEn ? 'Restored default settings!' : 'ডিফল্ট তথ্য সফলভাবে পুনরুদ্ধার করা হয়েছে!');
     }
   };
 
@@ -86,7 +96,7 @@ function FrontendSettings({ lang = 'BN' }) {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        alert(lang === 'EN' ? 'Image size must be under 2MB.' : 'ছবির সাইজ সর্বোচ্চ ২ মেগাবাইট (2MB) হতে পারবে।');
+        alert(isEn ? 'Image size must be under 2MB.' : 'ছবির সাইজ সর্বোচ্চ ২ মেগাবাইট (2MB) হতে পারবে।');
         return;
       }
       const reader = new FileReader();
@@ -102,10 +112,12 @@ function FrontendSettings({ lang = 'BN' }) {
     setIsSaved(false);
     const newTestimonial = {
       id: Date.now(),
-      name: 'নতুন শিক্ষার্থীর নাম',
-      college: 'কলেজের নাম',
-      score: 'ICT: ৯৫/১০০ (A+)',
-      text: 'এখানে শিক্ষার্থীর অভিজ্ঞতা ও রিভিউ লিখুন।'
+      name: isEn ? 'New Student Name' : 'নতুন শিক্ষার্থীর নাম',
+      college: isEn ? 'College / School Name' : 'কলেজ বা স্কুলের নাম',
+      score: isEn ? 'ICT: 98/100 (A+)' : 'ICT: ৯৮/১০০ (A+)',
+      text: isEn 
+        ? 'Practical lab sessions and real code examples made mastering ICT easy and enjoyable!' 
+        : 'প্র্যাকটিক্যাল ল্যাব ক্লাস ও নিয়মিত মডেল টেস্টের মাধ্যমে ICT পড়া অনেক সহজ ও আনন্দদায়ক হয়েছে!'
     };
     setSettings(prev => ({
       ...prev,
@@ -123,7 +135,7 @@ function FrontendSettings({ lang = 'BN' }) {
   };
 
   const handleDeleteTestimonial = (index) => {
-    if (window.confirm(lang === 'EN' ? 'Delete this review?' : 'এই রিভিউটি মুছে ফেলতে চান?')) {
+    if (window.confirm(isEn ? 'Delete this review?' : 'এই রিভিউটি মুছে ফেলতে চান?')) {
       setIsSaved(false);
       setSettings(prev => {
         const list = [...(prev.testimonials || [])];
@@ -138,8 +150,8 @@ function FrontendSettings({ lang = 'BN' }) {
     setIsSaved(false);
     const newFaq = {
       id: Date.now(),
-      question: 'নতুন সাধারণ প্রশ্ন?',
-      answer: 'এখানে প্রশ্নের বিস্তারিত উত্তর লিখুন।'
+      question: isEn ? 'New common question?' : 'নতুন সাধারণ প্রশ্ন?',
+      answer: isEn ? 'Write detailed answer here.' : 'এখানে প্রশ্নের বিস্তারিত উত্তর লিখুন।'
     };
     setSettings(prev => ({
       ...prev,
@@ -157,7 +169,7 @@ function FrontendSettings({ lang = 'BN' }) {
   };
 
   const handleDeleteFaq = (index) => {
-    if (window.confirm(lang === 'EN' ? 'Delete this FAQ item?' : 'এই প্রশ্নটি মুছে ফেলতে চান?')) {
+    if (window.confirm(isEn ? 'Delete this FAQ item?' : 'এই প্রশ্নটি মুছে ফেলতে চান?')) {
       setIsSaved(false);
       setSettings(prev => {
         const list = [...(prev.faq || [])];
@@ -177,32 +189,54 @@ function FrontendSettings({ lang = 'BN' }) {
           </div>
           <div>
             <h2 className="frontend-header-title">
-              Frontend ল্যান্ডিং পেজ ডাইনামিক CMS
+              {isEn ? 'Frontend Landing Page Dynamic CMS' : 'Frontend ল্যান্ডিং পেজ ডাইনামিক CMS'}
               <span style={{ fontSize: '0.72rem', background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 700 }}>
                 Live Sync
               </span>
               {!isSaved && (
                 <span style={{ fontSize: '0.72rem', background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', padding: '0.2rem 0.55rem', borderRadius: '6px', fontWeight: 700 }}>
-                  সংরক্ষণ বাকি
+                  {isEn ? 'Unsaved Changes' : 'সংরক্ষণ বাকি'}
                 </span>
               )}
             </h2>
             <p className="frontend-header-subtitle">
-              ওয়েবসাইটের টেক্সট, অফার ব্যানার, শিক্ষক পরিচিতি, পরিসংখ্যান ও রিভিউ সরাসরি এখান থেকে নিয়ন্ত্রণ করুন।
+              {isEn 
+                ? 'Manage website text, announcement banners, instructor bio, live statistics, and reviews in real time.'
+                : 'ওয়েবসাইটের টেক্সট, অফার ব্যানার, শিক্ষক পরিচিতি, পরিসংখ্যান ও রিভিউ সরাসরি এখান থেকে নিয়ন্ত্রণ করুন।'}
             </p>
           </div>
         </div>
 
         <div className="frontend-header-actions">
+          {/* Direct Language Switcher in Header */}
+          <div className="lang-toggle" style={{ marginRight: '0.35rem' }}>
+            <span 
+              className={`lang ${lang === 'EN' ? 'active' : ''}`} 
+              onClick={() => setLang('EN')}
+              style={{ cursor: 'pointer' }}
+              title="Switch to English"
+            >
+              EN
+            </span>
+            <span 
+              className={`lang ${lang === 'BN' ? 'active' : ''}`} 
+              onClick={() => setLang('BN')}
+              style={{ cursor: 'pointer' }}
+              title="বাংলায় পরিবর্তন করুন"
+            >
+              BN
+            </span>
+          </div>
+
           <a 
             href="#/" 
             target="_blank" 
             rel="noreferrer" 
             className="btn-cms-preview"
-            title="লাইভ ওয়েবসাইট নতুন ট্যাবে দেখুন"
+            title={isEn ? 'View live website in a new tab' : 'লাইভ ওয়েবসাইট নতুন ট্যাবে দেখুন'}
           >
             <Eye size={16} />
-            <span>ওয়েবসাইট দেখুন</span>
+            <span>{isEn ? 'View Website' : 'ওয়েবসাইট দেখুন'}</span>
             <ExternalLink size={13} />
           </a>
 
@@ -210,20 +244,20 @@ function FrontendSettings({ lang = 'BN' }) {
             type="button" 
             className="btn-cms-reset" 
             onClick={handleReset}
-            title="সব ডিফল্ট লেখায় রিসেট করুন"
+            title={isEn ? 'Reset to default texts' : 'সব ডিফল্ট লেখায় রিসেট করুন'}
           >
             <RotateCcw size={15} />
-            <span>রিসেট</span>
+            <span>{isEn ? 'Reset' : 'রিসেট'}</span>
           </button>
 
           <button 
             type="button" 
             className="btn-cms-save" 
             onClick={handleSave}
-            title="সকল পরিবর্তন সংরক্ষণ করুন"
+            title={isEn ? 'Save all modifications' : 'সকল পরিবর্তন সংরক্ষণ করুন'}
           >
             <Save size={16} />
-            <span>সংরক্ষণ করুন</span>
+            <span>{isEn ? 'Save Changes' : 'সংরক্ষণ করুন'}</span>
           </button>
         </div>
       </div>
@@ -244,7 +278,7 @@ function FrontendSettings({ lang = 'BN' }) {
           onClick={() => setActiveSubTab('notice')}
         >
           <Bell size={16} />
-          <span>টপ নোটিস বার</span>
+          <span>{isEn ? 'Top Notice Bar' : 'টপ নোটিস বার'}</span>
         </button>
 
         <button 
@@ -253,7 +287,7 @@ function FrontendSettings({ lang = 'BN' }) {
           onClick={() => setActiveSubTab('hero')}
         >
           <Sparkles size={16} />
-          <span>হিরো সেকশন ও স্ট্যাটস</span>
+          <span>{isEn ? 'Hero Section & Stats' : 'হিরো সেকশন ও স্ট্যাটস'}</span>
         </button>
 
         <button 
@@ -262,7 +296,7 @@ function FrontendSettings({ lang = 'BN' }) {
           onClick={() => setActiveSubTab('mentor')}
         >
           <Award size={16} />
-          <span>শিক্ষক পরিচিতি ও ব্যাজ</span>
+          <span>{isEn ? 'Instructor & Badges' : 'শিক্ষক পরিচিতি ও ব্যাজ'}</span>
         </button>
 
         <button 
@@ -271,7 +305,7 @@ function FrontendSettings({ lang = 'BN' }) {
           onClick={() => setActiveSubTab('testimonials')}
         >
           <Users size={16} />
-          <span>সাফল্যের গল্প ({settings.testimonials?.length || 0})</span>
+          <span>{isEn ? `Success Stories (${settings.testimonials?.length || 0})` : `সাফল্যের গল্প (${settings.testimonials?.length || 0})`}</span>
         </button>
 
         <button 
@@ -280,7 +314,7 @@ function FrontendSettings({ lang = 'BN' }) {
           onClick={() => setActiveSubTab('faq')}
         >
           <HelpCircle size={16} />
-          <span>FAQ ও প্রশ্নসমূহ ({settings.faq?.length || 0})</span>
+          <span>{isEn ? `FAQ & Questions (${settings.faq?.length || 0})` : `FAQ ও প্রশ্নসমূহ (${settings.faq?.length || 0})`}</span>
         </button>
 
         <button 
@@ -289,7 +323,7 @@ function FrontendSettings({ lang = 'BN' }) {
           onClick={() => setActiveSubTab('footer')}
         >
           <MapPin size={16} />
-          <span>যোগাযোগ ও ফুটার</span>
+          <span>{isEn ? 'Contact & Footer' : 'যোগাযোগ ও ফুটার'}</span>
         </button>
       </div>
 
@@ -299,10 +333,12 @@ function FrontendSettings({ lang = 'BN' }) {
       {activeSubTab === 'notice' && (
         <div className="cms-card">
           <h3 className="cms-section-title">
-            <Bell size={20} color="#0284c7" /> শীর্ষ নোটিস ও এনাউন্সমেন্ট বার
+            <Bell size={20} color="#0284c7" /> {isEn ? 'Top Notice & Announcement Bar' : 'শীর্ষ নোটিস ও এনাউন্সমেন্ট বার'}
           </h3>
           <p className="cms-section-subtitle">
-            ওয়েবসাইটের একদম উপরে যে নোটিস বার প্রদর্শিত হয় তার টেক্সট ও লিংক কনফিগার করুন।
+            {isEn 
+              ? 'Configure the text, badge, and action link for the banner displayed at the very top of the website.'
+              : 'ওয়েবসাইটের একদম উপরে যে নোটিস বার প্রদর্শিত হয় তার টেক্সট ও লিংক কনফিগার করুন।'}
           </p>
 
           <div className="cms-field-group">
@@ -313,41 +349,43 @@ function FrontendSettings({ lang = 'BN' }) {
                 checked={settings.notice?.enabled !== false} 
                 onChange={(e) => updateField('notice', 'enabled', e.target.checked)} 
               />
-              <span style={{ fontWeight: 600 }}>নোটিস বার ওয়েবসাইটে চালু রাখুন</span>
+              <span style={{ fontWeight: 600 }}>{isEn ? 'Keep notice bar active on website' : 'নোটিস বার ওয়েবসাইটে চালু রাখুন'}</span>
             </label>
           </div>
 
           <div className="cms-grid-2">
             <div className="cms-field-group">
-              <label>নোটিস ব্যাজ টেক্সট (যেমন: অফার ও আপডেট):</label>
+              <label>{isEn ? 'Notice Badge Text (e.g., Special Announcement):' : 'নোটিস ব্যাজ টেক্সট (যেমন: অফার ও আপডেট):'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
                 value={settings.notice?.badge || ''} 
                 onChange={(e) => updateField('notice', 'badge', e.target.value)} 
-                placeholder="অফার ও আপডেট"
+                placeholder={isEn ? 'Special Announcement' : 'অফার ও আপডেট'}
               />
             </div>
 
             <div className="cms-field-group">
-              <label>অ্যাকশন বাটন লেবেল (যেমন: অনলাইন ভর্তি আবেদন):</label>
+              <label>{isEn ? 'Action Button Label (e.g., Online Admission):' : 'অ্যাকশন বাটন লেবেল (যেমন: অনলাইন ভর্তি আবেদন):'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
                 value={settings.notice?.btnText || ''} 
                 onChange={(e) => updateField('notice', 'btnText', e.target.value)} 
-                placeholder="অনলাইন ভর্তি আবেদন"
+                placeholder={isEn ? 'Online Admission' : 'অনলাইন ভর্তি আবেদন'}
               />
             </div>
           </div>
 
           <div className="cms-field-group">
-            <label>মূল নোটিস বার্তা:</label>
+            <label>{isEn ? 'Main Notice Message:' : 'মূল নোটিস বার্তা:'}</label>
             <textarea 
               className="cms-textarea" 
               value={settings.notice?.text || ''} 
               onChange={(e) => updateField('notice', 'text', e.target.value)} 
-              placeholder="📢 HSC 2026 ও 2025 ব্যাচে সীমিত আসনে নতুন ভর্তি চলছে! সরাসরি ক্লাসরুমে ল্যাব সাপোর্ট।"
+              placeholder={isEn 
+                ? '📢 Limited seats available for HSC 2026 & 2025 batches! Hands-on classroom lab support included.' 
+                : '📢 HSC 2026 ও 2025 ব্যাচে সীমিত আসনে নতুন ভর্তি চলছে! সরাসরি ক্লাসরুমে ল্যাব সাপোর্ট।'}
             />
           </div>
         </div>
@@ -357,66 +395,70 @@ function FrontendSettings({ lang = 'BN' }) {
       {activeSubTab === 'hero' && (
         <div className="cms-card">
           <h3 className="cms-section-title">
-            <Sparkles size={20} color="#0284c7" /> হিরো সেকশন ও লাইভ অ্যানিমেটেড পরিসংখ্যান
+            <Sparkles size={20} color="#0284c7" /> {isEn ? 'Hero Section & Live Animated Stats' : 'হিরো সেকশন ও লাইভ অ্যানিমেটেড পরিসংখ্যান'}
           </h3>
           <p className="cms-section-subtitle">
-            ওয়েবসাইটের মূল ব্যানার হেডার, স্লোগান, ব্যাজ ও ৩টি অ্যানিমেটেড কাউন্টারের মান পরিবর্তন করুন।
+            {isEn 
+              ? 'Customize the main hero title, slogans, badge, tags, and 3 animated counter targets.'
+              : 'ওয়েবসাইটের মূল ব্যানার হেডার, স্লোগান, ব্যাজ ও ৩টি অ্যানিমেটেড কাউন্টারের মান পরিবর্তন করুন।'}
           </p>
 
           <div className="cms-field-group">
-            <label>টপ পিল ব্যাজ (Pill Badge):</label>
+            <label>{isEn ? 'Top Pill Badge:' : 'টপ পিল ব্যাজ (Pill Badge):'}</label>
             <input 
               type="text" 
               className="cms-input" 
               value={settings.hero?.pillBadge || ''} 
               onChange={(e) => updateField('hero', 'pillBadge', e.target.value)} 
-              placeholder="কুষ্টিয়ার সেরা HSC ICT লার্নিং সেন্টার"
+              placeholder={isEn ? "Kushtia's Premier HSC ICT Learning Center" : "কুষ্টিয়ার সেরা HSC ICT লার্নিং সেন্টার"}
             />
           </div>
 
           <div className="cms-grid-2">
             <div className="cms-field-group">
-              <label>প্রধান শিরোনাম (লাইন ১):</label>
+              <label>{isEn ? 'Main Headline (Line 1):' : 'প্রধান শিরোনাম (লাইন ১):'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
                 value={settings.hero?.titleLine1 || ''} 
                 onChange={(e) => updateField('hero', 'titleLine1', e.target.value)} 
-                placeholder="HSC ICT-তে A+ নিশ্চিত করতে"
+                placeholder={isEn ? 'To Secure an A+ in HSC ICT' : 'HSC ICT-তে A+ নিশ্চিত করতে'}
               />
             </div>
 
             <div className="cms-field-group">
-              <label>হাইলাইটেড অংশ (লাইন ২):</label>
+              <label>{isEn ? 'Highlighted Text (Line 2):' : 'হাইলাইটেড অংশ (লাইন ২):'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
                 value={settings.hero?.titleHighlight || ''} 
                 onChange={(e) => updateField('hero', 'titleHighlight', e.target.value)} 
-                placeholder="মুখস্ত নয়, এসো প্রযুক্তির সাথে শিখি"
+                placeholder={isEn ? 'Learn with Practical Tech, Not Rote Learning' : 'মুখস্ত নয়, এসো প্রযুক্তির সাথে শিখি'}
               />
             </div>
           </div>
 
           <div className="cms-field-group">
-            <label>হিরো সাবটাইটেল (বিস্তারিত বিবরণ):</label>
+            <label>{isEn ? 'Hero Subtitle (Detailed Description):' : 'হিরো সাবটাইটেল (বিস্তারিত বিবরণ):'}</label>
             <textarea 
               className="cms-textarea" 
               value={settings.hero?.subtitle || ''} 
               onChange={(e) => updateField('hero', 'subtitle', e.target.value)} 
-              placeholder="তথ্য ও যোগাযোগ প্রযুক্তি মুখস্ত করার বিষয় নয়!..."
+              placeholder={isEn 
+                ? 'Information and Communication Technology is not a subject to memorize!...' 
+                : 'তথ্য ও যোগাযোগ প্রযুক্তি মুখস্ত করার বিষয় নয়!...'}
             />
           </div>
 
           {/* 4 Chapter Tag highlights */}
           <div className="cms-subbox">
             <div className="cms-subbox-title">
-              <Code size={16} /> হিরো ট্যাগ ব্যাজসমূহ (৪টি বিষয়ভিত্তিক হাইলাইট)
+              <Code size={16} /> {isEn ? 'Hero Topic Tags (4 Curriculum Highlights)' : 'হিরো ট্যাগ ব্যাজসমূহ (৪টি বিষয়ভিত্তিক হাইলাইট)'}
             </div>
             <div className="cms-grid-4">
               {[0, 1, 2, 3].map((tagIdx) => (
                 <div key={tagIdx} className="cms-field-group" style={{ marginBottom: 0 }}>
-                  <label>ট্যাগ {tagIdx + 1}:</label>
+                  <label>{isEn ? `Tag ${tagIdx + 1}:` : `ট্যাগ ${tagIdx + 1}:`}</label>
                   <input 
                     type="text" 
                     className="cms-input" 
@@ -435,20 +477,20 @@ function FrontendSettings({ lang = 'BN' }) {
           {/* CTA Buttons */}
           <div className="cms-grid-2">
             <div className="cms-field-group">
-              <label>লগইন বাটন টেক্সট:</label>
+              <label>{isEn ? 'Login Button Text:' : 'লগইন বাটন টেক্সট:'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
-                value={settings.hero?.primaryBtnText || 'লগইন করুন'} 
+                value={settings.hero?.primaryBtnText || (isEn ? 'Login' : 'লগইন করুন')} 
                 onChange={(e) => updateField('hero', 'primaryBtnText', e.target.value)} 
               />
             </div>
             <div className="cms-field-group">
-              <label>ভর্তি বাটন টেক্সট:</label>
+              <label>{isEn ? 'Admission Button Text:' : 'ভর্তি বাটন টেক্সট:'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
-                value={settings.hero?.enrollBtnText || 'অনলাইন ভর্তি আবেদন'} 
+                value={settings.hero?.enrollBtnText || (isEn ? 'Online Admission Form' : 'অনলাইন ভর্তি আবেদন')} 
                 onChange={(e) => updateField('hero', 'enrollBtnText', e.target.value)} 
               />
             </div>
@@ -457,15 +499,15 @@ function FrontendSettings({ lang = 'BN' }) {
           {/* Animated Counters */}
           <div className="cms-subbox" style={{ marginTop: '1.25rem' }}>
             <div className="cms-subbox-title">
-              <TrendingUp size={16} /> ৩টি লাইভ অ্যানিমেটেড কাউন্টার স্ট্যাটস
+              <TrendingUp size={16} /> {isEn ? '3 Live Animated Counter Stats' : '৩টি লাইভ অ্যানিমেটেড কাউন্টার স্ট্যাটস'}
             </div>
 
             <div className="cms-grid-3">
               {/* Stat 1 */}
               <div style={{ background: 'rgba(56, 189, 248, 0.05)', padding: '0.9rem', borderRadius: '10px', border: '1px solid rgba(56, 189, 248, 0.15)' }}>
-                <h5 style={{ margin: '0 0 0.5rem 0', color: '#0284c7', fontSize: '0.85rem' }}>কাউন্টার ১</h5>
+                <h5 style={{ margin: '0 0 0.5rem 0', color: '#0284c7', fontSize: '0.85rem' }}>{isEn ? 'Counter 1' : 'কাউন্টার ১'}</h5>
                 <div className="cms-field-group">
-                  <label>টার্গেট নম্বর:</label>
+                  <label>{isEn ? 'Target Number:' : 'টার্গেট নম্বর:'}</label>
                   <input 
                     type="number" 
                     className="cms-input" 
@@ -477,7 +519,7 @@ function FrontendSettings({ lang = 'BN' }) {
                   />
                 </div>
                 <div className="cms-field-group">
-                  <label>সাফিক্স (চিহ্ন):</label>
+                  <label>{isEn ? 'Suffix (Symbol):' : 'সাফিক্স (চিহ্ন):'}</label>
                   <input 
                     type="text" 
                     className="cms-input" 
@@ -486,7 +528,7 @@ function FrontendSettings({ lang = 'BN' }) {
                   />
                 </div>
                 <div className="cms-field-group" style={{ marginBottom: 0 }}>
-                  <label>লেবেল:</label>
+                  <label>{isEn ? 'Label:' : 'লেবেল:'}</label>
                   <input 
                     type="text" 
                     className="cms-input" 
@@ -498,9 +540,9 @@ function FrontendSettings({ lang = 'BN' }) {
 
               {/* Stat 2 */}
               <div style={{ background: 'rgba(16, 185, 129, 0.05)', padding: '0.9rem', borderRadius: '10px', border: '1px solid rgba(16, 185, 129, 0.15)' }}>
-                <h5 style={{ margin: '0 0 0.5rem 0', color: '#10b981', fontSize: '0.85rem' }}>কাউন্টার ২</h5>
+                <h5 style={{ margin: '0 0 0.5rem 0', color: '#10b981', fontSize: '0.85rem' }}>{isEn ? 'Counter 2' : 'কাউন্টার ২'}</h5>
                 <div className="cms-field-group">
-                  <label>টার্গেট নম্বর:</label>
+                  <label>{isEn ? 'Target Number:' : 'টার্গেট নম্বর:'}</label>
                   <input 
                     type="number" 
                     className="cms-input" 
@@ -512,7 +554,7 @@ function FrontendSettings({ lang = 'BN' }) {
                   />
                 </div>
                 <div className="cms-field-group">
-                  <label>সাফিক্স (চিহ্ন):</label>
+                  <label>{isEn ? 'Suffix (Symbol):' : 'সাফিক্স (চিহ্ন):'}</label>
                   <input 
                     type="text" 
                     className="cms-input" 
@@ -521,7 +563,7 @@ function FrontendSettings({ lang = 'BN' }) {
                   />
                 </div>
                 <div className="cms-field-group" style={{ marginBottom: 0 }}>
-                  <label>লেবেল:</label>
+                  <label>{isEn ? 'Label:' : 'লেবেল:'}</label>
                   <input 
                     type="text" 
                     className="cms-input" 
@@ -533,9 +575,9 @@ function FrontendSettings({ lang = 'BN' }) {
 
               {/* Stat 3 */}
               <div style={{ background: 'rgba(168, 85, 247, 0.05)', padding: '0.9rem', borderRadius: '10px', border: '1px solid rgba(168, 85, 247, 0.15)' }}>
-                <h5 style={{ margin: '0 0 0.5rem 0', color: '#a855f7', fontSize: '0.85rem' }}>কাউন্টার ৩</h5>
+                <h5 style={{ margin: '0 0 0.5rem 0', color: '#a855f7', fontSize: '0.85rem' }}>{isEn ? 'Counter 3' : 'কাউন্টার ৩'}</h5>
                 <div className="cms-field-group">
-                  <label>টার্গেট নম্বর:</label>
+                  <label>{isEn ? 'Target Number:' : 'টার্গেট নম্বর:'}</label>
                   <input 
                     type="number" 
                     className="cms-input" 
@@ -547,7 +589,7 @@ function FrontendSettings({ lang = 'BN' }) {
                   />
                 </div>
                 <div className="cms-field-group">
-                  <label>সাফিক্স (চিহ্ন):</label>
+                  <label>{isEn ? 'Suffix (Symbol):' : 'সাফিক্স (চিহ্ন):'}</label>
                   <input 
                     type="text" 
                     className="cms-input" 
@@ -556,7 +598,7 @@ function FrontendSettings({ lang = 'BN' }) {
                   />
                 </div>
                 <div className="cms-field-group" style={{ marginBottom: 0 }}>
-                  <label>লেবেল:</label>
+                  <label>{isEn ? 'Label:' : 'লেবেল:'}</label>
                   <input 
                     type="text" 
                     className="cms-input" 
@@ -574,25 +616,28 @@ function FrontendSettings({ lang = 'BN' }) {
       {activeSubTab === 'mentor' && (
         <div className="cms-card">
           <h3 className="cms-section-title">
-            <Award size={20} color="#0284c7" /> শিক্ষক পরিচিতি, ছবি ও ফ্লোটিং ব্যাজসমূহ
+            <Award size={20} color="#0284c7" /> {isEn ? 'Instructor Profile, Photo & Floating Badges' : 'শিক্ষক পরিচিতি, ছবি ও ফ্লোটিং ব্যাজসমূহ'}
           </h3>
           <p className="cms-section-subtitle">
-            হিরো সেকশনের শিক্ষকের ছবি, চারপাশের ৪টি ফ্লোটিং ব্যাজ এবং বিস্তারিত শিক্ষক পরিচিতি নিয়ন্ত্রণ করুন।
+            {isEn 
+              ? 'Manage the hero instructor image, 4 surrounding floating badges, and detailed profile.'
+              : 'হিরো সেকশনের শিক্ষকের ছবি, চারপাশের ৪টি ফ্লোটিং ব্যাজ এবং বিস্তারিত শিক্ষক পরিচিতি নিয়ন্ত্রণ করুন।'}
           </p>
 
           <div className="cms-grid-2">
             <div className="cms-field-group">
-              <label>শিক্ষকের নাম:</label>
+              <label>{isEn ? 'Instructor Name:' : 'শিক্ষকের নাম:'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
-                value={settings.mentorHero?.name || 'মারুফ হোসেন'} 
+                value={settings.mentorHero?.name || ''} 
                 onChange={(e) => updateField('mentorHero', 'name', e.target.value)} 
+                placeholder={isEn ? 'Maruf Hossain' : 'মারুফ হোসেন'}
               />
             </div>
 
             <div className="cms-field-group">
-              <label>পদবি ও প্রফেশনাল ভূমিকা (Role):</label>
+              <label>{isEn ? 'Designation & Professional Role:' : 'পদবি ও প্রফেশনাল ভূমিকা (Role):'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
@@ -606,7 +651,7 @@ function FrontendSettings({ lang = 'BN' }) {
           {/* Mentor Photo URL and Upload */}
           <div className="cms-subbox">
             <div className="cms-subbox-title">
-              <Image size={16} /> শিক্ষকের ছবি (Mentor Image)
+              <Image size={16} /> {isEn ? 'Instructor Photo (Mentor Image)' : 'শিক্ষকের ছবি (Mentor Image)'}
             </div>
             <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
               <div style={{ width: '85px', height: '85px', borderRadius: '14px', background: '#090f1d', border: '2px solid rgba(56, 189, 248, 0.4)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -619,7 +664,7 @@ function FrontendSettings({ lang = 'BN' }) {
 
               <div style={{ flex: 1, minWidth: '240px' }}>
                 <div className="cms-field-group">
-                  <label>ছবির পাথ বা URL (যেমন: /m2.png):</label>
+                  <label>{isEn ? 'Image Path or URL (e.g., /m2.png):' : 'ছবির পাথ বা URL (যেমন: /m2.png):'}</label>
                   <input 
                     type="text" 
                     className="cms-input" 
@@ -629,7 +674,7 @@ function FrontendSettings({ lang = 'BN' }) {
                 </div>
                 <div>
                   <label style={{ fontSize: '0.8rem', color: '#64748b', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: '#f1f5f9', padding: '0.35rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
-                    📁 কম্পিউটার থেকে নতুন ছবি সিলেক্ট করুন
+                    {isEn ? '📁 Choose new image from computer' : '📁 কম্পিউটার থেকে নতুন ছবি সিলেক্ট করুন'}
                     <input 
                       type="file" 
                       accept="image/*" 
@@ -645,20 +690,20 @@ function FrontendSettings({ lang = 'BN' }) {
           {/* 4 Floating Badges */}
           <div className="cms-subbox">
             <div className="cms-subbox-title">
-              <Sparkles size={16} /> ছবির চারপাশের ৪টি ফ্লোটিং ব্যাজ
+              <Sparkles size={16} /> {isEn ? '4 Floating Badges Around Instructor Photo' : 'ছবির চারপাশের ৪টি ফ্লোটিং ব্যাজ'}
             </div>
 
             <div className="cms-grid-2">
               {/* Badge 1 */}
               <div style={{ background: '#ffffff', padding: '0.75rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: 700 }}>ব্যাজ ১ (উপরে ডানে):</span>
+                <span style={{ fontSize: '0.8rem', color: '#0284c7', fontWeight: 700 }}>{isEn ? 'Badge 1 (Top Right):' : 'ব্যাজ ১ (উপরে ডানে):'}</span>
                 <input 
                   type="text" 
                   className="cms-input" 
                   style={{ marginTop: '0.3rem' }}
                   value={settings.mentorHero?.badge1Title || ''} 
                   onChange={(e) => updateField('mentorHero', 'badge1Title', e.target.value)} 
-                  placeholder="শিরোনাম"
+                  placeholder={isEn ? 'Title' : 'শিরোনাম'}
                 />
                 <input 
                   type="text" 
@@ -666,20 +711,20 @@ function FrontendSettings({ lang = 'BN' }) {
                   style={{ marginTop: '0.4rem' }}
                   value={settings.mentorHero?.badge1Sub || ''} 
                   onChange={(e) => updateField('mentorHero', 'badge1Sub', e.target.value)} 
-                  placeholder="সাবটেক্সট"
+                  placeholder={isEn ? 'Subtext' : 'সাবটেক্সট'}
                 />
               </div>
 
               {/* Badge 2 */}
               <div style={{ background: '#ffffff', padding: '0.75rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 700 }}>ব্যাজ ২ (উপরে বামে):</span>
+                <span style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 700 }}>{isEn ? 'Badge 2 (Top Left):' : 'ব্যাজ ২ (উপরে বামে):'}</span>
                 <input 
                   type="text" 
                   className="cms-input" 
                   style={{ marginTop: '0.3rem' }}
                   value={settings.mentorHero?.badge2Title || ''} 
                   onChange={(e) => updateField('mentorHero', 'badge2Title', e.target.value)} 
-                  placeholder="শিরোনাম"
+                  placeholder={isEn ? 'Title' : 'শিরোনাম'}
                 />
                 <input 
                   type="text" 
@@ -687,20 +732,20 @@ function FrontendSettings({ lang = 'BN' }) {
                   style={{ marginTop: '0.4rem' }}
                   value={settings.mentorHero?.badge2Sub || ''} 
                   onChange={(e) => updateField('mentorHero', 'badge2Sub', e.target.value)} 
-                  placeholder="সাবটেক্সট"
+                  placeholder={isEn ? 'Subtext' : 'সাবটেক্সট'}
                 />
               </div>
 
               {/* Badge 3 */}
               <div style={{ background: '#ffffff', padding: '0.75rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.8rem', color: '#f59e0b', fontWeight: 700 }}>ব্যাজ ৩ (নিচে বামে):</span>
+                <span style={{ fontSize: '0.8rem', color: '#f59e0b', fontWeight: 700 }}>{isEn ? 'Badge 3 (Bottom Left):' : 'ব্যাজ ৩ (নিচে বামে):'}</span>
                 <input 
                   type="text" 
                   className="cms-input" 
                   style={{ marginTop: '0.3rem' }}
                   value={settings.mentorHero?.badge3Title || ''} 
                   onChange={(e) => updateField('mentorHero', 'badge3Title', e.target.value)} 
-                  placeholder="শিরোনাম"
+                  placeholder={isEn ? 'Title' : 'শিরোনাম'}
                 />
                 <input 
                   type="text" 
@@ -708,20 +753,20 @@ function FrontendSettings({ lang = 'BN' }) {
                   style={{ marginTop: '0.4rem' }}
                   value={settings.mentorHero?.badge3Sub || ''} 
                   onChange={(e) => updateField('mentorHero', 'badge3Sub', e.target.value)} 
-                  placeholder="সাবটেক্সট"
+                  placeholder={isEn ? 'Subtext' : 'সাবটেক্সট'}
                 />
               </div>
 
               {/* Badge 4 */}
               <div style={{ background: '#ffffff', padding: '0.75rem', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.8rem', color: '#ec4899', fontWeight: 700 }}>ব্যাজ ৪ (নিচে ডানে):</span>
+                <span style={{ fontSize: '0.8rem', color: '#ec4899', fontWeight: 700 }}>{isEn ? 'Badge 4 (Bottom Right):' : 'ব্যাজ ৪ (নিচে ডানে):'}</span>
                 <input 
                   type="text" 
                   className="cms-input" 
                   style={{ marginTop: '0.3rem' }}
                   value={settings.mentorHero?.badge4Title || ''} 
                   onChange={(e) => updateField('mentorHero', 'badge4Title', e.target.value)} 
-                  placeholder="শিরোনাম"
+                  placeholder={isEn ? 'Title' : 'শিরোনাম'}
                 />
                 <input 
                   type="text" 
@@ -729,7 +774,7 @@ function FrontendSettings({ lang = 'BN' }) {
                   style={{ marginTop: '0.4rem' }}
                   value={settings.mentorHero?.badge4Sub || ''} 
                   onChange={(e) => updateField('mentorHero', 'badge4Sub', e.target.value)} 
-                  placeholder="সাবটেক্সট"
+                  placeholder={isEn ? 'Subtext' : 'সাবটেক্সট'}
                 />
               </div>
             </div>
@@ -738,35 +783,35 @@ function FrontendSettings({ lang = 'BN' }) {
           {/* Teacher Detailed Bio & Section */}
           <div className="cms-subbox" style={{ marginTop: '1.25rem' }}>
             <div className="cms-subbox-title">
-              <FileText size={16} /> শিক্ষক পরিচিতি মূল সেকশন
+              <FileText size={16} /> {isEn ? 'Main Instructor Profile Section' : 'শিক্ষক পরিচিতি মূল সেকশন'}
             </div>
 
             <div className="cms-grid-2">
               <div className="cms-field-group">
-                <label>সেকশন পিল ব্যাজ:</label>
+                <label>{isEn ? 'Section Pill Badge:' : 'সেকশন পিল ব্যাজ:'}</label>
                 <input 
                   type="text" 
                   className="cms-input" 
                   value={settings.mentorSection?.pill || ''} 
                   onChange={(e) => updateField('mentorSection', 'pill', e.target.value)} 
-                  placeholder='"ICT মুখস্ত নয়, এসো শিখি"'
+                  placeholder={isEn ? '"Do Not Memorize ICT, Learn Practically"' : '"ICT মুখস্ত নয়, এসো শিখি"'}
                 />
               </div>
 
               <div className="cms-field-group">
-                <label>সেকশন শিরোনাম:</label>
+                <label>{isEn ? 'Section Headline:' : 'সেকশন শিরোনাম:'}</label>
                 <input 
                   type="text" 
                   className="cms-input" 
                   value={settings.mentorSection?.title || ''} 
                   onChange={(e) => updateField('mentorSection', 'title', e.target.value)} 
-                  placeholder="প্রযুক্তির যুগে মুখস্ত বিদ্যার কোনো স্থান নেই"
+                  placeholder={isEn ? 'In the Age of Technology, Rote Learning Has No Place' : 'প্রযুক্তির যুগে মুখস্ত বিদ্যার কোনো স্থান নেই'}
                 />
               </div>
             </div>
 
             <div className="cms-field-group">
-              <label>শিক্ষকের উক্তি / বক্তব্য:</label>
+              <label>{isEn ? 'Instructor Message / Bio Quote:' : 'শিক্ষকের উক্তি / বক্তব্য:'}</label>
               <textarea 
                 className="cms-textarea" 
                 value={settings.mentorSection?.bio || ''} 
@@ -777,7 +822,7 @@ function FrontendSettings({ lang = 'BN' }) {
             {/* 3 Bullets */}
             <div style={{ marginTop: '0.75rem' }}>
               <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.4rem' }}>
-                ৩টি মূল ফোকাস পয়েন্ট:
+                {isEn ? '3 Key Focus Highlights:' : '৩টি মূল ফোকাস পয়েন্ট:'}
               </label>
               {[0, 1, 2].map((bIdx) => (
                 <div key={bIdx} style={{ marginBottom: '0.5rem' }}>
@@ -790,7 +835,7 @@ function FrontendSettings({ lang = 'BN' }) {
                       list[bIdx] = e.target.value;
                       updateField('mentorSection', 'bullets', list);
                     }} 
-                    placeholder={`পয়েন্ট ${bIdx + 1}`}
+                    placeholder={isEn ? `Highlight Point ${bIdx + 1}` : `পয়েন্ট ${bIdx + 1}`}
                   />
                 </div>
               ))}
@@ -798,7 +843,7 @@ function FrontendSettings({ lang = 'BN' }) {
 
             <div className="cms-grid-2" style={{ marginTop: '0.75rem' }}>
               <div className="cms-field-group">
-                <label>কল করার মোবাইল নম্বর:</label>
+                <label>{isEn ? 'Hotline Phone Number:' : 'কল করার মোবাইল নম্বর:'}</label>
                 <input 
                   type="text" 
                   className="cms-input" 
@@ -808,7 +853,7 @@ function FrontendSettings({ lang = 'BN' }) {
               </div>
 
               <div className="cms-field-group">
-                <label>হোয়াটসঅ্যাপ নম্বর (কান্ট্রি কোড সহ):</label>
+                <label>{isEn ? 'WhatsApp Number (with country code):' : 'হোয়াটসঅ্যাপ নম্বর (কান্ট্রি কোড সহ):'}</label>
                 <input 
                   type="text" 
                   className="cms-input" 
@@ -827,10 +872,10 @@ function FrontendSettings({ lang = 'BN' }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
               <h3 className="cms-section-title">
-                <Users size={20} color="#0284c7" /> কৃতী শিক্ষার্থীদের রিভিউ ও সাফল্য
+                <Users size={20} color="#0284c7" /> {isEn ? 'Student Reviews & Success Stories' : 'কৃতী শিক্ষার্থীদের রিভিউ ও সাফল্য'}
               </h3>
               <p className="cms-section-subtitle" style={{ marginBottom: 0 }}>
-                ওয়েবসাইটে প্রদর্শিত ছাত্র-ছাত্রীদের রিভিউ পরিচালনা করুন।
+                {isEn ? 'Manage student testimonials and board exam success stories.' : 'ওয়েবসাইটে প্রদর্শিত ছাত্র-ছাত্রীদের রিভিউ পরিচালনা করুন।'}
               </p>
             </div>
 
@@ -840,7 +885,7 @@ function FrontendSettings({ lang = 'BN' }) {
               style={{ width: 'auto', margin: 0, padding: '0.5rem 1rem' }}
               onClick={handleAddTestimonial}
             >
-              <Plus size={16} /> নতুন রিভিউ যোগ করুন
+              <Plus size={16} /> {isEn ? 'Add New Review' : 'নতুন রিভিউ যোগ করুন'}
             </button>
           </div>
 
@@ -848,19 +893,19 @@ function FrontendSettings({ lang = 'BN' }) {
             {(settings.testimonials || []).map((tItem, index) => (
               <div key={tItem.id || index} className="cms-item-card">
                 <div className="cms-item-header">
-                  <span className="cms-item-badge">রিভিউ #{index + 1}</span>
+                  <span className="cms-item-badge">{isEn ? `Review #${index + 1}` : `রিভিউ #${index + 1}`}</span>
                   <button 
                     type="button" 
                     className="cms-delete-btn" 
                     onClick={() => handleDeleteTestimonial(index)}
                   >
-                    <Trash2 size={13} /> মুছে ফেলুন
+                    <Trash2 size={13} /> {isEn ? 'Delete' : 'মুছে ফেলুন'}
                   </button>
                 </div>
 
                 <div className="cms-grid-3">
                   <div className="cms-field-group">
-                    <label>শিক্ষার্থীর নাম:</label>
+                    <label>{isEn ? 'Student Name:' : 'শিক্ষার্থীর নাম:'}</label>
                     <input 
                       type="text" 
                       className="cms-input" 
@@ -870,7 +915,7 @@ function FrontendSettings({ lang = 'BN' }) {
                   </div>
 
                   <div className="cms-field-group">
-                    <label>কলেজ / প্রতিষ্ঠান:</label>
+                    <label>{isEn ? 'College / Institute:' : 'কলেজ / প্রতিষ্ঠান:'}</label>
                     <input 
                       type="text" 
                       className="cms-input" 
@@ -880,7 +925,7 @@ function FrontendSettings({ lang = 'BN' }) {
                   </div>
 
                   <div className="cms-field-group">
-                    <label>ফলাফল / ব্যাজ (যেমন: ICT: ৯৮/১০০):</label>
+                    <label>{isEn ? 'Result / Badge (e.g., ICT: 98/100):' : 'ফলাফল / ব্যাজ (যেমন: ICT: ৯৮/১০০):'}</label>
                     <input 
                       type="text" 
                       className="cms-input" 
@@ -891,7 +936,7 @@ function FrontendSettings({ lang = 'BN' }) {
                 </div>
 
                 <div className="cms-field-group" style={{ marginBottom: 0 }}>
-                  <label>রিভিউ / প্রশংসাপত্র:</label>
+                  <label>{isEn ? 'Review / Testimonial Text:' : 'রিভিউ / প্রশংসাপত্র:'}</label>
                   <textarea 
                     className="cms-textarea" 
                     style={{ minHeight: '65px' }}
@@ -907,7 +952,7 @@ function FrontendSettings({ lang = 'BN' }) {
               className="cms-add-btn" 
               onClick={handleAddTestimonial}
             >
-              <Plus size={16} /> আরও রিভিউ যোগ করুন
+              <Plus size={16} /> {isEn ? 'Add More Reviews' : 'আরও রিভিউ যোগ করুন'}
             </button>
           </div>
         </div>
@@ -919,10 +964,10 @@ function FrontendSettings({ lang = 'BN' }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
               <h3 className="cms-section-title">
-                <HelpCircle size={20} color="#0284c7" /> সচরাচর জিজ্ঞাসিত প্রশ্নসমূহ (FAQ)
+                <HelpCircle size={20} color="#0284c7" /> {isEn ? 'Frequently Asked Questions (FAQ)' : 'সচরাচর জিজ্ঞাসিত প্রশ্নসমূহ (FAQ)'}
               </h3>
               <p className="cms-section-subtitle" style={{ marginBottom: 0 }}>
-                শিক্ষার্থী ও অভিভাবকদের সাধারণ জিজ্ঞাসা ও উত্তরসমূহ সম্পাদনা করুন।
+                {isEn ? 'Edit common questions and answers for students and parents.' : 'শিক্ষার্থী ও অভিভাবকদের সাধারণ জিজ্ঞাসা ও উত্তরসমূহ সম্পাদনা করুন।'}
               </p>
             </div>
 
@@ -932,7 +977,7 @@ function FrontendSettings({ lang = 'BN' }) {
               style={{ width: 'auto', margin: 0, padding: '0.5rem 1rem' }}
               onClick={handleAddFaq}
             >
-              <Plus size={16} /> নতুন প্রশ্ন যোগ করুন
+              <Plus size={16} /> {isEn ? 'Add New Question' : 'নতুন প্রশ্ন যোগ করুন'}
             </button>
           </div>
 
@@ -940,18 +985,18 @@ function FrontendSettings({ lang = 'BN' }) {
             {(settings.faq || []).map((faqItem, index) => (
               <div key={faqItem.id || index} className="cms-item-card">
                 <div className="cms-item-header">
-                  <span className="cms-item-badge">প্রশ্ন #{index + 1}</span>
+                  <span className="cms-item-badge">{isEn ? `Question #${index + 1}` : `প্রশ্ন #${index + 1}`}</span>
                   <button 
                     type="button" 
                     className="cms-delete-btn" 
                     onClick={() => handleDeleteFaq(index)}
                   >
-                    <Trash2 size={13} /> মুছে ফেলুন
+                    <Trash2 size={13} /> {isEn ? 'Delete' : 'মুছে ফেলুন'}
                   </button>
                 </div>
 
                 <div className="cms-field-group">
-                  <label>প্রশ্ন:</label>
+                  <label>{isEn ? 'Question:' : 'প্রশ্ন:'}</label>
                   <input 
                     type="text" 
                     className="cms-input" 
@@ -961,7 +1006,7 @@ function FrontendSettings({ lang = 'BN' }) {
                 </div>
 
                 <div className="cms-field-group" style={{ marginBottom: 0 }}>
-                  <label>উত্তর:</label>
+                  <label>{isEn ? 'Answer:' : 'উত্তর:'}</label>
                   <textarea 
                     className="cms-textarea" 
                     style={{ minHeight: '65px' }}
@@ -977,7 +1022,7 @@ function FrontendSettings({ lang = 'BN' }) {
               className="cms-add-btn" 
               onClick={handleAddFaq}
             >
-              <Plus size={16} /> আরও প্রশ্ন যোগ করুন
+              <Plus size={16} /> {isEn ? 'Add More Questions' : 'আরও প্রশ্ন যোগ করুন'}
             </button>
           </div>
         </div>
@@ -987,39 +1032,39 @@ function FrontendSettings({ lang = 'BN' }) {
       {activeSubTab === 'footer' && (
         <div className="cms-card">
           <h3 className="cms-section-title">
-            <MapPin size={20} color="#0284c7" /> যোগাযোগ, ঠিকানা ও ফুটার সেটিংস
+            <MapPin size={20} color="#0284c7" /> {isEn ? 'Contact, Location & Footer Settings' : 'যোগাযোগ, ঠিকানা ও ফুটার সেটিংস'}
           </h3>
           <p className="cms-section-subtitle">
-            ফুটার সেকশনের যোগাযোগের ঠিকানা, হটলাইন নম্বর, সময় ও কপিরাইট লেখা আপডেট করুন।
+            {isEn ? 'Update physical address, hotline numbers, operating hours, and footer copy.' : 'ফুটার সেকশনের যোগাযোগের ঠিকানা, হটলাইন নম্বর, সময় ও কপিরাইট লেখা আপডেট করুন।'}
           </p>
 
           <div className="cms-grid-2">
             <div className="cms-field-group">
-              <label>ক্যাম্পাস / সেন্টারের ঠিকানা:</label>
+              <label>{isEn ? 'Campus / Center Address:' : 'ক্যাম্পাস / সেন্টারের ঠিকানা:'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
                 value={settings.contact?.address || ''} 
                 onChange={(e) => updateField('contact', 'address', e.target.value)} 
-                placeholder="কুষ্টিয়া সরকারি কলেজ গেট, কুষ্টিয়া, বাংলাদেশ"
+                placeholder={isEn ? 'Kushtia Govt. College Gate, Kushtia, Bangladesh' : 'কুষ্টিয়া সরকারি কলেজ গেট, কুষ্টিয়া, বাংলাদেশ'}
               />
             </div>
 
             <div className="cms-field-group">
-              <label>হটলাইন নম্বর (প্রদর্শনযোগ্য):</label>
+              <label>{isEn ? 'Hotline Phone (Display):' : 'হটলাইন নম্বর (প্রদর্শনযোগ্য):'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
                 value={settings.contact?.phone || ''} 
                 onChange={(e) => updateField('contact', 'phone', e.target.value)} 
-                placeholder="+৮৮০ ১৭২৩-৬১৯৫২৪"
+                placeholder={isEn ? '+880 1723-619524' : '+৮৮০ ১৭২৩-৬১৯৫২৪'}
               />
             </div>
           </div>
 
           <div className="cms-grid-2">
             <div className="cms-field-group">
-              <label>হোয়াটসঅ্যাপ সংযোগ নম্বর:</label>
+              <label>{isEn ? 'WhatsApp Phone Number:' : 'হোয়াটসঅ্যাপ সংযোগ নম্বর:'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
@@ -1030,37 +1075,37 @@ function FrontendSettings({ lang = 'BN' }) {
             </div>
 
             <div className="cms-field-group">
-              <label>খোলা থাকার সময়সূচি:</label>
+              <label>{isEn ? 'Opening Hours:' : 'খোলা থাকার সময়সূচি:'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
                 value={settings.contact?.hours || ''} 
                 onChange={(e) => updateField('contact', 'hours', e.target.value)} 
-                placeholder="সকাল ৭:০০ - রাত ৮:০০ (প্রতিদিন খোলা)"
+                placeholder={isEn ? '7:00 AM - 8:00 PM (Open Daily)' : 'সকাল ৭:০০ - রাত ৮:০০ (প্রতিদিন খোলা)'}
               />
             </div>
           </div>
 
           <div className="cms-grid-2">
             <div className="cms-field-group">
-              <label>কপিরাইট টেক্সট:</label>
+              <label>{isEn ? 'Copyright Text:' : 'কপিরাইট টেক্সট:'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
                 value={settings.contact?.copyright || ''} 
                 onChange={(e) => updateField('contact', 'copyright', e.target.value)} 
-                placeholder="© 2026 Maruf's ICT Care. সর্বস্বত্ব সংরক্ষিত।"
+                placeholder={isEn ? "© 2026 Maruf's ICT Care. All rights reserved." : "© 2026 Maruf's ICT Care. সর্বস্বত্ব সংরক্ষিত।"}
               />
             </div>
 
             <div className="cms-field-group">
-              <label>ফুটার বটম স্লোগান:</label>
+              <label>{isEn ? 'Footer Bottom Tagline:' : 'ফুটার বটম স্লোগান:'}</label>
               <input 
                 type="text" 
                 className="cms-input" 
                 value={settings.contact?.footerTagline || ''} 
                 onChange={(e) => updateField('contact', 'footerTagline', e.target.value)} 
-                placeholder="Designed for HSC ICT Students • ICT মুখস্ত নয়, এসো শিখি"
+                placeholder={isEn ? 'Designed for HSC ICT Students • Do Not Memorize ICT, Learn Practically' : 'Designed for HSC ICT Students • ICT মুখস্ত নয়, এসো শিখি'}
               />
             </div>
           </div>
@@ -1071,7 +1116,7 @@ function FrontendSettings({ lang = 'BN' }) {
       <div className="cms-sticky-save-bar">
         <div className="cms-sticky-text">
           <CheckCircle2 size={18} color="#34d399" />
-          <span>সকল সেকশনের পরিবর্তন এক ক্লিকেই সেভ করুন।</span>
+          <span>{isEn ? 'Save all section updates with a single click.' : 'সকল সেকশনের পরিবর্তন এক ক্লিকেই সেভ করুন।'}</span>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
@@ -1080,7 +1125,7 @@ function FrontendSettings({ lang = 'BN' }) {
             className="btn-cms-reset"
             onClick={handleReset}
           >
-            <RotateCcw size={15} /> ডিফল্ট করুন
+            <RotateCcw size={15} /> {isEn ? 'Reset Defaults' : 'ডিফল্ট করুন'}
           </button>
 
           <button 
@@ -1088,7 +1133,7 @@ function FrontendSettings({ lang = 'BN' }) {
             className="btn-cms-save"
             onClick={handleSave}
           >
-            <Save size={16} /> পরিবর্তন সংরক্ষণ করুন
+            <Save size={16} /> {isEn ? 'Save Changes' : 'পরিবর্তন সংরক্ষণ করুন'}
           </button>
         </div>
       </div>

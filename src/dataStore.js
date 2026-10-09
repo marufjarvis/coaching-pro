@@ -14,6 +14,8 @@ const STORAGE_KEYS = {
   STAFF: 'coachingStaff',
   SETTINGS: 'coachingSettings',
   FRONTEND: 'coachingFrontendSettings',
+  FRONTEND_BN: 'coachingFrontendSettings_BN',
+  FRONTEND_EN: 'coachingFrontendSettings_EN',
   PENDING_ADMISSIONS: 'pendingAdmissions',
   LANGUAGE: 'coachingLanguage',
   DISMISSED_GUIDE: 'coachingDismissedGuide'
@@ -27,8 +29,8 @@ const notifyChange = () => {
   }
 };
 
-// Default Landing Page Frontend Settings
-export const defaultFrontendSettings = {
+// Default Landing Page Frontend Settings (Bengali)
+export const defaultFrontendSettings_BN = {
   // 1. Notice Bar
   notice: {
     enabled: true,
@@ -159,6 +161,142 @@ export const defaultFrontendSettings = {
     footerTagline: 'Designed for HSC ICT Students • ICT মুখস্ত নয়, এসো শিখি'
   }
 };
+
+// Default Landing Page Frontend Settings (English)
+export const defaultFrontendSettings_EN = {
+  // 1. Notice Bar
+  notice: {
+    enabled: true,
+    badge: 'Special Announcement',
+    text: '📢 Limited seats available for HSC 2026 & 2025 batches! Hands-on classroom lab support included.',
+    btnText: 'Online Admission'
+  },
+
+  // 2. Branding & Tagline
+  brand: {
+    titlePrefix: "Maruf's",
+    titleHighlight: "ICT Care",
+    tagline: 'Do Not Memorize ICT, Let Us Learn Practically',
+    logoUrl: '/logo.png'
+  },
+
+  // 3. Hero Section
+  hero: {
+    pillBadge: "Kushtia's Premier HSC ICT Learning Center",
+    titleLine1: 'To Secure an A+ in HSC ICT',
+    titleHighlight: 'Learn with Practical Tech, Not Rote Learning',
+    subtitle: 'Information and Communication Technology is not a subject to memorize! Master C Programming, HTML Tables, Logic Gates, and SQL Database with interactive laptop lab sessions to achieve a full 100/100 on your board exams.',
+    tags: [
+      'Number Systems & Logic Gates',
+      'HTML5 Web Design',
+      'C Programming Lab',
+      'SQL Database'
+    ],
+    primaryBtnText: 'Login Now',
+    enrollBtnText: 'Online Admission Form',
+    stat1: { number: 98, suffix: '%+', label: 'A+ Pass Rate in Board Exams' },
+    stat2: { number: 1200, suffix: '+', label: 'Successful Students' },
+    stat3: { number: 100, suffix: '%', label: 'Practical Lab Support' }
+  },
+
+  // 4. Mentor Hero Showcase & Badges
+  mentorHero: {
+    image: '/m2.png',
+    name: 'Maruf Hossain',
+    role: 'AI Engineer | Blockchain Developer | Quantum Expert',
+    badge1Title: 'Maruf Hossain',
+    badge1Sub: 'Lead Instructor & Founder',
+    badge2Title: 'HSC ICT Specialist',
+    badge2Sub: '10+ Years Teaching Excellence',
+    badge3Title: '1,200+ Students A+',
+    badge3Sub: '5.0 Star Rating',
+    badge4Title: 'Hands-on Lab Classes',
+    badge4Sub: 'Practiced on Laptops & Projectors',
+    chips: [
+      '🤖 Artificial Intelligence',
+      '⛓️ Blockchain & Web3',
+      '⚛️ Quantum Computing',
+      '🧠 Deep Learning & LLMs'
+    ]
+  },
+
+  // 5. Mentor Detailed Profile Section
+  mentorSection: {
+    pill: '"Do Not Memorize ICT, Learn Practically"',
+    title: 'In the Age of Technology, Rote Learning Has No Place',
+    bio: '"HSC ICT is the most modern and essential subject for future careers. Yet without proper guidance, many students struggle by attempting to memorize C code or logic gates. In our classroom, every concept comes alive on laptop screens and projectors, empowering every student to achieve an A+ with genuine confidence."',
+    bullets: [
+      '10+ years experienced ICT mentor & software engineering professional',
+      'Intuitive logic-building and practical programming methodologies',
+      '24/7 personalized academic mentorship and doubt resolution'
+    ],
+    phone: '+880 1723-619524',
+    whatsapp: '8801723619524'
+  },
+
+  // 6. Testimonials
+  testimonials: [
+    {
+      id: 1,
+      name: 'Tamim Iqbal',
+      college: 'Kushtia Govt. College',
+      score: 'ICT: 98/100 (A+)',
+      text: 'Everyone warned me chapters 3 and 5 were difficult to memorize. But after practicing C coding and digital logic gates on laptops with Maruf Sir, all fears vanished. I scored 98 in the board exams!'
+    },
+    {
+      id: 2,
+      name: 'Sumaiya Farhana',
+      college: 'Kushtia Govt. Women College',
+      score: 'ICT: 96/100 (A+)',
+      text: 'The student portal is incredible! I could track my attendance and weekly exam scores right from my phone. Whenever I had difficulties, Sir provided 1-on-1 support.'
+    },
+    {
+      id: 3,
+      name: 'Ariful Islam',
+      college: 'Kushtia Islamia College',
+      score: 'ICT: 95/100 (A+)',
+      text: 'Hands-on practice with HTML tables in Chapter 4 and SQL queries in Chapter 6 made all the difference. Solving 10 years of past board questions meant zero surprises in the final exam.'
+    }
+  ],
+
+  // 7. FAQ Section
+  faq: [
+    {
+      id: 1,
+      question: 'I have no prior computer or coding experience. Can I succeed?',
+      answer: 'Absolutely! Our curriculum starts from ground zero. Algorithms, flowcharts, and C programming are taught with simple real-life examples on live laptop displays so anyone can grasp them easily.'
+    },
+    {
+      id: 2,
+      question: 'How do I log in to the Student Portal?',
+      answer: 'No complicated ID or password needed. Simply click the "Login" button above and enter the mobile number registered during your admission for 1-second instant access.'
+    },
+    {
+      id: 3,
+      question: 'What if I miss a scheduled class?',
+      answer: 'If you miss a class due to illness or exam conflicts, you can easily attend a free backup session or join another batch by consulting the instructor.'
+    },
+    {
+      id: 4,
+      question: 'How do I apply for admission?',
+      answer: 'You can submit the "Online Admission" form on this website or visit our physical campus at Kushtia Govt. College Gate directly.'
+    }
+  ],
+
+  // 8. Contact & Footer
+  contact: {
+    address: 'Kushtia Govt. College Gate, Kushtia, Bangladesh',
+    phone: '+880 1723-619524',
+    phoneRaw: '01723619524',
+    whatsapp: '8801723619524',
+    hours: '7:00 AM - 8:00 PM (Open Daily)',
+    copyright: "© 2026 Maruf's ICT Care. All rights reserved.",
+    footerTagline: 'Designed for HSC ICT Students • Do Not Memorize ICT, Learn Practically'
+  }
+};
+
+// Backward-compatible default alias
+export const defaultFrontendSettings = defaultFrontendSettings_BN;
 
 export const dataStore = {
   // --- BACKEND SYNCHRONIZATION ---
@@ -710,54 +848,65 @@ export const dataStore = {
     return updated;
   },
 
-  // --- FRONTEND LANDING PAGE CMS SETTINGS ---
-  getFrontendSettings() {
+  // --- FRONTEND LANDING PAGE CMS SETTINGS (Bilingual EN/BN) ---
+  getFrontendSettings(lang) {
+    const activeLang = (lang || this.getLanguage()) === 'EN' ? 'EN' : 'BN';
+    const defaults = activeLang === 'EN' ? defaultFrontendSettings_EN : defaultFrontendSettings_BN;
+    const storageKey = activeLang === 'EN' ? STORAGE_KEYS.FRONTEND_EN : STORAGE_KEYS.FRONTEND_BN;
+
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.FRONTEND);
+      let data = localStorage.getItem(storageKey);
+      // Fallback for BN if user saved settings before under legacy STORAGE_KEYS.FRONTEND
+      if (!data && activeLang === 'BN') {
+        data = localStorage.getItem(STORAGE_KEYS.FRONTEND);
+      }
+
       if (data) {
         const parsed = JSON.parse(data);
         if (parsed && typeof parsed === 'object') {
           return {
-            ...defaultFrontendSettings,
+            ...defaults,
             ...parsed,
-            notice: { ...defaultFrontendSettings.notice, ...(parsed.notice || {}) },
-            brand: { ...defaultFrontendSettings.brand, ...(parsed.brand || {}) },
+            notice: { ...defaults.notice, ...(parsed.notice || {}) },
+            brand: { ...defaults.brand, ...(parsed.brand || {}) },
             hero: { 
-              ...defaultFrontendSettings.hero, 
+              ...defaults.hero, 
               ...(parsed.hero || {}),
-              tags: Array.isArray(parsed.hero?.tags) ? parsed.hero.tags : defaultFrontendSettings.hero.tags,
-              stat1: { ...defaultFrontendSettings.hero.stat1, ...(parsed.hero?.stat1 || {}) },
-              stat2: { ...defaultFrontendSettings.hero.stat2, ...(parsed.hero?.stat2 || {}) },
-              stat3: { ...defaultFrontendSettings.hero.stat3, ...(parsed.hero?.stat3 || {}) }
+              tags: Array.isArray(parsed.hero?.tags) ? parsed.hero.tags : defaults.hero.tags,
+              stat1: { ...defaults.hero.stat1, ...(parsed.hero?.stat1 || {}) },
+              stat2: { ...defaults.hero.stat2, ...(parsed.hero?.stat2 || {}) },
+              stat3: { ...defaults.hero.stat3, ...(parsed.hero?.stat3 || {}) }
             },
             mentorHero: { 
-              ...defaultFrontendSettings.mentorHero, 
+              ...defaults.mentorHero, 
               ...(parsed.mentorHero || {}),
-              chips: Array.isArray(parsed.mentorHero?.chips) ? parsed.mentorHero.chips : defaultFrontendSettings.mentorHero.chips
+              chips: Array.isArray(parsed.mentorHero?.chips) ? parsed.mentorHero.chips : defaults.mentorHero.chips
             },
             mentorSection: { 
-              ...defaultFrontendSettings.mentorSection, 
+              ...defaults.mentorSection, 
               ...(parsed.mentorSection || {}),
-              bullets: Array.isArray(parsed.mentorSection?.bullets) ? parsed.mentorSection.bullets : defaultFrontendSettings.mentorSection.bullets
+              bullets: Array.isArray(parsed.mentorSection?.bullets) ? parsed.mentorSection.bullets : defaults.mentorSection.bullets
             },
-            contact: { ...defaultFrontendSettings.contact, ...(parsed.contact || {}) },
+            contact: { ...defaults.contact, ...(parsed.contact || {}) },
             testimonials: Array.isArray(parsed.testimonials) && parsed.testimonials.length > 0 
               ? parsed.testimonials 
-              : defaultFrontendSettings.testimonials,
+              : defaults.testimonials,
             faq: Array.isArray(parsed.faq) && parsed.faq.length > 0 
               ? parsed.faq 
-              : defaultFrontendSettings.faq
+              : defaults.faq
           };
         }
       }
     } catch (e) {
       console.warn('[dataStore] Failed to read frontend settings', e);
     }
-    return JSON.parse(JSON.stringify(defaultFrontendSettings));
+    return JSON.parse(JSON.stringify(defaults));
   },
 
-  saveFrontendSettings(newSettings) {
-    const current = this.getFrontendSettings();
+  saveFrontendSettings(newSettings, lang) {
+    const activeLang = (lang || this.getLanguage()) === 'EN' ? 'EN' : 'BN';
+    const storageKey = activeLang === 'EN' ? STORAGE_KEYS.FRONTEND_EN : STORAGE_KEYS.FRONTEND_BN;
+    const current = this.getFrontendSettings(activeLang);
     const updated = {
       ...current,
       ...newSettings,
@@ -786,7 +935,10 @@ export const dataStore = {
       faq: Array.isArray(newSettings.faq) ? newSettings.faq : current.faq
     };
     try {
-      localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(updated));
+      localStorage.setItem(storageKey, JSON.stringify(updated));
+      if (activeLang === 'BN') {
+        localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(updated));
+      }
     } catch (e) {
       console.error('[dataStore] Failed to save frontend settings', e);
     }
@@ -794,14 +946,20 @@ export const dataStore = {
     return updated;
   },
 
-  resetFrontendSettings() {
+  resetFrontendSettings(lang) {
+    const activeLang = (lang || this.getLanguage()) === 'EN' ? 'EN' : 'BN';
+    const storageKey = activeLang === 'EN' ? STORAGE_KEYS.FRONTEND_EN : STORAGE_KEYS.FRONTEND_BN;
+    const defaults = activeLang === 'EN' ? defaultFrontendSettings_EN : defaultFrontendSettings_BN;
     try {
-      localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(defaultFrontendSettings));
+      localStorage.setItem(storageKey, JSON.stringify(defaults));
+      if (activeLang === 'BN') {
+        localStorage.setItem(STORAGE_KEYS.FRONTEND, JSON.stringify(defaults));
+      }
     } catch (e) {
       console.error('[dataStore] Failed to reset frontend settings', e);
     }
     notifyChange();
-    return JSON.parse(JSON.stringify(defaultFrontendSettings));
+    return JSON.parse(JSON.stringify(defaults));
   },
 
   // --- ONLINE ADMISSIONS ---

@@ -214,6 +214,41 @@ html {
   gap: 0.65rem;
 }
 
+/* Language Switcher in Landing Page Navbar */
+.landing-lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  padding: 2px 3px;
+  gap: 2px;
+}
+
+.lang-pill-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.22rem 0.6rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.lang-pill-btn:hover {
+  color: #ffffff;
+}
+
+.lang-pill-btn.active {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+}
+
 /* Nav Action Buttons */
 .btn-nav-student,
 .btn-nav-login {
