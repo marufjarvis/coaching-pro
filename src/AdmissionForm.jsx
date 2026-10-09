@@ -37,7 +37,7 @@ function AdmissionForm({ batch: initialBatch }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const finalBatch = formData.selectedBatch || initialBatch || 'HSC 2026';
+    const finalBatch = initialBatch || formData.selectedBatch || 'HSC 2026';
     const appData = {
       id: `APP-${Math.floor(1000 + Math.random() * 9000)}`,
       name: formData.name.trim(),
@@ -118,10 +118,10 @@ function AdmissionForm({ batch: initialBatch }) {
 
         <h1 className="admission-title">HSC ICT অনলাইন ভর্তি</h1>
         <p className="admission-subtitle">
-          Maruf's ICT Care &middot; {formData.selectedBatch || 'নতুন শিক্ষাবর্ষ'}
+          Maruf's ICT Care &middot; {initialBatch || formData.selectedBatch || 'নতুন শিক্ষাবর্ষ'}
         </p>
         
-        {formData.selectedBatch && (
+        {initialBatch && (
           <div style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -136,7 +136,7 @@ function AdmissionForm({ batch: initialBatch }) {
             marginTop: '0.5rem'
           }}>
             <CheckCircle2 size={15} color="#10b981" />
-            <span>নির্বাচিত ব্যাচ: <strong>{formData.selectedBatch}</strong></span>
+            <span>নির্বাচিত ব্যাচ: <strong>{initialBatch}</strong></span>
           </div>
         )}
         
@@ -176,26 +176,28 @@ function AdmissionForm({ batch: initialBatch }) {
             />
           </div>
 
-          <div className="form-group">
-            <label>পছন্দের ব্যাচ</label>
-            <select
-              value={formData.selectedBatch}
-              onChange={(e) => setFormData({...formData, selectedBatch: e.target.value})}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                borderRadius: '8px',
-                border: '1px solid #cbd5e1',
-                fontSize: '0.95rem',
-                fontFamily: 'inherit',
-                backgroundColor: '#ffffff'
-              }}
-            >
-              {batchOptions.map((bName, i) => (
-                <option key={i} value={bName}>{bName}</option>
-              ))}
-            </select>
-          </div>
+          {!initialBatch && (
+            <div className="form-group">
+              <label>পছন্দের ব্যাচ</label>
+              <select
+                value={formData.selectedBatch}
+                onChange={(e) => setFormData({...formData, selectedBatch: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '0.95rem',
+                  fontFamily: 'inherit',
+                  backgroundColor: '#ffffff'
+                }}
+              >
+                {batchOptions.map((bName, i) => (
+                  <option key={i} value={bName}>{bName}</option>
+                ))}
+              </select>
+            </div>
+          )}
           
           <button type="submit" className="btn-submit" disabled={!isFormValid}>
             ভর্তি আবেদন সম্পন্ন করুন
