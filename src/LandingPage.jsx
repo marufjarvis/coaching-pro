@@ -819,8 +819,8 @@ function LandingPage({
             </h2>
             <p className="lp-section-subtitle">
               {isEn 
-                ? 'Complex concepts in each chapter are made intuitive with animations, hands-on lab sessions, and 10 years of board question analysis.'
-                : 'প্রতিটি অধ্যায়ের জটিল টপিকগুলোকে সহজবোধ্য অ্যানিমেশন, ল্যাব প্র্যাকটিস এবং বিগত ১০ বছরের বোর্ড প্রশ্ন বিশ্লেষণের মাধ্যমে পূর্ণাঙ্গ প্রস্তুত করা হয়।'}
+                ? 'Complex concepts in each chapter are thoroughly prepared through intuitive and comprehensive analysis.'
+                : 'প্রতিটি অধ্যায়ের জটিল টপিকগুলোকে সহজবোধ্য বিশ্লেষণের মাধ্যমে পূর্ণাঙ্গ প্রস্তুত করা হয়।'}
             </p>
           </div>
 
