@@ -636,7 +636,8 @@ export const dataStore = {
 
   // Centralized Smart Notification Engine
   getNotifications(refDate = new Date()) {
-    const students = this.getStudents().filter(s => s.status === 'Active');
+    // Check all enrolled students for dues (both Active and attendance-suspended)
+    const students = this.getStudents();
     const payments = this.getPayments();
     const pendingAdmissions = this.getPendingAdmissions();
     const now = refDate instanceof Date ? refDate : new Date();
@@ -745,7 +746,22 @@ export const dataStore = {
         }
       } else {
         // Monthly tuition fee
-        if (dueAmount > 0) {
+        // Find payments made by this student
+        const stuPayments = payments.filter(p => p.studentId === student.id || p.studentName === student.name);
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+
+        // Check if student has paid in the current month
+        const paidThisMonth = stuPayments.some(p => {
+          const pDate = parseDateString(p.date);
+          return pDate && pDate.getMonth() === currentMonth && pDate.getFullYear() === currentYear;
+        });
+
+        // Student has monthly due if unpaid balance exists OR hasn't paid for the current month
+        const hasMonthlyDue = dueAmount > 0 || !paidThisMonth;
+        const currentMonthDueAmount = dueAmount > 0 ? dueAmount : totalFee;
+
+        if (hasMonthlyDue) {
           monthlyDues.push({
             id: `monthly-${student.id}`,
             type: 'monthly_due',
@@ -758,7 +774,7 @@ export const dataStore = {
             guardianPhone: student.guardianPhone,
             monthlyFee: totalFee,
             paidAmount: paid,
-            dueAmount,
+            dueAmount: currentMonthDueAmount,
             admissionDate: student.admissionDate,
             studentObj: student
           });
@@ -795,7 +811,7 @@ export const dataStore = {
     // Total Due
     let totalDues = 0;
     let dueCount = 0;
-    activeStudents.forEach(s => {
+    students.forEach(s => {
       const { dueAmount, isDue } = this.calculateDue(s);
       if (isDue) {
         totalDues += dueAmount;
@@ -900,10 +916,9 @@ export const dataStore = {
         const paid = Number(student.paidAmount) || 0;
         const dueAmount = Math.max(0, totalFee - paid);
 
-        // Restore any student previously set to Inactive by autoInactive back to Active
-        let currentStatus = student.status || 'Active';
-        if (student.autoInactive && currentStatus === 'Inactive') {
-          currentStatus = 'Active';
+        // Ensure student status is Active (overdue fees only suspend attendance temporarily; students stay Active for payments and notifications)
+        let currentStatus = 'Active';
+        if (student.status !== 'Active') {
           hasChanged = true;
           api.updateStudent(student.id, { status: 'Active' }).catch(() => {});
         }
