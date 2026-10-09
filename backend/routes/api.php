@@ -16,8 +16,8 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\AuthController;
 
 // Authentication (Admin & Manager & Student)
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/student-login', [AuthController::class, 'studentLogin']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+Route::post('/student-login', [AuthController::class, 'studentLogin'])->middleware('throttle:15,1');
 
 // Dashboard Stats
 Route::get('/dashboard-stats', [DashboardController::class, 'stats']);
@@ -67,7 +67,7 @@ Route::put('/settings', [SettingController::class, 'update']);
 
 // Online Admissions
 Route::get('/online-admissions', [OnlineAdmissionController::class, 'index']);
-Route::post('/online-admissions', [OnlineAdmissionController::class, 'store']);
+Route::post('/online-admissions', [OnlineAdmissionController::class, 'store'])->middleware('throttle:15,1');
 Route::post('/online-admissions/{id}/approve', [OnlineAdmissionController::class, 'approve']);
 Route::delete('/online-admissions/{id}', [OnlineAdmissionController::class, 'destroy']);
 

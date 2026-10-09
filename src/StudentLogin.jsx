@@ -8,7 +8,7 @@ import { api } from './api';
 import { dataStore } from './dataStore';
 
 function StudentLogin({ onStudentLogin, onSwitchToAdmin, onBackToHome }) {
-  const [phone, setPhone] = useState('01723619524');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
