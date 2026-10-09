@@ -74,13 +74,6 @@ function Login({ onLogin }) {
             <button type="submit" className="submit-btn">
               লগইন করুন <ArrowRight size={18} strokeWidth={2.5} />
             </button>
-
-            <div className="form-footer">
-              <a href="#" className="forgot-pwd">পাসওয়ার্ড ভুলে গেছেন?</a>
-              <a href="#" className="create-account">
-                অ্যাকাউন্ট খুলুন <ArrowRight size={16} strokeWidth={2.5} />
-              </a>
-            </div>
           </form>
 
           <div className="card-footer">
