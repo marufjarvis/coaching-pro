@@ -1178,8 +1178,8 @@ function LandingPage({
             </h2>
             <p className="lp-section-subtitle">
               {isEn 
-                ? 'Classes are conducted with 20-25 students per batch to ensure dedicated individual attention.'
-                : 'প্রতি ব্যাচে সর্বোচ্চ ২০-২৫ জন শিক্ষার্থী নিয়ে ক্লাস পরিচালিত হয়, যাতে প্রতিটি ছাত্র-ছাত্রীর প্রতি আলাদা মনোযোগ নিশ্চিত করা যায়।'}
+                ? 'Classes are conducted with a maximum of 50 students per batch.'
+                : 'প্রতি ব্যাচে সর্বোচ্চ ৫০জন শিক্ষার্থী নিয়ে ক্লাস পরিচালিত হয়।'}
             </p>
           </div>
 
