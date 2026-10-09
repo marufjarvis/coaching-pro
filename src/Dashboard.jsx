@@ -104,7 +104,7 @@ function Dashboard({ onLogout }) {
           </div>
           <button 
             type="button" 
-            className="sidebar-close-btn" 
+            className="mobile-sidebar-close" 
             onClick={() => setIsSidebarOpen(false)}
             aria-label="Close sidebar menu"
           >
