@@ -992,7 +992,7 @@ function LandingPage({
             <div className="chapter-modal-actions">
               <button 
                 type="button" 
-                onClick={() => { setSelectedChapter(null); onGoToEnroll && onGoToEnroll(''); }}
+                onClick={() => { setSelectedChapter(null); if (onGoToEnroll) onGoToEnroll(''); }}
                 className="btn-batch-enroll"
               >
                 {isEn ? 'Apply for Admission' : 'ভর্তি আবেদন করুন'}
