@@ -511,6 +511,13 @@ function LandingPage({
         }
       ]);
 
+  // WhatsApp Number Formatting for direct messaging
+  const rawWa = contact.whatsapp || mentorSection.whatsapp || '8801723619524';
+  const cleanWa = String(rawWa).replace(/\D/g, '');
+  const whatsappNumber = cleanWa.startsWith('880')
+    ? cleanWa
+    : (cleanWa.startsWith('0') ? '88' + cleanWa : ('880' + cleanWa));
+
   return (
     <div className="landing-page">
       {/* Background Ambient Lighting */}
@@ -1659,6 +1666,24 @@ function LandingPage({
           </div>
         </div>
       </footer>
+
+      {/* FLOATING WHATSAPP BUTTON (Bottom Right) */}
+      <a
+        href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(isEn ? 'Hello! I would like to inquire about HSC ICT coaching admission.' : 'আসসালামু আলাইকুম, আমি HSC ICT কোর্স ও ভর্তি সম্পর্কে জানতে চাই।')}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="floating-whatsapp-btn"
+        aria-label={isEn ? 'Chat on WhatsApp' : 'হোয়াটসঅ্যাপে চ্যাট করুন'}
+        title={isEn ? 'Chat on WhatsApp' : 'হোয়াটসঅ্যাপে সরাসরি মেসেজ দিন'}
+      >
+        <span className="wa-tooltip">{isEn ? 'Chat with us' : 'হোয়াটসঅ্যাপে মেসেজ দিন'}</span>
+        <div className="wa-icon-circle">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+            <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 15 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.53 7.5C9.33 7.5 9 7.58 8.72 7.89C8.44 8.19 7.65 8.94 7.65 10.46C7.65 11.98 8.76 13.44 8.91 13.65C9.07 13.85 11.08 16.94 14.15 18.27C14.88 18.59 15.46 18.78 15.9 18.92C16.64 19.16 17.31 19.12 17.84 19.04C18.43 18.96 19.66 18.3 19.92 17.58C20.17 16.85 20.17 16.23 20.1 16.1C20.02 15.98 19.82 15.9 19.52 15.75C19.21 15.6 17.75 14.88 17.47 14.78C17.2 14.68 17 14.63 16.8 14.94C16.6 15.24 16.03 15.91 15.86 16.11C15.68 16.32 15.51 16.34 15.2 16.19C14.9 16.04 13.92 15.72 12.76 14.69C11.87 13.89 11.26 12.9 11.11 12.65C10.96 12.39 11.1 12.25 11.25 12.1C11.39 11.97 11.56 11.74 11.71 11.57C11.86 11.39 11.91 11.27 12.01 11.07C12.11 10.86 12.06 10.69 11.99 10.54C11.91 10.38 11.31 8.91 11.06 8.31C10.82 7.72 10.57 7.8 10.39 7.79C10.22 7.79 10.02 7.79 9.82 7.79C9.62 7.79 9.53 7.5 9.53 7.5Z"/>
+          </svg>
+          <span className="wa-pulse-dot"></span>
+        </div>
+      </a>
     </div>
   );
 }
