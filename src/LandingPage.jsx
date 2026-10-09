@@ -270,142 +270,145 @@ function LandingPage({
       <div className="landing-ambient-glow-2"></div>
       <div className="landing-ambient-glow-3"></div>
 
-      {/* 1. TOP NOTICE BAR */}
-      <div className="top-announcement-bar">
-        <div className="top-announcement-content">
-          <span className="announcement-badge">অফার ও আপডেট</span>
-          <span>📢 HSC 2026 ও 2025 ব্যাচে সীমিত আসনে নতুন ভর্তি চলছে! সরাসরি ক্লাসরুমে ল্যাব সাপোর্ট।</span>
-          <span className="announcement-link" onClick={onGoToEnroll}>
-            অনলাইন ভর্তি আবেদন <ArrowRight size={14} />
-          </span>
+      {/* STICKY HEADER SECTION (Top Announcement Bar + Navigation Bar) */}
+      <header className="landing-header-sticky">
+        {/* 1. TOP NOTICE BAR */}
+        <div className="top-announcement-bar">
+          <div className="top-announcement-content">
+            <span className="announcement-badge">অফার ও আপডেট</span>
+            <span>📢 HSC 2026 ও 2025 ব্যাচে সীমিত আসনে নতুন ভর্তি চলছে! সরাসরি ক্লাসরুমে ল্যাব সাপোর্ট।</span>
+            <span className="announcement-link" onClick={onGoToEnroll}>
+              অনলাইন ভর্তি আবেদন <ArrowRight size={14} />
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* 2. NAVIGATION BAR */}
-      <nav className="landing-nav">
-        <div className="nav-container">
-          {/* Logo & Branding */}
-          <div className="nav-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="nav-logo-box">
-              <img src="/logo.png" alt="Maruf's ICT Care Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-            </div>
-            <div>
-              <div className="nav-brand-title">
-                Maruf's <span>ICT Care</span>
+        {/* 2. NAVIGATION BAR */}
+        <nav className="landing-nav">
+          <div className="nav-container">
+            {/* Logo & Branding */}
+            <div className="nav-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <div className="nav-logo-box">
+                <img src="/logo.png" alt="Maruf's ICT Care Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
               </div>
-              <div className="nav-brand-sub">HSC ICT Academic & Practical Lab</div>
+              <div>
+                <div className="nav-brand-title">
+                  Maruf's <span>ICT Care</span>
+                </div>
+                <div className="nav-brand-sub">HSC ICT Academic & Practical Lab</div>
+              </div>
             </div>
-          </div>
 
-          {/* Desktop Nav Links */}
-          <ul className="nav-links-desktop">
-            <li><a href="#hero" className="nav-link-item">হোম</a></li>
-            <li><a href="#courses" className="nav-link-item">কোর্স</a></li>
-            <li><a href="#batches" className="nav-link-item">ব্যাচ</a></li>
-            <li><a href="#success" className="nav-link-item">সাফল্য</a></li>
-            <li><a href="#mentor" className="nav-link-item">শিক্ষক</a></li>
-            <li><a href="#contact" className="nav-link-item">যোগাযোগ</a></li>
-          </ul>
+            {/* Desktop Nav Links */}
+            <ul className="nav-links-desktop">
+              <li><a href="#hero" className="nav-link-item">হোম</a></li>
+              <li><a href="#courses" className="nav-link-item">কোর্স</a></li>
+              <li><a href="#batches" className="nav-link-item">ব্যাচ</a></li>
+              <li><a href="#success" className="nav-link-item">সাফল্য</a></li>
+              <li><a href="#mentor" className="nav-link-item">শিক্ষক</a></li>
+              <li><a href="#contact" className="nav-link-item">যোগাযোগ</a></li>
+            </ul>
 
-          {/* Header Action Buttons - Only Login Button */}
-          <div className="nav-actions">
-            {/* If Admin is Logged In */}
-            {isAdminLoggedIn && (
-              <button 
-                type="button" 
-                onClick={onGoToDashboard} 
-                className="btn-nav-admin"
-                style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', borderColor: '#38bdf8' }}
-                title="এডমিন ড্যাশবোর্ডে প্রবেশ করুন"
-              >
-                <ShieldCheck size={16} /> এডমিন ড্যাশবোর্ড
-              </button>
-            )}
-
-            {/* If Student is Logged In */}
-            {isStudentLoggedIn && (
-              <button 
-                type="button" 
-                onClick={onGoToStudentDashboard} 
-                className="btn-nav-student"
-                title="আমার স্টুডেন্ট ড্যাশবোর্ড"
-              >
-                <GraduationCap size={16} /> আমার ড্যাশবোর্ড
-              </button>
-            )}
-
-            {/* Single Unified Login Button */}
-            {(!isAdminLoggedIn && !isStudentLoggedIn) && (
-              <button 
-                type="button" 
-                onClick={handleOpenLogin} 
-                className="btn-nav-login"
-                id="btn-login-nav"
-                title="লগইন করুন"
-              >
-                <Lock size={15} strokeWidth={2.5} /> লগইন
-              </button>
-            )}
-
-            {/* Mobile Hamburger Button */}
-            <button 
-              type="button" 
-              className="mobile-menu-toggle" 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle Navigation"
-            >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation Drawer */}
-        {mobileMenuOpen && (
-          <div className="mobile-nav-drawer">
-            <a href="#hero" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>হোম</a>
-            <a href="#courses" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>কোর্স</a>
-            <a href="#batches" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>ব্যাচ</a>
-            <a href="#success" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>সাফল্য</a>
-            <a href="#mentor" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>শিক্ষক</a>
-            <a href="#contact" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>যোগাযোগ</a>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.75rem' }}>
+            {/* Header Action Buttons - Only Login Button */}
+            <div className="nav-actions">
+              {/* If Admin is Logged In */}
               {isAdminLoggedIn && (
                 <button 
                   type="button" 
-                  onClick={() => { setMobileMenuOpen(false); onGoToDashboard(); }} 
+                  onClick={onGoToDashboard} 
                   className="btn-nav-admin"
-                  style={{ justifyContent: 'center' }}
+                  style={{ background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', borderColor: '#38bdf8' }}
+                  title="এডমিন ড্যাশবোর্ডে প্রবেশ করুন"
                 >
                   <ShieldCheck size={16} /> এডমিন ড্যাশবোর্ড
                 </button>
               )}
 
+              {/* If Student is Logged In */}
               {isStudentLoggedIn && (
                 <button 
                   type="button" 
-                  onClick={() => { setMobileMenuOpen(false); onGoToStudentDashboard(); }} 
+                  onClick={onGoToStudentDashboard} 
                   className="btn-nav-student"
-                  style={{ justifyContent: 'center' }}
+                  title="আমার স্টুডেন্ট ড্যাশবোর্ড"
                 >
-                  <GraduationCap size={18} /> আমার ড্যাশবোর্ড
+                  <GraduationCap size={16} /> আমার ড্যাশবোর্ড
                 </button>
               )}
 
+              {/* Single Unified Login Button */}
               {(!isAdminLoggedIn && !isStudentLoggedIn) && (
                 <button 
                   type="button" 
-                  onClick={() => { setMobileMenuOpen(false); handleOpenLogin(); }} 
+                  onClick={handleOpenLogin} 
                   className="btn-nav-login"
-                  style={{ justifyContent: 'center' }}
+                  id="btn-login-nav"
+                  title="লগইন করুন"
                 >
-                  <Lock size={16} strokeWidth={2.5} /> লগইন
+                  <Lock size={15} strokeWidth={2.5} /> লগইন
                 </button>
               )}
+
+              {/* Mobile Hamburger Button */}
+              <button 
+                type="button" 
+                className="mobile-menu-toggle" 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Toggle Navigation"
+              >
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
             </div>
           </div>
-        )}
-      </nav>
+
+          {/* Mobile Navigation Drawer */}
+          {mobileMenuOpen && (
+            <div className="mobile-nav-drawer">
+              <a href="#hero" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>হোম</a>
+              <a href="#courses" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>কোর্স</a>
+              <a href="#batches" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>ব্যাচ</a>
+              <a href="#success" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>সাফল্য</a>
+              <a href="#mentor" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>শিক্ষক</a>
+              <a href="#contact" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>যোগাযোগ</a>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.75rem' }}>
+                {isAdminLoggedIn && (
+                  <button 
+                    type="button" 
+                    onClick={() => { setMobileMenuOpen(false); onGoToDashboard(); }} 
+                    className="btn-nav-admin"
+                    style={{ justifyContent: 'center' }}
+                  >
+                    <ShieldCheck size={16} /> এডমিন ড্যাশবোর্ড
+                  </button>
+                )}
+
+                {isStudentLoggedIn && (
+                  <button 
+                    type="button" 
+                    onClick={() => { setMobileMenuOpen(false); onGoToStudentDashboard(); }} 
+                    className="btn-nav-student"
+                    style={{ justifyContent: 'center' }}
+                  >
+                    <GraduationCap size={18} /> আমার ড্যাশবোর্ড
+                  </button>
+                )}
+
+                {(!isAdminLoggedIn && !isStudentLoggedIn) && (
+                  <button 
+                    type="button" 
+                    onClick={() => { setMobileMenuOpen(false); handleOpenLogin(); }} 
+                    className="btn-nav-login"
+                    style={{ justifyContent: 'center' }}
+                  >
+                    <Lock size={16} strokeWidth={2.5} /> লগইন
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </nav>
+      </header>
 
       {/* 3. HERO SECTION */}
       <section id="hero" className="hero-section">

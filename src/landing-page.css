@@ -23,13 +23,18 @@
   --lp-glow-blue: 0 0 30px rgba(56, 189, 248, 0.3);
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 115px;
+}
+
 .landing-page {
   font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
   background-color: var(--lp-bg-dark);
   color: var(--lp-text-primary);
   min-height: 100vh;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: clip;
   line-height: 1.6;
 }
 
@@ -70,6 +75,16 @@
   z-index: 0;
 }
 
+/* ====================================================
+   STICKY HEADER SECTION (Notice Bar + Navbar)
+   ==================================================== */
+.landing-header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+
 /* Top Announcement Bar */
 .top-announcement-bar {
   background: linear-gradient(90deg, #0369a1, #4338ca, #0d9488);
@@ -81,7 +96,7 @@
   justify-content: space-between;
   align-items: center;
   position: relative;
-  z-index: 60;
+  z-index: 101;
 }
 
 .top-announcement-content {
@@ -113,14 +128,15 @@
 
 /* Navbar */
 .landing-nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  background: rgba(7, 13, 25, 0.85);
+  position: relative;
+  width: 100%;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(7, 13, 25, 0.92);
   border-bottom: 1px solid var(--lp-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   transition: all 0.3s ease;
+  z-index: 100;
 }
 
 .nav-container {
