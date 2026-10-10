@@ -34,6 +34,7 @@ html {
   color: var(--lp-text-primary);
   min-height: 100vh;
   position: relative;
+  overflow-x: hidden;
   overflow-x: clip;
   line-height: 1.6;
 }
@@ -2319,6 +2320,24 @@ html {
     width: 100%;
     justify-content: center;
   }
+
+  /* Batch Cards on compact screens */
+  .batch-title {
+    font-size: 1.18rem;
+    line-height: 1.35;
+  }
+  .btn-batch-enroll {
+    font-size: 0.92rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  /* Stats on compact screens */
+  .stat-item h3 {
+    font-size: 1.25rem;
+  }
+  .stat-item p {
+    font-size: 0.72rem;
+  }
 }
 
 /* FLOATING WHATSAPP BUTTON (Bottom Right) */
@@ -2451,6 +2470,19 @@ html {
   .mentor-pill-item {
     font-size: 0.68rem;
     padding: 0.25rem 0.45rem;
+  }
+  .batch-title {
+    font-size: 1.05rem;
+  }
+  .btn-batch-enroll {
+    font-size: 0.85rem;
+    padding: 0.7rem 0.75rem;
+  }
+  .stat-item h3 {
+    font-size: 1.1rem;
+  }
+  .stat-item p {
+    font-size: 0.68rem;
   }
 }
 

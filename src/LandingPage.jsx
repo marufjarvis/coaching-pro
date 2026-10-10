@@ -22,13 +22,11 @@ import {
   Award, 
   Lightbulb, 
   Binary, 
-  MessageCircle, 
   Menu, 
   X, 
   ChevronRight, 
   Laptop, 
   FileCheck, 
-  Send, 
   Lock
 } from 'lucide-react';
 import { dataStore } from './dataStore';
@@ -143,18 +141,16 @@ function LandingPage({
   // Dynamic Frontend CMS Data (Single Unified Content Store)
   const [frontendData, setFrontendData] = useState(() => dataStore.getFrontendSettings());
 
-  // Dynamic Live Batches & Students synced with backend and dataStore
+  // Dynamic Live Batches synced with backend and dataStore
   const [liveBatches, setLiveBatches] = useState(() => {
     const stored = dataStore.getBatches();
     return stored.length > 0 ? stored : (batches.length > 0 ? batches : []);
   });
-  const [students, setStudents] = useState(() => dataStore.getStudents());
 
   useEffect(() => {
     const handleSync = () => {
       setFrontendData(dataStore.getFrontendSettings());
       setLiveBatches(dataStore.getBatches());
-      setStudents(dataStore.getStudents());
     };
     window.addEventListener('coaching-data-change', handleSync);
     window.addEventListener('storage', handleSync);
