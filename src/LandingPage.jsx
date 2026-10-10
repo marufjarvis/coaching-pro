@@ -387,7 +387,7 @@ function LandingPage({
       tagline: 'Complete syllabus from basics to board A+ preparation',
       days: 'Sat, Mon, Wed',
       time: '8:00 AM & 4:00 PM (2 slots)',
-      seatsLeft: '4 seats left',
+      seatsLeft: 'Limited Seats Available',
       status: 'Admission Open',
       featured: true
     },
@@ -397,7 +397,7 @@ function LandingPage({
       tagline: 'Past board CQ-MCQ & special suggestions',
       days: 'Sun, Tue, Thu',
       time: '9:00 AM & 5:00 PM (2 slots)',
-      seatsLeft: '3 seats left',
+      seatsLeft: 'Limited Seats Available',
       status: 'Limited Seats',
       featured: false
     },
@@ -407,7 +407,7 @@ function LandingPage({
       tagline: 'Make ICT simple and enjoyable from the start',
       days: 'Sat, Mon, Wed',
       time: '10:00 AM',
-      seatsLeft: '8 seats left',
+      seatsLeft: 'Limited Seats Available',
       status: 'Admission Open',
       featured: false
     }
@@ -418,7 +418,7 @@ function LandingPage({
       tagline: 'সম্পূর্ণ সিলেবাস বেসিক থেকে বোর্ড A+ প্রস্তুতি',
       days: 'শনি, সোম, বুধ',
       time: 'সকাল ৮:০০ ও বিকাল ৪:০০ (২টি স্লট)',
-      seatsLeft: '৪টি আসন খালি',
+      seatsLeft: 'সীমিত আসন ফাঁকা আছে',
       status: 'ভর্তি চলছে',
       featured: true
     },
@@ -428,7 +428,7 @@ function LandingPage({
       tagline: 'বিগত বছরের বোর্ড CQ-MCQ ও বিশেষ সাজেশন',
       days: 'রবি, মঙ্গল, বৃহস্পতি',
       time: 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)',
-      seatsLeft: '৩টি আসন খালি',
+      seatsLeft: 'সীমিত আসন ফাঁকা আছে',
       status: 'সীমিত আসন',
       featured: false
     },
@@ -438,7 +438,7 @@ function LandingPage({
       tagline: 'আইসিটি শুরু থেকেই সহজ ও আনন্দময় করার ব্যাচ',
       days: 'শনি, সোম, বুধ',
       time: 'সকাল ১০:০০ টা',
-      seatsLeft: '৮টি আসন খালি',
+      seatsLeft: 'সীমিত আসন ফাঁকা আছে',
       status: 'ভর্তি চলছে',
       featured: false
     }
@@ -446,20 +446,13 @@ function LandingPage({
 
   const currentBatches = (liveBatches && liveBatches.length > 0 ? liveBatches : defaultBatches).map((b, i) => {
     const title = b.name || b.title;
-    const enrolledCount = students.filter(s => s.batch === title || s.preferredBatch === title).length;
-    const seatLimit = Number(b.seatLimit) || 50;
-    const seatsRemaining = Math.max(0, seatLimit - enrolledCount);
 
-    // Dynamic seat status text based on real enrolled students
+    // Privacy-safe seat status (confidential enrolled student count)
     let seatsStatusText = '';
-    if (seatsRemaining === 0 || b.status === 'ব্যাচ পূর্ণ' || b.status === 'Batch Full') {
+    if (b.status === 'ব্যাচ পূর্ণ' || b.status === 'Batch Full' || b.status === 'আসন পূর্ণ') {
       seatsStatusText = isEn ? 'Batch Full' : 'আসন পূর্ণ';
-    } else if (enrolledCount > 0) {
-      seatsStatusText = isEn 
-        ? `${seatsRemaining} seats left (${enrolledCount} enrolled)` 
-        : `${seatsRemaining}টি আসন খালি (${enrolledCount} জন ভর্তি)`;
     } else {
-      seatsStatusText = b.seatsLeft || (isEn ? 'Limited Seats' : 'সীমিত আসন');
+      seatsStatusText = isEn ? 'Limited Seats Available' : 'সীমিত আসন ফাঁকা আছে';
     }
 
     const enrollUrl = b.enrollUrl || dataStore.getEnrollmentUrl(title);
@@ -473,10 +466,7 @@ function LandingPage({
       days: b.days || (i % 2 === 0 ? (isEn ? 'Sat, Mon, Wed' : 'শনি, সোম, বুধ') : (isEn ? 'Sun, Tue, Thu' : 'রবি, মঙ্গল, বৃহস্পতি')),
       time: b.time || (i === 0 ? (isEn ? '8:00 AM & 4:00 PM (2 slots)' : 'সকাল ৮:০০ ও বিকাল ৪:০০ (২টি স্লট)') : (isEn ? '9:00 AM & 5:00 PM (2 slots)' : 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)')),
       seatsLeft: seatsStatusText,
-      seatsRemaining,
-      enrolledCount,
-      seatLimit,
-      status: b.status || (seatsRemaining === 0 ? 'আসন পূর্ণ' : 'ভর্তি চলছে'),
+      status: b.status || (isEn ? 'Admission Open' : 'ভর্তি চলছে'),
       coverage: b.coverage || (isEn ? 'Chapters 1-6 + Practical Lab' : 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব'),
       featured: b.featured !== undefined ? Boolean(b.featured) : (i === 0)
     };
@@ -1257,9 +1247,9 @@ function LandingPage({
                       fontWeight: '700', 
                       padding: '2px 8px', 
                       borderRadius: '12px', 
-                      backgroundColor: batch.seatsRemaining === 0 ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                      color: batch.seatsRemaining === 0 ? '#ef4444' : '#10b981',
-                      border: `1px solid ${batch.seatsRemaining === 0 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
+                      backgroundColor: (batch.status === 'ব্যাচ পূর্ণ' || batch.status === 'Batch Full' || batch.status === 'আসন পূর্ণ') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                      color: (batch.status === 'ব্যাচ পূর্ণ' || batch.status === 'Batch Full' || batch.status === 'আসন পূর্ণ') ? '#ef4444' : '#10b981',
+                      border: `1px solid ${(batch.status === 'ব্যাচ পূর্ণ' || batch.status === 'Batch Full' || batch.status === 'আসন পূর্ণ') ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`
                     }}>
                       {batch.status}
                     </span>
@@ -1278,7 +1268,7 @@ function LandingPage({
                   </li>
                   <li className="batch-info-item">
                     <Users size={18} className="batch-info-icon" />
-                    <span><strong>{isEn ? 'Seat Status:' : 'আসন স্ট্যাটাস:'}</strong> <span style={{ color: batch.seatsRemaining <= 5 ? '#ef4444' : '#f59e0b', fontWeight: 'bold' }}>{batch.seatsLeft}</span></span>
+                    <span><strong>{isEn ? 'Seat Status:' : 'আসন স্ট্যাটাস:'}</strong> <span style={{ color: (batch.status === 'ব্যাচ পূর্ণ' || batch.status === 'Batch Full' || batch.status === 'আসন পূর্ণ') ? '#ef4444' : '#f59e0b', fontWeight: 'bold' }}>{batch.seatsLeft}</span></span>
                   </li>
                   <li className="batch-info-item">
                     <Award size={18} className="batch-info-icon" />

@@ -554,7 +554,7 @@ export const DEFAULT_INITIAL_BATCHES = [
     days: 'শনি, সোম, বুধ',
     time: 'সকাল ৮:০০ ও বিকাল ৪:০০ (২টি স্লট)',
     seatLimit: 50,
-    seatsLeft: '৪টি আসন খালি',
+    seatsLeft: 'সীমিত আসন ফাঁকা আছে',
     status: 'ভর্তি চলছে',
     coverage: 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
     featured: true
@@ -566,7 +566,7 @@ export const DEFAULT_INITIAL_BATCHES = [
     days: 'রবি, মঙ্গল, বৃহস্পতি',
     time: 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)',
     seatLimit: 50,
-    seatsLeft: '৩টি আসন খালি',
+    seatsLeft: 'সীমিত আসন ফাঁকা আছে',
     status: 'সীমিত আসন',
     coverage: 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
     featured: false
@@ -578,7 +578,7 @@ export const DEFAULT_INITIAL_BATCHES = [
     days: 'শনি, সোম, বুধ',
     time: 'সকাল ১০:০০ টা',
     seatLimit: 50,
-    seatsLeft: '৮টি আসন খালি',
+    seatsLeft: 'সীমিত আসন ফাঁকা আছে',
     status: 'ভর্তি চলছে',
     coverage: 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
     featured: false
