@@ -1158,21 +1158,54 @@ export const dataStore = {
       ? (updatedData.name ? updatedData.name.trim() : '') 
       : (typeof updatedData === 'string' ? updatedData.trim() : '');
 
+    let oldName = null;
+    let actualNewName = null;
+
     const updated = batches.map(b => {
       if (b.id === id || b.name === id) {
+        oldName = b.name;
+        actualNewName = newName || b.name;
         if (isObj) {
           return {
             ...b,
             ...updatedData,
-            name: newName || b.name,
+            name: actualNewName,
             seatLimit: Number(updatedData.seatLimit) || b.seatLimit || 50
           };
         }
-        return { ...b, name: newName || b.name };
+        return { ...b, name: actualNewName };
       }
       return b;
     });
     this.saveBatches(updated);
+
+    // If batch name changed, cascade update to Students, Attendance, and Exams
+    if (oldName && actualNewName && oldName !== actualNewName) {
+      // Update Students
+      const students = this.getStudents();
+      const updatedStudents = students.map(s => s.batch === oldName ? { ...s, batch: actualNewName } : s);
+      this.saveStudents(updatedStudents);
+
+      // Update Attendance
+      const attendance = this.getAttendance();
+      const updatedAttendance = {};
+      Object.keys(attendance).forEach(key => {
+        const record = attendance[key];
+        if (record.batch === oldName) {
+          const [date, _] = key.split('_');
+          const newKey = `${date}_${actualNewName}`;
+          updatedAttendance[newKey] = { ...record, batch: actualNewName };
+        } else {
+          updatedAttendance[key] = record;
+        }
+      });
+      this.saveAttendance(updatedAttendance);
+
+      // Update Exams
+      const exams = this.getExams();
+      const updatedExams = exams.map(e => e.batch === oldName ? { ...e, batch: actualNewName } : e);
+      this.saveExams(updatedExams);
+    }
 
     api.updateBatch(id, newName || id).catch(e => console.error('[API Batch Update Error]', e));
   },
@@ -1338,7 +1371,7 @@ export const dataStore = {
       installments: Number(student.installments) || 1,
       paidAmount: Number(student.paidAmount) || 0,
       billingDate: student.feeType === 'monthly' ? '1st of every month' : null,
-      nextInstallmentDate: student.feeType === 'course' ? student.nextInstallmentDate || '01/11/2026' : null,
+      nextInstallmentDate: student.feeType === 'course' ? student.nextInstallmentDate || null : null,
       admissionDate: student.admissionDate || new Date().toLocaleDateString('en-GB')
     };
     const updated = sortStudentsById([...students, newStudent]);
@@ -1366,6 +1399,14 @@ export const dataStore = {
 
   updateStudent(id, updatedData) {
     const students = this.getStudents();
+    let oldBatch = null;
+    let newBatch = updatedData.batch;
+    const targetStudent = students.find(s => s.id === id);
+    
+    if (targetStudent && newBatch && targetStudent.batch !== newBatch) {
+      oldBatch = targetStudent.batch;
+    }
+
     const updated = students.map(s => {
       if (s.id === id) {
         const initials = updatedData.name ? updatedData.name.trim().substring(0, 2).toUpperCase() : s.initials;
@@ -1374,6 +1415,37 @@ export const dataStore = {
       return s;
     });
     this.saveStudents(updated);
+
+    if (oldBatch && newBatch) {
+      // 1. Shift payments
+      const payments = this.getPayments();
+      let paymentsChanged = false;
+      const updatedPayments = payments.map(p => {
+        if (p.studentId === id && p.batch === oldBatch) {
+          paymentsChanged = true;
+          return { ...p, batch: newBatch };
+        }
+        return p;
+      });
+      if (paymentsChanged) this.savePayments(updatedPayments);
+
+      // 2. Shift attendance
+      const attendance = this.getAttendance();
+      let attChanged = false;
+      Object.keys(attendance).forEach(key => {
+        if (!key.includes('_')) return;
+        const [date, batch] = key.split('_');
+        if (batch === oldBatch && attendance[key][id]) {
+          const status = attendance[key][id];
+          delete attendance[key][id];
+          const newKey = `${date}_${newBatch}`;
+          if (!attendance[newKey]) attendance[newKey] = { date, batch: newBatch };
+          attendance[newKey][id] = status;
+          attChanged = true;
+        }
+      });
+      if (attChanged) this.saveAttendance(attendance);
+    }
 
     api.updateStudent(id, updatedData).catch(e => console.error('[API Update Student Error]', e));
   },
@@ -1902,13 +1974,47 @@ export const dataStore = {
     return selected;
   },
 
+  parseDate(dateStr) {
+    if (!dateStr) return new Date();
+    if (dateStr.includes('-')) {
+      const [y, m, d] = dateStr.split('-');
+      return new Date(y, m - 1, d);
+    } else if (dateStr.includes('/')) {
+      const [d, m, y] = dateStr.split('/');
+      return new Date(y, m - 1, d);
+    }
+    return new Date(dateStr);
+  },
+
   // --- CALCULATIONS & STATS ---
-  calculateDue(student) {
-    const totalFee = Number(student.feeAmount) || 0;
+  calculateDue(student, refDate) {
     const paid = Number(student.paidAmount) || 0;
-    const dueAmount = Math.max(0, totalFee - paid);
-    const isDue = dueAmount > 0;
-    return { dueAmount, isDue };
+    
+    if (student.feeType === 'course') {
+      const totalFee = Number(student.feeAmount) || 0;
+      const dueAmount = Math.max(0, totalFee - paid);
+      return { dueAmount, isDue: dueAmount > 0 };
+    } else {
+      const monthlyFee = Number(student.feeAmount) || 0;
+      const admissionFee = Number(student.admissionFee) || 0;
+      
+      const admDate = this.parseDate(student.admissionDate);
+      const now = refDate instanceof Date ? refDate : new Date();
+      
+      let monthsElapsed = (now.getFullYear() - admDate.getFullYear()) * 12 + (now.getMonth() - admDate.getMonth()) + 1;
+      
+      // If the selected month is strictly BEFORE the admission month, they were not a student yet
+      if (monthsElapsed < 1) {
+        return { dueAmount: 0, isDue: false };
+      }
+      
+      monthsElapsed = Math.max(1, monthsElapsed); // At least 1 month is billed
+      
+      const totalExpectedFee = admissionFee + (monthsElapsed * monthlyFee);
+      const dueAmount = Math.max(0, totalExpectedFee - paid);
+      
+      return { dueAmount, isDue: dueAmount > 0 };
+    }
   },
 
   // Centralized Smart Notification Engine
@@ -1944,9 +2050,9 @@ export const dataStore = {
 
     students.forEach(student => {
       const isCourse = student.feeType === 'course';
-      const totalFee = Number(student.feeAmount) || 0;
+      const { dueAmount, isDue } = this.calculateDue(student);
+      const totalFee = Number(student.feeAmount) || 0; // For display purposes
       const paid = Number(student.paidAmount) || 0;
-      const dueAmount = Math.max(0, totalFee - paid);
 
       if (isCourse) {
         if (dueAmount > 0) {
@@ -2023,20 +2129,9 @@ export const dataStore = {
         }
       } else {
         // Monthly tuition fee
-        // Find payments made by this student
-        const stuPayments = payments.filter(p => p.studentId === student.id || p.studentName === student.name);
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-
-        // Check if student has paid in the current month
-        const paidThisMonth = stuPayments.some(p => {
-          const pDate = parseDateString(p.date);
-          return pDate && pDate.getMonth() === currentMonth && pDate.getFullYear() === currentYear;
-        });
-
-        // Student has monthly due if unpaid balance exists OR hasn't paid for the current month
-        const hasMonthlyDue = dueAmount > 0 || !paidThisMonth;
-        const currentMonthDueAmount = dueAmount > 0 ? dueAmount : totalFee;
+        // Student has monthly due if unpaid balance exists
+        const hasMonthlyDue = isDue;
+        const currentMonthDueAmount = dueAmount;
 
         if (hasMonthlyDue) {
           monthlyDues.push({
@@ -2073,23 +2168,52 @@ export const dataStore = {
     };
   },
 
-  getStats() {
+  getStats(monthStr) {
     const students = this.getStudents();
     const payments = this.getPayments();
     const batches = this.getBatches();
     const expenses = this.getExpenses();
     const attendance = this.getAttendance();
 
-    const activeStudents = students.filter(s => s.status === 'Active');
-    
+    let filteredPayments = payments;
+    let filteredExpenses = expenses;
+    let refDate = new Date();
+    let filteredStudents = students;
+
+    if (monthStr) {
+      const [y, m] = monthStr.split('-');
+      refDate = new Date(parseInt(y, 10), parseInt(m, 10), 0, 23, 59, 59);
+      
+      filteredPayments = payments.filter(p => {
+        if (!p.date) return true;
+        const parts = p.date.split('/');
+        if (parts.length === 3) {
+          return parts[2] === y && parts[1] === m;
+        }
+        return true;
+      });
+
+      filteredExpenses = expenses.filter(exp => {
+        if (!exp.date) return true;
+        return exp.date.startsWith(monthStr);
+      });
+      
+      filteredStudents = students.filter(s => {
+        const admDate = this.parseDate(s.admissionDate);
+        return admDate <= refDate;
+      });
+    }
+
+    const activeStudents = filteredStudents.filter(s => s.status === 'Active');
+
     // Collected this month
-    const totalCollected = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+    const totalCollected = filteredPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
     // Total Due
     let totalDues = 0;
     let dueCount = 0;
-    students.forEach(s => {
-      const { dueAmount, isDue } = this.calculateDue(s);
+    filteredStudents.forEach(s => {
+      const { dueAmount, isDue } = this.calculateDue(s, refDate);
       if (isDue) {
         totalDues += dueAmount;
         dueCount++;
@@ -2099,18 +2223,31 @@ export const dataStore = {
     // Attendance Avg calculation
     let totalAttRecords = 0;
     let presentCount = 0;
-    Object.values(attendance).forEach(record => {
-      Object.values(record).forEach(status => {
-        totalAttRecords++;
-        if (status === 'Present' || status === 'Late') presentCount++;
-      });
+    Object.entries(attendance).forEach(([key, record]) => {
+      let includeRecord = true;
+      if (monthStr) {
+        const [y, m] = monthStr.split('-');
+        if (key.includes('-')) {
+          includeRecord = key.startsWith(`${y}-${m}`);
+        } else if (key.includes('/')) {
+          includeRecord = key.includes(`/${m}/${y}`);
+        }
+      }
+      if (includeRecord) {
+        Object.values(record).forEach(status => {
+          totalAttRecords++;
+          if (status === 'Present' || status === 'Late') presentCount++;
+        });
+      }
     });
-    const attendanceAvg = totalAttRecords > 0 ? Math.round((presentCount / totalAttRecords) * 100) + '%' : '92%';
+    
+    // Default to '0%' if there are no records for that month, instead of 92% fake data
+    const attendanceAvg = totalAttRecords > 0 ? Math.round((presentCount / totalAttRecords) * 100) + '%' : '0%';
 
     // Total Expenses
-    const totalExpenses = expenses.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
+    const totalExpenses = filteredExpenses.reduce((sum, exp) => sum + (Number(exp.amount) || 0), 0);
 
-    const notifs = this.getNotifications();
+    const notifs = this.getNotifications(refDate);
 
     return {
       activeStudentsCount: activeStudents.length,

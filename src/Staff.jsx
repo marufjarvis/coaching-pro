@@ -63,6 +63,7 @@ function Staff({ lang: propLang }) {
           </div>
         </div>
 
+        <div className="table-responsive">
         <table className="data-table">
           <thead>
             <tr>
@@ -95,6 +96,7 @@ function Staff({ lang: propLang }) {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {isAddModalOpen && (

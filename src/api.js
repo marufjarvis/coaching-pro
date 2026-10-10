@@ -1,7 +1,7 @@
 // src/api.js
 // Client for Laravel REST API backend (Coaching Pro)
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' ? '/api' : 'http://127.0.0.1:8000/api');
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
@@ -219,5 +219,17 @@ export const api = {
   // --- DASHBOARD ---
   async getDashboardStats() {
     return request('/dashboard-stats');
+  },
+
+  // --- DATABASE BACKUP & RESTORE ---
+  async exportDatabase() {
+    return request('/database/export');
+  },
+
+  async importDatabase(data) {
+    return request('/database/import', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
   }
 };

@@ -4,7 +4,7 @@ import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './student-profile.css';
 
-function StudentProfile({ student, onBack, onEdit, lang: propLang }) {
+function StudentProfile({ student, onBack, onEdit, lang: propLang, currentUser }) {
   const { t } = useTranslation(propLang);
   const [payments, setPayments] = useState(() => {
     return dataStore.getPayments().filter(p => p.studentId === student.id);
@@ -125,9 +125,11 @@ function StudentProfile({ student, onBack, onEdit, lang: propLang }) {
           <button className="btn-secondary" onClick={onEdit}>
             <Edit size={16} /> {t.edit}
           </button>
-          <button className="btn-secondary text-danger" onClick={handleDelete} title={t.delete}>
-            <Trash2 size={16} />
-          </button>
+          {(!currentUser || currentUser.role === 'admin') && (
+            <button className="btn-secondary text-danger" onClick={handleDelete} title={t.delete}>
+              <Trash2 size={16} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -251,6 +253,7 @@ function StudentProfile({ student, onBack, onEdit, lang: propLang }) {
             </div>
 
             {studentExams.length > 0 ? (
+              <div className="table-responsive">
               <table className="data-table" style={{ fontSize: '0.875rem', marginTop: '1rem' }}>
                 <thead>
                   <tr>
@@ -279,6 +282,7 @@ function StudentProfile({ student, onBack, onEdit, lang: propLang }) {
                   })}
                 </tbody>
               </table>
+              </div>
             ) : (
               <p className="text-muted" style={{ fontSize: '0.9rem', margin: '0.5rem 0' }}>{t.notGraded}</p>
             )}
@@ -289,6 +293,7 @@ function StudentProfile({ student, onBack, onEdit, lang: propLang }) {
               <h2 className="section-title flex-align"><Wallet size={18} /> {t.paymentHistoryTitle}</h2>
             </div>
             {payments.length > 0 ? (
+              <div className="table-responsive">
               <table className="data-table" style={{ fontSize: '0.875rem' }}>
                 <thead>
                   <tr>
@@ -311,6 +316,7 @@ function StudentProfile({ student, onBack, onEdit, lang: propLang }) {
                   ))}
                 </tbody>
               </table>
+              </div>
             ) : (
               <div className="empty-state-full">
                 <h3>{t.noPaymentsFound}</h3>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Building, Shield, Image as ImageIcon, Globe, Upload, CheckCircle2 } from 'lucide-react';
+import { Building, Shield, Image as ImageIcon, Globe, Upload, CheckCircle2, Database, Download } from 'lucide-react';
 import { dataStore } from './dataStore';
+import { api } from './api';
 import { useTranslation } from './translations';
 import './settings.css';
 
@@ -70,6 +71,50 @@ function Settings({ lang: propLang }) {
     setLang(newLang);
     dataStore.setLanguage(newLang);
     showToast(t.languageSetToast.replace('{lang}', newLang === 'BN' ? 'বাংলা' : 'English'));
+  };
+
+  const [isBackupLoading, setIsBackupLoading] = useState(false);
+  const [isUploadLoading, setIsUploadLoading] = useState(false);
+
+  const handleDownloadBackup = async () => {
+    setIsBackupLoading(true);
+    try {
+      const data = await api.exportDatabase();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `CoachingPro_Backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(lang === 'BN' ? 'ব্যাকআপ ডাউনলোড সফল হয়েছে' : 'Backup downloaded successfully');
+    } catch (e) {
+      alert(lang === 'BN' ? 'ব্যাকআপ ডাউনলোড ব্যর্থ হয়েছে' : 'Failed to download backup');
+    }
+    setIsBackupLoading(false);
+  };
+
+  const handleUploadBackup = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!window.confirm(lang === 'BN' ? 'আপনি কি নিশ্চিত? পূর্বের সকল ডাটা মুছে যাবে!' : 'Are you sure? This will wipe all existing data!')) {
+      e.target.value = '';
+      return;
+    }
+
+    setIsUploadLoading(true);
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await api.importDatabase(data);
+      alert(lang === 'BN' ? 'ডাটাবেজ সফলভাবে রিস্টোর হয়েছে! পেজটি রিলোড করা হচ্ছে...' : 'Database restored successfully! Reloading...');
+      window.location.reload();
+    } catch (e) {
+      alert((lang === 'BN' ? 'ডাটাবেজ আপলোডে সমস্যা হয়েছে: ' : 'Failed to upload database: ') + e.message);
+      setIsUploadLoading(false);
+    }
+    e.target.value = '';
   };
 
   return (
@@ -238,6 +283,44 @@ function Settings({ lang: propLang }) {
                   <span>{lang === 'BN' ? `(${t.active})` : 'Bangla'}</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Database Backup & Restore */}
+          <div className="settings-card">
+            <div className="settings-card-header">
+              <div className="settings-icon-box"><Database size={20} /></div>
+              <div>
+                <h3>{lang === 'BN' ? 'ডাটাবেজ (Database)' : 'Database Management'}</h3>
+                <p>{lang === 'BN' ? 'আপনার ওয়েবসাইটের সম্পূর্ণ ডাটাবেজ ব্যাকআপ নিন এবং নতুন হোস্টিংয়ে আপলোড করুন।' : 'Download a complete backup or restore from an existing backup.'}</p>
+              </div>
+            </div>
+            <div className="settings-card-body" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <button 
+                type="button" 
+                className="btn-outline" 
+                onClick={handleDownloadBackup}
+                disabled={isBackupLoading}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'center' }}
+              >
+                <Download size={18} />
+                {isBackupLoading ? (lang === 'BN' ? 'ডাউনলোড হচ্ছে...' : 'Downloading...') : (lang === 'BN' ? 'ব্যাকআপ ডাউনলোড' : 'Download Backup')}
+              </button>
+              
+              <label 
+                className="btn-primary" 
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, justifyContent: 'center', cursor: 'pointer', margin: 0, opacity: isUploadLoading ? 0.7 : 1 }}
+              >
+                <Upload size={18} />
+                {isUploadLoading ? (lang === 'BN' ? 'আপলোড হচ্ছে...' : 'Uploading...') : (lang === 'BN' ? 'ডেটাবেজ আপলোড' : 'Upload Database')}
+                <input 
+                  type="file" 
+                  accept=".json" 
+                  onChange={handleUploadBackup} 
+                  style={{ display: 'none' }} 
+                  disabled={isUploadLoading}
+                />
+              </label>
             </div>
           </div>
         </div>

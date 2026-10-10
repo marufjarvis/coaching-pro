@@ -4,7 +4,7 @@ import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './payments.css';
 
-function Payments({ setActiveTab, lang: propLang }) {
+function Payments({ setActiveTab, lang: propLang, currentUser }) {
   const { t, lang } = useTranslation(propLang);
   const [payments, setPayments] = useState(() => dataStore.getPayments());
   const [students, setStudents] = useState(() => dataStore.getStudents());
@@ -20,8 +20,11 @@ function Payments({ setActiveTab, lang: propLang }) {
   const [paymentMethod, setPaymentMethod] = useState('bKash');
   const [collectedBy, setCollectedBy] = useState('Admin');
   const [paymentNote, setPaymentNote] = useState('');
+  const [paymentDate, setPaymentDate] = useState(() => new Date().toISOString().split('T')[0]);
 
-  const [selectedMonth, setSelectedMonth] = useState('October 2026');
+  const currentMonthDate = new Date();
+  const monthName = currentMonthDate.toLocaleString(lang === 'EN' ? 'en-US' : 'bn-BD', { month: 'long', year: 'numeric' });
+  const [selectedMonth, setSelectedMonth] = useState(monthName);
   const [selectedFeeType, setSelectedFeeType] = useState('All types');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -71,18 +74,26 @@ function Payments({ setActiveTab, lang: propLang }) {
   const handleRecordPayment = () => {
     if (!selectedStudent || !paymentAmount) return;
 
+    let formattedDate = null;
+    if (paymentDate) {
+      const [year, month, day] = paymentDate.split('-');
+      formattedDate = `${day}/${month}/${year}`;
+    }
+
     const newTxn = dataStore.recordPayment({
       studentId: selectedStudent.id,
       amount: paymentAmount,
       method: paymentMethod,
       collectedBy: collectedBy,
-      note: paymentNote
+      note: paymentNote,
+      date: formattedDate
     });
 
     if (newTxn) {
       setIsCollectModalOpen(false);
       setSelectedStudentId('');
       setPaymentAmount('');
+      setPaymentDate(new Date().toISOString().split('T')[0]);
       setViewingReceipt(newTxn);
     }
   };
@@ -109,7 +120,15 @@ function Payments({ setActiveTab, lang: propLang }) {
     .filter(p => p.date === today)
     .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
-  const thisMonthsCollection = payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+  const currentMonthYearStr = currentMonthDate.toISOString().substring(0, 7); // YYYY-MM
+  const thisMonthsCollection = payments.filter(p => {
+    if (!p.date) return false;
+    const parts = p.date.split('/');
+    if (parts.length === 3) {
+      return parts[2] === currentMonthYearStr.split('-')[0] && parts[1] === currentMonthYearStr.split('-')[1];
+    }
+    return false;
+  }).reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
   const lastPayment = payments.length > 0 ? payments[0] : null;
 
   return (
@@ -341,15 +360,26 @@ function Payments({ setActiveTab, lang: propLang }) {
                     </div>
                   </div>
 
-                  <div className="form-group" style={{ marginTop: '1rem' }}>
-                    <label>NOTE / DESCRIPTION</label>
-                    <input 
-                      type="text" 
-                      className="form-control"
-                      placeholder="e.g. October 2026 tuition fee"
-                      value={paymentNote}
-                      onChange={(e) => setPaymentNote(e.target.value)}
-                    />
+                  <div className="form-row" style={{ marginTop: '1rem' }}>
+                    <div className="form-group half">
+                      <label>NOTE / DESCRIPTION</label>
+                      <input 
+                        type="text" 
+                        className="form-control"
+                        placeholder="e.g. October 2026 tuition fee"
+                        value={paymentNote}
+                        onChange={(e) => setPaymentNote(e.target.value)}
+                      />
+                    </div>
+                    <div className="form-group half">
+                      <label>DATE</label>
+                      <input 
+                        type="date" 
+                        className="form-control"
+                        value={paymentDate}
+                        onChange={(e) => setPaymentDate(e.target.value)}
+                      />
+                    </div>
                   </div>
 
                   <div className="form-group" style={{ marginTop: '1rem' }}>

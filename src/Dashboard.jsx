@@ -23,9 +23,11 @@ import { useTranslation } from './translations';
 import './dashboard.css';
 
 function Dashboard({ onLogout }) {
+  const currentUser = JSON.parse(localStorage.getItem('coachingUser') || '{"role": "admin"}');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [stats, setStats] = useState(() => dataStore.getStats());
+  const [dashboardMonth, setDashboardMonth] = useState(() => new Date().toISOString().substring(0, 7));
+  const [stats, setStats] = useState(() => dataStore.getStats(new Date().toISOString().substring(0, 7)));
   const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [students, setStudents] = useState(() => dataStore.getStudents());
   const [payments, setPayments] = useState(() => dataStore.getPayments());
@@ -42,7 +44,7 @@ function Dashboard({ onLogout }) {
 
   useEffect(() => {
     const handleSync = () => {
-      setStats(dataStore.getStats());
+      setStats(dataStore.getStats(dashboardMonth));
       setBatches(dataStore.getBatches());
       setStudents(dataStore.getStudents());
       setPayments(dataStore.getPayments());
@@ -55,7 +57,12 @@ function Dashboard({ onLogout }) {
       window.removeEventListener('coaching-data-change', handleSync);
       window.removeEventListener('storage', handleSync);
     };
-  }, []);
+  }, [dashboardMonth]);
+
+  useEffect(() => {
+    setStats(dataStore.getStats(dashboardMonth));
+  }, [dashboardMonth]);
+
 
   const handleDismissGuide = () => {
     setIsGuideVisible(false);
@@ -82,7 +89,15 @@ function Dashboard({ onLogout }) {
     ).map(p => ({ type: 'payment', title: `${p.studentName} (৳ ${p.amount})`, subtitle: `Receipt: ${p.id} • ${p.date}`, targetTab: 'payments' }))
   ].slice(0, 6);
 
-  const recentPayments = payments.slice(0, 5);
+  const recentPayments = payments.filter(p => {
+    if (!p.date) return true;
+    const [y, m] = dashboardMonth.split('-');
+    const parts = p.date.split('/');
+    if (parts.length === 3) {
+      return parts[2] === y && parts[1] === m;
+    }
+    return true;
+  }).slice(0, 5);
   const displayBatches = batches.slice(0, 4);
 
   return (
@@ -242,32 +257,36 @@ function Dashboard({ onLogout }) {
                 </span>
               )}
             </a>
-            <a 
-              href="#" 
-              className={`nav-item ${activeTab === 'staff' ? 'active' : ''}`} 
-              onClick={(e) => { e.preventDefault(); setActiveTab('staff'); setIsSidebarOpen(false); }}
-            >
-              <UserPlus size={18} />
-              <span>{t.staff}</span>
-            </a>
-            <a 
-              href="#" 
-              className={`nav-item ${activeTab === 'frontend' ? 'active' : ''}`} 
-              onClick={(e) => { e.preventDefault(); setActiveTab('frontend'); setIsSidebarOpen(false); }}
-              title="ওয়েবসাইট ও ল্যান্ডিং পেজ কাস্টমাইজেশন"
-            >
-              <Globe size={18} />
-              <span>Frontend</span>
-              <span className="nav-badge nav-badge-blue" style={{ fontSize: '10px', padding: '1px 6px' }}>CMS</span>
-            </a>
-            <a 
-              href="#" 
-              className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} 
-              onClick={(e) => { e.preventDefault(); setActiveTab('settings'); setIsSidebarOpen(false); }}
-            >
-              <SettingsIcon size={18} />
-              <span>{t.settings}</span>
-            </a>
+            {currentUser.role === 'admin' && (
+              <>
+                <a 
+                  href="#" 
+                  className={`nav-item ${activeTab === 'staff' ? 'active' : ''}`} 
+                  onClick={(e) => { e.preventDefault(); setActiveTab('staff'); setIsSidebarOpen(false); }}
+                >
+                  <UserPlus size={18} />
+                  <span>{t.staff}</span>
+                </a>
+                <a 
+                  href="#" 
+                  className={`nav-item ${activeTab === 'frontend' ? 'active' : ''}`} 
+                  onClick={(e) => { e.preventDefault(); setActiveTab('frontend'); setIsSidebarOpen(false); }}
+                  title="ওয়েবসাইট ও ল্যান্ডিং পেজ কাস্টমাইজেশন"
+                >
+                  <Globe size={18} />
+                  <span>Frontend</span>
+                  <span className="nav-badge nav-badge-blue" style={{ fontSize: '10px', padding: '1px 6px' }}>CMS</span>
+                </a>
+                <a 
+                  href="#" 
+                  className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} 
+                  onClick={(e) => { e.preventDefault(); setActiveTab('settings'); setIsSidebarOpen(false); }}
+                >
+                  <SettingsIcon size={18} />
+                  <span>{t.settings}</span>
+                </a>
+              </>
+            )}
           </div>
 
           {/* 5. Direct Link to Live Coaching Website */}
@@ -427,9 +446,38 @@ function Dashboard({ onLogout }) {
               <p className="page-desc">{t.dashboardSubtitle}</p>
             </div>
             <div className="header-actions">
-              <button className="btn-outline">
-                {lang === 'EN' ? 'October 2026' : 'অক্টোবর ২০২৬'} <Calendar size={16} />
-              </button>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <select 
+                  className="btn-outline" 
+                  style={{ padding: '0.35rem 0.5rem', fontFamily: 'inherit', fontSize: '14px', border: '1px solid #e2e8f0', borderRadius: '6px', backgroundColor: '#fff', color: '#1e293b', cursor: 'pointer' }}
+                  value={dashboardMonth.split('-')[1]}
+                  onChange={(e) => setDashboardMonth(`${dashboardMonth.split('-')[0]}-${e.target.value}`)}
+                >
+                  <option value="01">{lang === 'EN' ? 'January' : 'জানুয়ারি'}</option>
+                  <option value="02">{lang === 'EN' ? 'February' : 'ফেব্রুয়ারি'}</option>
+                  <option value="03">{lang === 'EN' ? 'March' : 'মার্চ'}</option>
+                  <option value="04">{lang === 'EN' ? 'April' : 'এপ্রিল'}</option>
+                  <option value="05">{lang === 'EN' ? 'May' : 'মে'}</option>
+                  <option value="06">{lang === 'EN' ? 'June' : 'জুন'}</option>
+                  <option value="07">{lang === 'EN' ? 'July' : 'জুলাই'}</option>
+                  <option value="08">{lang === 'EN' ? 'August' : 'আগস্ট'}</option>
+                  <option value="09">{lang === 'EN' ? 'September' : 'সেপ্টেম্বর'}</option>
+                  <option value="10">{lang === 'EN' ? 'October' : 'অক্টোবর'}</option>
+                  <option value="11">{lang === 'EN' ? 'November' : 'নভেম্বর'}</option>
+                  <option value="12">{lang === 'EN' ? 'December' : 'ডিসেম্বর'}</option>
+                </select>
+                
+                <select 
+                  className="btn-outline" 
+                  style={{ padding: '0.35rem 0.5rem', fontFamily: 'inherit', fontSize: '14px', border: '1px solid #e2e8f0', borderRadius: '6px', backgroundColor: '#fff', color: '#1e293b', cursor: 'pointer' }}
+                  value={dashboardMonth.split('-')[0]}
+                  onChange={(e) => setDashboardMonth(`${e.target.value}-${dashboardMonth.split('-')[1]}`)}
+                >
+                  {Array.from({length: 10}, (_, i) => new Date().getFullYear() - 5 + i).map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
               <button className="btn-outline" onClick={() => window.print()}>
                 <Printer size={16} /> {lang === 'EN' ? 'Print Overview' : 'প্রিন্ট ওভারভিউ'}
               </button>
@@ -651,33 +699,33 @@ function Dashboard({ onLogout }) {
         ) : (
           <div className="page-content">
             {activeTab === 'batches' ? (
-              <Batches lang={lang} />
+              <Batches lang={lang} currentUser={currentUser} />
             ) : activeTab === 'students' ? (
-              <Students setActiveTab={setActiveTab} lang={lang} />
+              <Students setActiveTab={setActiveTab} lang={lang} currentUser={currentUser} />
             ) : activeTab === 'online-admission' ? (
               <OnlineAdmission lang={lang} />
             ) : activeTab === 'enrollment' ? (
               <EnrollmentLinks lang={lang} />
             ) : activeTab === 'payments' ? (
-              <Payments setActiveTab={setActiveTab} lang={lang} />
+              <Payments setActiveTab={setActiveTab} lang={lang} currentUser={currentUser} />
             ) : activeTab === 'due-inbox' ? (
               <DueInbox lang={lang} />
             ) : activeTab === 'expenses' ? (
-              <Expenses lang={lang} />
+              <Expenses lang={lang} currentUser={currentUser} />
             ) : activeTab === 'attendance' ? (
               <Attendance lang={lang} />
             ) : activeTab === 'exams' ? (
-              <Exams lang={lang} />
+              <Exams lang={lang} currentUser={currentUser} />
             ) : activeTab === 'reports' ? (
-              <Reports lang={lang} />
+              <Reports lang={lang} currentUser={currentUser} />
             ) : activeTab === 'notifications' ? (
               <Notifications setActiveTab={setActiveTab} lang={lang} />
             ) : activeTab === 'staff' ? (
-              <Staff lang={lang} />
+              currentUser.role === 'admin' ? <Staff lang={lang} /> : <div>Access Denied</div>
             ) : activeTab === 'settings' ? (
-              <Settings lang={lang} />
+              currentUser.role === 'admin' ? <Settings lang={lang} /> : <div>Access Denied</div>
             ) : activeTab === 'frontend' ? (
-              <FrontendSettings lang={lang} />
+              currentUser.role === 'admin' ? <FrontendSettings lang={lang} /> : <div>Access Denied</div>
             ) : null}
           </div>
         )}

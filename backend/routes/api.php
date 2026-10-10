@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\OnlineAdmissionController;
 use App\Http\Controllers\Api\EnrollmentLinkController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DatabaseController;
 
 // Authentication (Admin & Manager & Student)
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
@@ -75,3 +76,7 @@ Route::delete('/online-admissions/{id}', [OnlineAdmissionController::class, 'des
 Route::get('/enrollment-links', [EnrollmentLinkController::class, 'index']);
 Route::post('/enrollment-links', [EnrollmentLinkController::class, 'store']);
 Route::delete('/enrollment-links/{id}', [EnrollmentLinkController::class, 'destroy']);
+
+// Database Backup & Restore
+Route::get('/database/export', [DatabaseController::class, 'export']);
+Route::post('/database/import', [DatabaseController::class, 'import']);

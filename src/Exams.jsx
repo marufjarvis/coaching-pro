@@ -4,7 +4,7 @@ import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './exams.css';
 
-function Exams({ lang: propLang }) {
+function Exams({ lang: propLang, currentUser }) {
   const { t } = useTranslation(propLang);
   const [exams, setExams] = useState(() => dataStore.getExams());
   const [batches, setBatches] = useState(() => dataStore.getBatches());
@@ -143,6 +143,7 @@ function Exams({ lang: propLang }) {
         </div>
 
         {exams.length > 0 ? (
+          <div className="table-responsive">
           <table className="data-table">
             <thead>
               <tr>
@@ -173,15 +174,18 @@ function Exams({ lang: propLang }) {
                       <button className="btn-icon" onClick={() => handleOpenMarksModal(exam)} title={t.enterMarksBtn}>
                         <ListChecks size={18} color="#0284c7" />
                       </button>
-                      <button className="btn-icon text-danger" onClick={() => handleDeleteExam(exam.id)} title={t.delete}>
-                        <Trash2 size={18} />
-                      </button>
+                      {(!currentUser || currentUser.role === 'admin') && (
+                        <button className="btn-icon text-danger" onClick={() => handleDeleteExam(exam.id)} title={t.delete}>
+                          <Trash2 size={18} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          </div>
         ) : (
           <div className="empty-state-box">
             <div className="empty-icon-circle purple-icon">
@@ -295,6 +299,7 @@ function Exams({ lang: propLang }) {
               {allStudents
                 .filter(s => selectedExamForMarks.batch === 'All Batches' || s.batch === selectedExamForMarks.batch)
                 .length > 0 ? (
+                <div className="table-responsive">
                 <table className="data-table">
                   <thead>
                     <tr>
@@ -339,6 +344,7 @@ function Exams({ lang: propLang }) {
                     })}
                   </tbody>
                 </table>
+                </div>
               ) : (
                 <p style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
                   {t.noStudentsInBatchMsg}

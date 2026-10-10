@@ -637,7 +637,7 @@
   background-color: white;
   border: 1px solid var(--accent);
   color: var(--accent);
-  border-radius: 20px;
+  border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;

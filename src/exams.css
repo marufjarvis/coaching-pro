@@ -43,20 +43,7 @@
   color: #8b5cf6;
 }
 
-.btn-icon {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #64748b;
-  padding: 0.25rem;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
 
-.btn-icon:hover {
-  background: #f1f5f9;
-  color: #1e293b;
-}
 
 .text-danger {
   color: #ef4444;

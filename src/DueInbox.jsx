@@ -16,6 +16,9 @@ function DueInbox({ lang: propLang }) {
   const [payAmount, setPayAmount] = useState('');
   const [payMethod, setPayMethod] = useState('bKash');
 
+  const currentMonthDate = new Date();
+  const monthName = currentMonthDate.toLocaleString(lang === 'EN' ? 'en-US' : 'bn-BD', { month: 'long', year: 'numeric' });
+
   useEffect(() => {
     const handleSync = () => {
       setStudents(dataStore.getStudents());
@@ -37,7 +40,7 @@ function DueInbox({ lang: propLang }) {
     .map(student => {
       const { dueAmount, isDue } = dataStore.calculateDue(student);
       const dueDateStr = student.feeType === 'course' 
-        ? (student.nextInstallmentDate || '01/11/2026') 
+        ? (student.nextInstallmentDate || (lang === 'EN' ? 'Check Details' : 'বিস্তারিত দেখুন')) 
         : (lang === 'EN' ? '10th of this month' : 'চলতি মাসের ১০ তারিখ');
       return {
         ...student,
@@ -119,7 +122,7 @@ function DueInbox({ lang: propLang }) {
         <div className="filter-group">
           <label>{t.dueMonthLabel}</label>
           <div className="date-input-wrapper">
-            <input type="text" className="form-control" value={lang === 'EN' ? "October 2026" : "অক্টোবর ২০২৬"} readOnly />
+            <input type="text" className="form-control" value={monthName} readOnly />
             <Calendar className="calendar-icon" size={16} />
           </div>
         </div>
@@ -130,7 +133,7 @@ function DueInbox({ lang: propLang }) {
           <div>
             <div className="summary-label">{t.outstandingThisMonth}</div>
             <div className="summary-value">৳ {totalOutstanding.toLocaleString()}</div>
-            <div className="summary-date">{lang === 'EN' ? "October 2026" : "অক্টোবর ২০২৬"}</div>
+            <div className="summary-date">{monthName}</div>
           </div>
           <AlertCircle size={48} className="bg-icon" />
         </div>

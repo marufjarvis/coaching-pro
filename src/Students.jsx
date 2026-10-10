@@ -5,7 +5,7 @@ import { dataStore, sortStudentsById } from './dataStore';
 import { useTranslation } from './translations';
 import './students.css';
 
-function Students({ setActiveTab: setParentTab, lang: propLang }) {
+function Students({ setActiveTab: setParentTab, lang: propLang, currentUser }) {
   const { t, lang } = useTranslation(propLang);
   const [activeTab, setActiveTab] = useState('All students');
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -33,10 +33,10 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
     guardianPhone: '',
     batch: '',
     feeAmount: '500',
-    admissionFee: '200',
     discount: '0',
     installments: '1',
-    status: 'Active'
+    status: 'Active',
+    admissionDate: new Date().toISOString().split('T')[0]
   });
 
   useEffect(() => {
@@ -65,10 +65,10 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
       guardianPhone: '',
       batch: batches.length > 0 ? batches[0].name : '',
       feeAmount: '500',
-      admissionFee: '200',
       discount: '0',
       installments: '1',
-      status: 'Active'
+      status: 'Active',
+      admissionDate: new Date().toISOString().split('T')[0]
     });
     setFeeType('monthly');
     setIsAddModalOpen(true);
@@ -86,7 +86,8 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
       admissionFee: stu.admissionFee || '0',
       discount: stu.discount || '0',
       installments: stu.installments || '1',
-      status: stu.status || 'Active'
+      status: stu.status || 'Active',
+      admissionDate: stu.admissionDate ? stu.admissionDate.split('/').reverse().join('-') : new Date().toISOString().split('T')[0]
     });
     setFeeType(stu.feeType || 'monthly');
     setIsAddModalOpen(true);
@@ -109,7 +110,8 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
         admissionFee: Number(studentForm.admissionFee) || 0,
         discount: Number(studentForm.discount) || 0,
         installments: Number(studentForm.installments) || 1,
-        status: studentForm.status
+        status: studentForm.status,
+        admissionDate: studentForm.admissionDate ? studentForm.admissionDate.split('-').reverse().join('/') : new Date().toLocaleDateString('en-GB')
       });
       if (selectedStudent && selectedStudent.id === studentForm.idNumber) {
         setSelectedStudent({
@@ -135,7 +137,8 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
         admissionFee: Number(studentForm.admissionFee) || 0,
         discount: Number(studentForm.discount) || 0,
         installments: Number(studentForm.installments) || 1,
-        status: studentForm.status || 'Active'
+        status: studentForm.status || 'Active',
+        admissionDate: studentForm.admissionDate ? studentForm.admissionDate.split('-').reverse().join('/') : new Date().toLocaleDateString('en-GB')
       });
 
       if (studentForm.isPending) {
@@ -186,6 +189,7 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
     <>
       {selectedStudent ? (
         <StudentProfile 
+          currentUser={currentUser}
           student={selectedStudent} 
           onBack={() => setSelectedStudent(null)}
           onEdit={() => openEditModal(selectedStudent)}
@@ -413,17 +417,28 @@ function Students({ setActiveTab: setParentTab, lang: propLang }) {
             </div>
             
             <div className="modal-body">
-              <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-                <label>{t.studentIdLabel} <span className="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  className="form-control"
-                  placeholder={t.studentIdPlaceholder} 
-                  value={studentForm.idNumber} 
-                  onChange={(e) => setStudentForm({...studentForm, idNumber: e.target.value})} 
-                  disabled={isEditMode}
-                  required
-                />
+              <div className="form-row">
+                <div className="form-group half" style={{ marginBottom: '1.25rem' }}>
+                  <label>{t.studentIdLabel} <span className="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    className="form-control"
+                    placeholder={t.studentIdPlaceholder} 
+                    value={studentForm.idNumber} 
+                    onChange={(e) => setStudentForm({...studentForm, idNumber: e.target.value})} 
+                    disabled={isEditMode}
+                    required
+                  />
+                </div>
+                <div className="form-group half" style={{ marginBottom: '1.25rem' }}>
+                  <label>ADMISSION DATE</label>
+                  <input 
+                    type="date" 
+                    className="form-control"
+                    value={studentForm.admissionDate} 
+                    onChange={(e) => setStudentForm({...studentForm, admissionDate: e.target.value})} 
+                  />
+                </div>
               </div>
 
               <div className="form-row">

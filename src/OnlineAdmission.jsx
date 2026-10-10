@@ -51,7 +51,8 @@ function OnlineAdmission({ lang: propLang }) {
     feeAmount: '',
     admissionFee: '',
     discount: '0',
-    installments: '3'
+    installments: '3',
+    admissionDate: new Date().toISOString().substring(0, 10)
   });
 
   useEffect(() => {
@@ -94,7 +95,8 @@ function OnlineAdmission({ lang: propLang }) {
       feeAmount: '',
       admissionFee: '',
       discount: '0',
-      installments: '3'
+      installments: '3',
+      admissionDate: app.date ? new Date(app.date).toISOString().substring(0, 10) : new Date().toISOString().substring(0, 10)
     });
   };
 
@@ -114,6 +116,7 @@ function OnlineAdmission({ lang: propLang }) {
       name: editForm.name.trim(),
       batch: editForm.batch || (batches.length > 0 ? batches[0].name : 'Unassigned'),
       status: 'Active',
+      admissionDate: editForm.admissionDate,
       phone: editForm.phone.trim(),
       guardianPhone: editForm.guardianPhone.trim(),
       feeType: editForm.feeType,
@@ -262,19 +265,28 @@ function OnlineAdmission({ lang: propLang }) {
             </div>
             
             <div className="modal-body">
-              <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-                <label>{t.studentIdLabel} <span className="text-danger">*</span></label>
-                <input 
-                  type="text" 
-                  className="form-control"
-                  placeholder={t.studentIdPlaceholder} 
-                  value={editForm.idNumber} 
-                  onChange={(e) => setEditForm({...editForm, idNumber: e.target.value})} 
-                  required
-                />
-              </div>
-
               <div className="form-row">
+                <div className="form-group half" style={{ marginBottom: '1.5rem' }}>
+                  <label>{t.studentIdLabel} <span className="text-danger">*</span></label>
+                  <input 
+                    type="text" 
+                    className="form-control"
+                    placeholder={t.studentIdPlaceholder} 
+                    value={editForm.idNumber} 
+                    onChange={(e) => setEditForm({...editForm, idNumber: e.target.value})} 
+                    required
+                  />
+                </div>
+                <div className="form-group half" style={{ marginBottom: '1.5rem' }}>
+                  <label>ADMISSION DATE</label>
+                  <input 
+                    type="date" 
+                    className="form-control"
+                    value={editForm.admissionDate} 
+                    onChange={(e) => setEditForm({...editForm, admissionDate: e.target.value})} 
+                  />
+                </div>
+              </div>              <div className="form-row">
                 <div className="form-group half">
                   <label>{t.studentNameLabel}</label>
                   <input 

@@ -4,7 +4,7 @@ import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './reports.css';
 
-function Reports({ lang: propLang }) {
+function Reports({ lang: propLang, currentUser }) {
   const { t } = useTranslation(propLang);
   const [activeReport, setActiveReport] = useState(null);
   const [payments, setPayments] = useState(() => dataStore.getPayments());
@@ -100,7 +100,7 @@ function Reports({ lang: propLang }) {
     });
 
     // Monthly calculations:
-    const [yearStr, monthStr] = (attendanceMonth || '2026-10').split('-');
+    const [yearStr, monthStr] = (attendanceMonth || new Date().toISOString().substring(0, 7)).split('-');
     const yearNum = parseInt(yearStr, 10);
     const monthNum = parseInt(monthStr, 10);
     const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
@@ -180,12 +180,37 @@ function Reports({ lang: propLang }) {
           ) : (
             <div className="att-filter-item">
               <label>{t.monthLabel || 'Month'}</label>
-              <input
-                type="month"
-                className="form-control"
-                value={attendanceMonth}
-                onChange={(e) => setAttendanceMonth(e.target.value)}
-              />
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                <select 
+                  className="form-control"
+                  style={{ padding: '0.35rem 0.5rem', width: '50%' }}
+                  value={attendanceMonth.split('-')[1]}
+                  onChange={(e) => setAttendanceMonth(`${attendanceMonth.split('-')[0]}-${e.target.value}`)}
+                >
+                  <option value="01">{propLang === 'EN' ? 'January' : 'জানুয়ারি'}</option>
+                  <option value="02">{propLang === 'EN' ? 'February' : 'ফেব্রুয়ারি'}</option>
+                  <option value="03">{propLang === 'EN' ? 'March' : 'মার্চ'}</option>
+                  <option value="04">{propLang === 'EN' ? 'April' : 'এপ্রিল'}</option>
+                  <option value="05">{propLang === 'EN' ? 'May' : 'মে'}</option>
+                  <option value="06">{propLang === 'EN' ? 'June' : 'জুন'}</option>
+                  <option value="07">{propLang === 'EN' ? 'July' : 'জুলাই'}</option>
+                  <option value="08">{propLang === 'EN' ? 'August' : 'আগস্ট'}</option>
+                  <option value="09">{propLang === 'EN' ? 'September' : 'সেপ্টেম্বর'}</option>
+                  <option value="10">{propLang === 'EN' ? 'October' : 'অক্টোবর'}</option>
+                  <option value="11">{propLang === 'EN' ? 'November' : 'নভেম্বর'}</option>
+                  <option value="12">{propLang === 'EN' ? 'December' : 'ডিসেম্বর'}</option>
+                </select>
+                <select 
+                  className="form-control"
+                  style={{ padding: '0.35rem 0.5rem', width: '50%' }}
+                  value={attendanceMonth.split('-')[0]}
+                  onChange={(e) => setAttendanceMonth(`${e.target.value}-${attendanceMonth.split('-')[1]}`)}
+                >
+                  {Array.from({length: 10}, (_, i) => new Date().getFullYear() - 5 + i).map(year => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
 
@@ -378,6 +403,7 @@ function Reports({ lang: propLang }) {
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#16a34a' }}>৳ {totalCollected.toLocaleString()}</div>
               </div>
             </div>
+            <div className="table-responsive">
             <table className="data-table">
               <thead>
                 <tr>
@@ -402,6 +428,7 @@ function Reports({ lang: propLang }) {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         );
 
@@ -418,6 +445,7 @@ function Reports({ lang: propLang }) {
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#dc2626' }}>৳ {totalDues.toLocaleString()}</div>
               </div>
             </div>
+            <div className="table-responsive">
             <table className="data-table">
               <thead>
                 <tr>
@@ -446,6 +474,7 @@ function Reports({ lang: propLang }) {
                 )}
               </tbody>
             </table>
+            </div>
           </div>
         );
 
@@ -469,6 +498,7 @@ function Reports({ lang: propLang }) {
               </div>
             </div>
             <h4 style={{ margin: '0 0 10px 0' }}>{t.expenseLedgerSectionTitle}</h4>
+            <div className="table-responsive">
             <table className="data-table">
               <thead>
                 <tr>
@@ -489,6 +519,7 @@ function Reports({ lang: propLang }) {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         );
 
@@ -600,12 +631,37 @@ function Reports({ lang: propLang }) {
                     <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
                       {t.selectMonthLabel || 'Select Month'}
                     </label>
-                    <input
-                      type="month"
-                      className="form-control"
-                      value={attendanceMonth}
-                      onChange={(e) => setAttendanceMonth(e.target.value)}
-                    />
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                      <select 
+                        className="form-control"
+                        style={{ padding: '0.35rem 0.5rem', width: '50%' }}
+                        value={attendanceMonth.split('-')[1]}
+                        onChange={(e) => setAttendanceMonth(`${attendanceMonth.split('-')[0]}-${e.target.value}`)}
+                      >
+                        <option value="01">{propLang === 'EN' ? 'January' : 'জানুয়ারি'}</option>
+                        <option value="02">{propLang === 'EN' ? 'February' : 'ফেব্রুয়ারি'}</option>
+                        <option value="03">{propLang === 'EN' ? 'March' : 'মার্চ'}</option>
+                        <option value="04">{propLang === 'EN' ? 'April' : 'এপ্রিল'}</option>
+                        <option value="05">{propLang === 'EN' ? 'May' : 'মে'}</option>
+                        <option value="06">{propLang === 'EN' ? 'June' : 'জুন'}</option>
+                        <option value="07">{propLang === 'EN' ? 'July' : 'জুলাই'}</option>
+                        <option value="08">{propLang === 'EN' ? 'August' : 'আগস্ট'}</option>
+                        <option value="09">{propLang === 'EN' ? 'September' : 'সেপ্টেম্বর'}</option>
+                        <option value="10">{propLang === 'EN' ? 'October' : 'অক্টোবর'}</option>
+                        <option value="11">{propLang === 'EN' ? 'November' : 'নভেম্বর'}</option>
+                        <option value="12">{propLang === 'EN' ? 'December' : 'ডিসেম্বর'}</option>
+                      </select>
+                      <select 
+                        className="form-control"
+                        style={{ padding: '0.35rem 0.5rem', width: '50%' }}
+                        value={attendanceMonth.split('-')[0]}
+                        onChange={(e) => setAttendanceMonth(`${e.target.value}-${attendanceMonth.split('-')[1]}`)}
+                      >
+                        {Array.from({length: 10}, (_, i) => new Date().getFullYear() - 5 + i).map(year => (
+                          <option key={year} value={year}>{year}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 )}
               </div>
@@ -827,6 +883,7 @@ function Reports({ lang: propLang }) {
       case 'StudentList':
         return (
           <div>
+            <div className="table-responsive">
             <table className="data-table">
               <thead>
                 <tr>
@@ -857,6 +914,7 @@ function Reports({ lang: propLang }) {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         );
 
@@ -878,6 +936,7 @@ function Reports({ lang: propLang }) {
                   <div><strong>{t.totalMarksInputLabel}:</strong> {selectedExam.totalMarks}</div>
                   <div><strong>{t.passMarksInputLabel}:</strong> {selectedExam.passMarks}</div>
                 </div>
+                <div className="table-responsive">
                 <table className="data-table">
                   <thead>
                     <tr>
@@ -910,6 +969,7 @@ function Reports({ lang: propLang }) {
                     })}
                   </tbody>
                 </table>
+                </div>
               </>
             )}
           </div>

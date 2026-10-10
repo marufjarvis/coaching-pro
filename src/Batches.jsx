@@ -13,7 +13,7 @@ const defaultBatchState = {
   status: 'ভর্তি চলছে'
 };
 
-function Batches({ lang: propLang }) {
+function Batches({ lang: propLang, currentUser }) {
   const { t } = useTranslation(propLang);
   const [batches, setBatches] = useState(() => dataStore.getBatches());
   const [students, setStudents] = useState(() => dataStore.getStudents());
@@ -185,12 +185,16 @@ function Batches({ lang: propLang }) {
                       >
                         <ExternalLink size={14} /> ভর্তি ফর্ম দেখুন
                       </a>
-                      <button className="dropdown-item" onClick={() => { handleEditClick(batch); setOpenDropdown(null); }}>
-                        <Pencil size={14} /> {t.edit}
-                      </button>
-                      <button className="dropdown-item text-danger" onClick={() => { handleDeleteBatch(batch); setOpenDropdown(null); }}>
-                        <Trash2 size={14} /> {t.delete}
-                      </button>
+                      {(!currentUser || currentUser.role === 'admin') && (
+                        <button className="dropdown-item" onClick={() => { handleEditClick(batch); setOpenDropdown(null); }}>
+                          <Pencil size={14} /> {t.edit}
+                        </button>
+                      )}
+                      {(!currentUser || currentUser.role === 'admin') && (
+                        <button className="dropdown-item text-danger" onClick={() => { handleDeleteBatch(batch); setOpenDropdown(null); }}>
+                          <Trash2 size={14} /> {t.delete}
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

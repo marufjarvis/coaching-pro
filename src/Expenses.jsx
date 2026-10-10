@@ -4,7 +4,7 @@ import { dataStore } from './dataStore';
 import { useTranslation } from './translations';
 import './expenses.css';
 
-function Expenses({ lang: propLang }) {
+function Expenses({ lang: propLang, currentUser }) {
   const { t } = useTranslation(propLang);
   const [expenses, setExpenses] = useState(() => dataStore.getExpenses());
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -104,6 +104,7 @@ function Expenses({ lang: propLang }) {
         </div>
 
         {expenses.length > 0 ? (
+          <div className="table-responsive">
           <table className="data-table">
             <thead>
               <tr>
@@ -124,18 +125,21 @@ function Expenses({ lang: propLang }) {
                     ৳ {Number(exp.amount).toLocaleString()}
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    <button 
-                      className="btn-icon text-danger" 
-                      onClick={() => handleDeleteExpense(exp.id)}
-                      title={t.delete}
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {(!currentUser || currentUser.role === 'admin') && (
+                      <button 
+                        className="btn-icon text-danger" 
+                        onClick={() => handleDeleteExpense(exp.id)}
+                        title={t.delete}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <div className="empty-state-box">
             <div className="empty-icon-circle">

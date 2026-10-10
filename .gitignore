@@ -28,3 +28,9 @@ backend/.env.*
 *.njsproj
 *.sln
 *.sw?
+
+# Build & Deployment Archives
+*.zip
+dev-dist
+backend 2
+
