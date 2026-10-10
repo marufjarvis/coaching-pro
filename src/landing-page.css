@@ -1861,6 +1861,13 @@ html {
   .hero-float-top-right { top: 1.25rem; right: 0.5rem; }
   .hero-float-bottom-left { top: 14.5rem; left: 0.5rem; }
   .hero-float-bottom-right { top: 15.5rem; right: 0.5rem; }
+
+  /* Hide off-screen ambient glow circles to prevent horizontal scroll on tablets */
+  .landing-ambient-glow-1,
+  .landing-ambient-glow-2,
+  .landing-ambient-glow-3 {
+    display: none;
+  }
 }
 
 /* --- TABLETS & LARGE PHONES (<= 768px) --- */
