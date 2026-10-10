@@ -33,4 +33,6 @@ backend/.env.*
 *.zip
 dev-dist
 backend 2
+Deployment/Frontend/
+Deployment/Backend/
 
