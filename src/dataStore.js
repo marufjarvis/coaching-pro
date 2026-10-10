@@ -205,7 +205,7 @@ export const defaultFrontendSettings_BN = {
     badge4Sub: 'ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস',
     chips: [
       '🤖 Artificial Intelligence',
-      '⛓️ Blockchain & Web3',
+      '🧬 Blockchain & Web3',
       '⚛️ Quantum Computing',
       '🧠 Deep Learning & LLMs'
     ]
@@ -461,7 +461,7 @@ export const defaultFrontendSettings_EN = {
     badge4Sub: 'Practiced on Laptops & Projectors',
     chips: [
       '🤖 Artificial Intelligence',
-      '⛓️ Blockchain & Web3',
+      '🧬 Blockchain & Web3',
       '⚛️ Quantum Computing',
       '🧠 Deep Learning & LLMs'
     ]

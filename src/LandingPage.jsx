@@ -817,15 +817,33 @@ function LandingPage({
                   <div className="mentor-cred-role">
                     {mentorHero.role || 'AI Engineer | Blockchain Developer | Quantum Expert'}
                   </div>
-                  <div className="mentor-cred-chips">
-                    {(mentorHero.chips && mentorHero.chips.length > 0 ? mentorHero.chips : [
-                      '🤖 Artificial Intelligence',
-                      '⛓️ Blockchain & Web3',
-                      '⚛️ Quantum Computing',
-                      '🧠 Deep Learning & LLMs'
-                    ]).map((chip, chipIdx) => (
-                      <span key={chipIdx} className="mentor-chip">{chip}</span>
-                    ))}
+                  <div className="mentor-cred-chips-container">
+                    {(() => {
+                      const chipsList = (mentorHero.chips && mentorHero.chips.length > 0) ? mentorHero.chips : [
+                        '🤖 Artificial Intelligence',
+                        '🧬 Blockchain & Web3',
+                        '⚛️ Quantum Computing',
+                        '🧠 Deep Learning & LLMs'
+                      ];
+                      const row1 = chipsList.slice(0, 3);
+                      const row2 = chipsList.slice(3);
+                      return (
+                        <>
+                          <div className="mentor-cred-chips-row">
+                            {row1.map((chip, idx) => (
+                              <span key={idx} className="mentor-chip">{chip}</span>
+                            ))}
+                          </div>
+                          {row2.length > 0 && (
+                            <div className="mentor-cred-chips-row">
+                              {row2.map((chip, idx) => (
+                                <span key={idx + 3} className="mentor-chip">{chip}</span>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
@@ -1377,15 +1395,33 @@ function LandingPage({
                   </span>
                 </div>
                 <div className="mentor-designation">{mentorHero.role || 'AI Engineer | Blockchain Developer | Quantum Expert'}</div>
-                <div className="mentor-skill-pills">
-                  {(mentorHero.chips && mentorHero.chips.length > 0 ? mentorHero.chips : [
-                    '🤖 Artificial Intelligence',
-                    '⛓️ Blockchain & Web3',
-                    '⚛️ Quantum Computing',
-                    '🧠 Deep Learning & LLMs'
-                  ]).map((chip, chipIdx) => (
-                    <span key={chipIdx} className="mentor-pill-item">{chip}</span>
-                  ))}
+                <div className="mentor-skill-pills-container">
+                  {(() => {
+                    const chipsList = (mentorHero.chips && mentorHero.chips.length > 0) ? mentorHero.chips : [
+                      '🤖 Artificial Intelligence',
+                      '🧬 Blockchain & Web3',
+                      '⚛️ Quantum Computing',
+                      '🧠 Deep Learning & LLMs'
+                    ];
+                    const row1 = chipsList.slice(0, 3);
+                    const row2 = chipsList.slice(3);
+                    return (
+                      <>
+                        <div className="mentor-skill-pills-row">
+                          {row1.map((chip, idx) => (
+                            <span key={idx} className="mentor-pill-item">{chip}</span>
+                          ))}
+                        </div>
+                        {row2.length > 0 && (
+                          <div className="mentor-skill-pills-row">
+                            {row2.map((chip, idx) => (
+                              <span key={idx + 3} className="mentor-pill-item">{chip}</span>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
