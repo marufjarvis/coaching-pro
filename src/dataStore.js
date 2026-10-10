@@ -63,7 +63,7 @@ export const defaultFrontendSettings_BN = {
     primaryBtnText: 'লগইন করুন',
     enrollBtnText: 'অনলাইন ভর্তি আবেদন',
     stat1: { number: 98, suffix: '%+', label: 'বোর্ড পরীক্ষায় A+ পাশের হার' },
-    stat2: { number: 1200, suffix: '+', label: 'সফল ও সন্তুষ্ট শিক্ষার্থী' },
+    stat2: { number: 9000, suffix: '+', label: 'সফল ও সন্তুষ্ট শিক্ষার্থী' },
     stat3: { number: 100, suffix: '%', label: 'প্র্যাকটিক্যাল ল্যাব সাপোর্ট' }
   },
 
@@ -199,7 +199,7 @@ export const defaultFrontendSettings_BN = {
     badge1Sub: 'প্রধান শিক্ষক ও প্রতিষ্ঠাতা',
     badge2Title: 'HSC ICT স্পেশালিস্ট',
     badge2Sub: '১০+ বছর সফল পাঠদান',
-    badge3Title: '১,২০০+ শিক্ষার্থী A+',
+    badge3Title: '৯,০০০+ শিক্ষার্থী A+',
     badge3Sub: '৫.০ রেটিং',
     badge4Title: 'সরাসরি ল্যাব ক্লাস',
     badge4Sub: 'ল্যাপটপ ও প্রজেক্টরে প্র্যাকটিস',
@@ -319,7 +319,7 @@ export const defaultFrontendSettings_EN = {
     primaryBtnText: 'Login Now',
     enrollBtnText: 'Online Admission Form',
     stat1: { number: 98, suffix: '%+', label: 'A+ Pass Rate in Board Exams' },
-    stat2: { number: 1200, suffix: '+', label: 'Successful Students' },
+    stat2: { number: 9000, suffix: '+', label: 'Successful Students' },
     stat3: { number: 100, suffix: '%', label: 'Practical Lab Support' }
   },
 
@@ -455,7 +455,7 @@ export const defaultFrontendSettings_EN = {
     badge1Sub: 'Lead Instructor & Founder',
     badge2Title: 'HSC ICT Specialist',
     badge2Sub: '10+ Years Teaching Excellence',
-    badge3Title: '1,200+ Students A+',
+    badge3Title: '9,000+ Students A+',
     badge3Sub: '5.0 Star Rating',
     badge4Title: 'Hands-on Lab Classes',
     badge4Sub: 'Practiced on Laptops & Projectors',
@@ -1814,12 +1814,19 @@ export const dataStore = {
                 ? parsed.hero.tags.map(t => (t.includes('সি') || t.includes('C Programming')) ? defaults.hero.tags[2] : t)
                 : defaults.hero.tags,
               stat1: { ...defaults.hero.stat1, ...(parsed.hero?.stat1 || {}) },
-              stat2: { ...defaults.hero.stat2, ...(parsed.hero?.stat2 || {}) },
+              stat2: { 
+                ...defaults.hero.stat2, 
+                ...(parsed.hero?.stat2 || {}),
+                number: (parsed.hero?.stat2?.number === 1200) ? 9000 : (parsed.hero?.stat2?.number ?? 9000)
+              },
               stat3: { ...defaults.hero.stat3, ...(parsed.hero?.stat3 || {}) }
             },
             mentorHero: { 
               ...defaults.mentorHero, 
               ...(parsed.mentorHero || {}),
+              badge3Title: (parsed.mentorHero?.badge3Title && !parsed.mentorHero.badge3Title.includes('১,২০০') && !parsed.mentorHero.badge3Title.includes('1,200'))
+                ? parsed.mentorHero.badge3Title
+                : defaults.mentorHero.badge3Title,
               chips: Array.isArray(parsed.mentorHero?.chips) ? parsed.mentorHero.chips : defaults.mentorHero.chips
             },
             mentorSection: { 

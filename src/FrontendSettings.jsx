@@ -595,7 +595,7 @@ function FrontendSettings({ lang: propLang = 'BN' }) {
                   <input 
                     type="number" 
                     className="cms-input" 
-                    value={settings.hero?.stat2?.number || 1200} 
+                    value={settings.hero?.stat2?.number || 9000} 
                     onChange={(e) => {
                       const val = parseInt(e.target.value, 10) || 0;
                       updateField('hero', 'stat2', { ...settings.hero?.stat2, number: val });

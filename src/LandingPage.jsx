@@ -744,7 +744,7 @@ function LandingPage({
                 </div>
                 <div className="stat-item">
                   <h3>
-                    <AnimatedCounter end={hero.stat2?.number ?? 1200} suffix={hero.stat2?.suffix || '+'} duration={1800} isEn={isEn} />
+                    <AnimatedCounter end={hero.stat2?.number ?? 9000} suffix={hero.stat2?.suffix || '+'} duration={1800} isEn={isEn} />
                   </h3>
                   <p>{hero.stat2?.label || (isEn ? 'Successful Students' : 'সফল ও সন্তুষ্ট শিক্ষার্থী')}</p>
                 </div>
@@ -795,13 +795,13 @@ function LandingPage({
                   </div>
                 </div>
 
-                {/* Floating Badge 3: Bottom-Left 1200+ A+ Students (Shifted to Side) */}
+                {/* Floating Badge 3: Bottom-Left 9000+ A+ Students (Shifted to Side) */}
                 <div className="hero-float-badge hero-float-bottom-left">
                   <div className="float-badge-icon badge-accent-amber">
                     <GraduationCap size={18} />
                   </div>
                   <div>
-                    <div className="float-badge-title">{mentorHero.badge3Title || (isEn ? '1,200+ Students A+' : '১,২০০+ শিক্ষার্থী A+')}</div>
+                    <div className="float-badge-title">{mentorHero.badge3Title || (isEn ? '9,000+ Students A+' : '৯,০০০+ শিক্ষার্থী A+')}</div>
                     <div className="float-badge-rating">
                       <span>★★★★★</span> <small>{mentorHero.badge3Sub || (isEn ? '5.0 Star Rating' : '৫.০ রেটিং')}</small>
                     </div>
@@ -1373,7 +1373,7 @@ function LandingPage({
                 {/* Floating Badge 2: Bottom-Right A+ Rating */}
                 <div className="mentor-float-badge mentor-float-bottom-right">
                   <Award size={16} color="#38bdf8" />
-                  <span>{mentorHero.badge3Title || (isEn ? '1,200+ Successful Students' : '১,২০০+ সফল শিক্ষার্থী')}</span>
+                  <span>{mentorHero.badge3Title || (isEn ? '9,000+ Successful Students' : '৯,০০০+ সফল শিক্ষার্থী')}</span>
                 </div>
               </div>
 
