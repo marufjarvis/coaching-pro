@@ -1801,6 +1801,17 @@ html {
 
 /* --- TABLET & LAPTOP (<= 1024px) --- */
 @media (max-width: 1024px) {
+  /* Navigation Bar - Switch to mobile menu on tablets to prevent link collision */
+  .nav-container {
+    padding: 0.75rem 1.25rem;
+  }
+  .nav-links-desktop {
+    display: none;
+  }
+  .mobile-menu-toggle {
+    display: block;
+  }
+
   .hero-grid {
     grid-template-columns: 1fr;
     gap: 2.5rem;
@@ -1825,10 +1836,10 @@ html {
     transform: scale(1.1);
     transform-origin: center 25%;
   }
-  .hero-float-top-left { top: 0.75rem; left: -1rem; }
-  .hero-float-top-right { top: 1.25rem; right: -1rem; }
-  .hero-float-bottom-left { top: 14.5rem; left: -1.5rem; }
-  .hero-float-bottom-right { top: 15.5rem; right: -1.5rem; }
+  .hero-float-top-left { top: 0.75rem; left: 0.5rem; }
+  .hero-float-top-right { top: 1.25rem; right: 0.5rem; }
+  .hero-float-bottom-left { top: 14.5rem; left: 0.5rem; }
+  .hero-float-bottom-right { top: 15.5rem; right: 0.5rem; }
 }
 
 /* --- TABLETS & LARGE PHONES (<= 768px) --- */
@@ -1843,17 +1854,6 @@ html {
     justify-content: center;
     gap: 0.35rem;
     line-height: 1.4;
-  }
-
-  /* Navigation Bar */
-  .nav-container {
-    padding: 0.75rem 1.25rem;
-  }
-  .nav-links-desktop {
-    display: none;
-  }
-  .mobile-menu-toggle {
-    display: block;
   }
 
   /* Section Headings */
@@ -2204,6 +2204,44 @@ html {
 
 /* --- SMALL MOBILE PHONES (<= 480px) --- */
 @media (max-width: 480px) {
+  /* Compact Navigation Bar */
+  .nav-container {
+    padding: 0.5rem 0.75rem;
+  }
+  .nav-brand {
+    gap: 0.5rem;
+  }
+  .nav-logo-box {
+    width: 34px;
+    height: 34px;
+  }
+  .nav-brand-title {
+    font-size: 0.98rem;
+  }
+  .nav-brand-sub {
+    font-size: 0.62rem;
+  }
+  .nav-actions {
+    gap: 0.4rem;
+  }
+  .landing-lang-toggle {
+    padding: 1px 2px;
+  }
+  .lang-pill-btn {
+    font-size: 0.68rem;
+    padding: 0.16rem 0.42rem;
+  }
+  .btn-nav-login,
+  .btn-nav-student {
+    padding: 0.38rem 0.7rem;
+    font-size: 0.78rem;
+    gap: 4px;
+    border-radius: 8px;
+  }
+  .mobile-menu-toggle {
+    padding: 0.25rem;
+  }
+
   /* Container on compact screens */
   .lp-container {
     padding: 0 0.85rem;
