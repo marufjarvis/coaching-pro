@@ -429,7 +429,7 @@ function LandingPage({
       days: 'রবি, মঙ্গল, বৃহস্পতি',
       time: 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)',
       seatsLeft: 'সীমিত আসন ফাঁকা আছে',
-      status: 'সীমিত আসন',
+      status: 'ভর্তি চলছে',
       featured: false
     },
     {
@@ -1240,13 +1240,15 @@ function LandingPage({
             {currentBatches.map((batch, bIdx) => (
               <div key={batch.id || bIdx} className="batch-card">
                 <div className="batch-header">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
-                    <h3 className="batch-title" style={{ margin: 0 }}>{batch.title}</h3>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px', marginBottom: '6px' }}>
+                    <h3 className="batch-title" style={{ margin: 0, flex: 1 }}>{batch.title}</h3>
                     <span style={{ 
                       fontSize: '0.75rem', 
                       fontWeight: '700', 
                       padding: '2px 8px', 
                       borderRadius: '12px', 
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
                       backgroundColor: (batch.status === 'ব্যাচ পূর্ণ' || batch.status === 'Batch Full' || batch.status === 'আসন পূর্ণ') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
                       color: (batch.status === 'ব্যাচ পূর্ণ' || batch.status === 'Batch Full' || batch.status === 'আসন পূর্ণ') ? '#ef4444' : '#10b981',
                       border: `1px solid ${(batch.status === 'ব্যাচ পূর্ণ' || batch.status === 'Batch Full' || batch.status === 'আসন পূর্ণ') ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`

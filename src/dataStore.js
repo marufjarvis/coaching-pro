@@ -567,7 +567,7 @@ export const DEFAULT_INITIAL_BATCHES = [
     time: 'সকাল ৯:০০ ও বিকাল ৫:০০ (২টি স্লট)',
     seatLimit: 50,
     seatsLeft: 'সীমিত আসন ফাঁকা আছে',
-    status: 'সীমিত আসন',
+    status: 'ভর্তি চলছে',
     coverage: 'অধ্যায় ১-৬ + প্র্যাকটিক্যাল ল্যাব',
     featured: false
   },
