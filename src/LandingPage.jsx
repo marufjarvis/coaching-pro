@@ -1404,7 +1404,7 @@ function LandingPage({
                 <Lightbulb size={14} /> {mentorSection.pill || (isEn ? '"Do Not Memorize ICT, Learn Practically"' : '"ICT মুখস্ত নয়, এসো শিখি"')}
               </div>
 
-              <h2 style={{ fontSize: '2.1rem', fontWeight: 800, color: '#ffffff', marginBottom: '1rem', lineHeight: 1.3 }}>
+              <h2 className="mentor-heading">
                 {mentorSection.title || (isEn ? 'In the Age of Technology, Rote Learning Has No Place' : 'প্রযুক্তির যুগে মুখস্ত বিদ্যার কোনো স্থান নেই')}
               </h2>
 
@@ -1431,7 +1431,7 @@ function LandingPage({
                 ))}
               </ul>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem' }}>
+              <div className="mentor-cta-actions">
                 <a 
                   href={`tel:${mentorSection.phone || '01723619524'}`} 
                   className="btn-hero-primary"

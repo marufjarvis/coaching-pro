@@ -1391,7 +1391,7 @@ html {
 .mentor-natural-img-wrapper {
   position: relative;
   width: 100%;
-  height: 440px;
+  height: auto;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -1399,14 +1399,15 @@ html {
 }
 
 .mentor-natural-img {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
-  max-height: 450px;
+  max-height: 440px;
   object-fit: contain;
   object-position: bottom center;
   display: block;
-  mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 98%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 98%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 80%, transparent 98%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 80%, transparent 98%);
   filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 35px rgba(56, 189, 248, 0.25));
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
 }
@@ -1479,26 +1480,41 @@ html {
 .mentor-skill-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.5rem;
   justify-content: center;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .mentor-pill-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.8rem;
   font-weight: 600;
   color: #cbd5e1;
-  background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 0.3rem 0.75rem;
+  background: rgba(30, 41, 59, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 0.35rem 0.8rem;
   border-radius: 9999px;
   backdrop-filter: blur(8px);
   transition: all 0.25s ease;
+  white-space: nowrap;
 }
 
 .mentor-pill-item:hover {
   color: #ffffff;
-  border-color: rgba(56, 189, 248, 0.4);
+  border-color: rgba(56, 189, 248, 0.45);
   background: rgba(30, 41, 59, 0.95);
+  transform: translateY(-1px);
+}
+
+.mentor-heading {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 1rem;
+  line-height: 1.3;
 }
 
 .mentor-bio {
@@ -1506,6 +1522,13 @@ html {
   color: #cbd5e1;
   line-height: 1.7;
   margin-bottom: 1.5rem;
+}
+
+.mentor-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
 }
 
 .mentor-bullet-list {
@@ -1884,8 +1907,42 @@ html {
   }
 
   /* Mentor Section */
+  .mentor-card {
+    padding: 2.25rem 1.5rem;
+    gap: 2rem;
+    border-radius: 24px;
+  }
+  .mentor-heading {
+    font-size: 1.75rem;
+    line-height: 1.35;
+  }
+  .mentor-natural-showcase-box {
+    max-width: 360px;
+    margin: 0 auto 1.5rem;
+    padding-top: 0.5rem;
+  }
   .mentor-natural-img-wrapper {
-    height: 380px;
+    height: auto;
+  }
+  .mentor-natural-img {
+    max-height: 380px;
+  }
+  .mentor-natural-ambient-glow {
+    width: 300px;
+    height: 300px;
+    filter: blur(40px);
+  }
+  .mentor-float-badge {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.78rem;
+  }
+  .mentor-float-top-left {
+    top: 0.5rem;
+    left: 0;
+  }
+  .mentor-float-bottom-right {
+    bottom: 0.75rem;
+    right: 0;
   }
 
   /* CTA Banner */
@@ -2088,11 +2145,24 @@ html {
 
   /* Teacher/Mentor Section */
   .mentor-card {
-    padding: 1.5rem 1rem;
+    padding: 1.75rem 1.15rem;
     border-radius: 20px;
+    gap: 1.75rem;
+  }
+  .mentor-heading {
+    font-size: 1.5rem;
+    line-height: 1.35;
+  }
+  .mentor-natural-showcase-box {
+    max-width: 330px;
+    margin: 0 auto 1.25rem;
+    padding-top: 0.75rem;
   }
   .mentor-natural-img-wrapper {
-    height: 300px;
+    height: auto;
+  }
+  .mentor-natural-img {
+    max-height: 320px;
   }
   .mentor-natural-ambient-glow {
     width: 260px;
@@ -2104,18 +2174,30 @@ html {
     font-size: 0.75rem;
   }
   .mentor-float-top-left {
-    top: 0.5rem;
-    left: 0.25rem;
+    top: 0.25rem;
+    left: 0;
   }
   .mentor-float-bottom-right {
     bottom: 0.5rem;
-    right: 0.25rem;
+    right: 0;
   }
   .mentor-name-row .mentor-name {
     font-size: 1.4rem;
   }
+  .mentor-designation {
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .mentor-skill-pills {
+    gap: 0.4rem;
+  }
+  .mentor-pill-item {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.65rem;
+  }
   .mentor-bio {
     font-size: 0.92rem;
+    line-height: 1.6;
   }
 }
 
@@ -2158,13 +2240,48 @@ html {
     font-size: 0.98rem;
   }
 
-  /* Mentor Section CTA */
-  .mentor-card div:last-child > div:last-child {
+  /* Mentor Section on compact phones */
+  .mentor-card {
+    padding: 1.5rem 0.85rem;
+    gap: 1.5rem;
+  }
+  .mentor-heading {
+    font-size: 1.35rem;
+    line-height: 1.35;
+  }
+  .mentor-natural-showcase-box {
+    max-width: 290px;
+    margin: 0 auto 1rem;
+    padding-top: 0.5rem;
+  }
+  .mentor-natural-img {
+    max-height: 280px;
+  }
+  .mentor-float-badge {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.55rem;
+    gap: 0.35rem;
+  }
+  .mentor-float-top-left {
+    top: 0.2rem;
+    left: 0;
+  }
+  .mentor-float-bottom-right {
+    bottom: 0.4rem;
+    right: 0;
+  }
+  .mentor-pill-item {
+    font-size: 0.72rem;
+    padding: 0.28rem 0.55rem;
+  }
+  .mentor-cta-actions {
     flex-direction: column;
     align-items: stretch;
+    width: 100%;
+    gap: 0.65rem;
   }
-  .mentor-card a.btn-hero-primary,
-  .mentor-card a.btn-hero-enroll {
+  .mentor-cta-actions .btn-hero-primary,
+  .mentor-cta-actions .btn-hero-enroll {
     width: 100%;
     justify-content: center;
     text-align: center;
@@ -2312,4 +2429,29 @@ html {
     display: none;
   }
 }
+
+/* --- ULTRA COMPACT MOBILE PHONES (<= 360px) --- */
+@media (max-width: 360px) {
+  .mentor-card {
+    padding: 1.25rem 0.65rem;
+  }
+  .mentor-natural-showcase-box {
+    max-width: 250px;
+  }
+  .mentor-natural-img {
+    max-height: 240px;
+  }
+  .mentor-float-badge {
+    font-size: 0.64rem;
+    padding: 0.25rem 0.45rem;
+  }
+  .mentor-heading {
+    font-size: 1.22rem;
+  }
+  .mentor-pill-item {
+    font-size: 0.68rem;
+    padding: 0.25rem 0.45rem;
+  }
+}
+
 
