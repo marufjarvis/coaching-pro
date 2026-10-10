@@ -1307,17 +1307,17 @@ export const dataStore = {
   getStudents() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.STUDENTS);
-      if (data) {
+      if (data !== null) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length >= 20) return sortStudentsById(parsed);
+        if (Array.isArray(parsed)) return sortStudentsById(parsed);
       }
-      // Force seed the 20 demo students (10 Course @ 4000 BDT, 10 Monthly @ 500 BDT)
+      // Seed initial demo students only on first launch if key does not exist
       const sorted = sortStudentsById(defaultDemoStudents);
       localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(sorted));
       localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(defaultDemoPayments));
       return sorted;
     } catch (e) {}
-    return sortStudentsById(defaultDemoStudents);
+    return [];
   },
 
   saveStudents(students) {
@@ -1462,14 +1462,14 @@ export const dataStore = {
   getPayments() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.PAYMENTS);
-      if (data) {
+      if (data !== null) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length >= 15) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       }
       localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(defaultDemoPayments));
       return defaultDemoPayments;
     } catch (e) {}
-    return defaultDemoPayments;
+    return [];
   },
 
   savePayments(payments) {
@@ -2441,6 +2441,61 @@ export const dataStore = {
     } catch (e) {
       return [];
     }
+  },
+
+  exportAllData() {
+    return {
+      batches: this.getBatches(),
+      students: this.getStudents(),
+      payments: this.getPayments(),
+      attendances: this.getAttendance(),
+      exams: this.getExams(),
+      expenses: this.getExpenses(),
+      staff: this.getStaff(),
+      coaching_settings: this.getSettings(),
+      online_admissions: this.getPendingAdmissions(),
+      enrollment_links: this.getEnrollmentLinks()
+    };
+  },
+
+  importAllData(data) {
+    if (!data || typeof data !== 'object') return false;
+
+    if (Array.isArray(data.batches)) {
+      localStorage.setItem(STORAGE_KEYS.BATCHES, JSON.stringify(data.batches));
+    }
+    if (Array.isArray(data.students)) {
+      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(sortStudentsById(data.students)));
+    }
+    if (Array.isArray(data.payments)) {
+      localStorage.setItem(STORAGE_KEYS.PAYMENTS, JSON.stringify(data.payments));
+    }
+    if (data.attendances && typeof data.attendances === 'object') {
+      localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(data.attendances));
+    } else if (Array.isArray(data.attendances) && data.attendances.length === 0) {
+      localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify({}));
+    }
+    if (Array.isArray(data.exams)) {
+      localStorage.setItem(STORAGE_KEYS.EXAMS, JSON.stringify(data.exams));
+    }
+    if (Array.isArray(data.expenses)) {
+      localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(data.expenses));
+    }
+    if (Array.isArray(data.staff)) {
+      localStorage.setItem(STORAGE_KEYS.STAFF, JSON.stringify(data.staff));
+    }
+    if (data.coaching_settings && typeof data.coaching_settings === 'object') {
+      localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(data.coaching_settings));
+    }
+    if (Array.isArray(data.online_admissions)) {
+      localStorage.setItem(STORAGE_KEYS.PENDING_ADMISSIONS, JSON.stringify(data.online_admissions));
+      localStorage.setItem('pendingStudents', JSON.stringify(data.online_admissions));
+    }
+    if (Array.isArray(data.enrollment_links)) {
+      localStorage.setItem(STORAGE_KEYS.ENROLLMENT_LINKS, JSON.stringify(data.enrollment_links));
+    }
+    notifyChange();
+    return true;
   }
 };
 

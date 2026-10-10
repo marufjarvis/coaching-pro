@@ -27,7 +27,8 @@ import {
   ChevronRight, 
   Laptop, 
   FileCheck, 
-  Lock
+  Lock,
+  Smartphone
 } from 'lucide-react';
 import { dataStore } from './dataStore';
 import './landing-page.css';
@@ -165,6 +166,31 @@ function LandingPage({
       setLiveBatches(batches);
     }
   }, [batches]);
+
+  // PWA Mobile App Install Prompt
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  useEffect(() => {
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      if (choice.outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      alert(isEn 
+        ? 'To install as an app on your phone: Tap browser menu (⋮ or Share) > "Add to Home screen" / "Install App".' 
+        : 'ফোনে অ্যাপ হিসেবে ইনস্টল করতে: ব্রাউজার মেনু (⋮ বা Share) থেকে "ইনস্টল করুন / Add to Home screen" চাপুন।');
+    }
+  };
 
   const {
     notice = {},
@@ -593,6 +619,30 @@ function LandingPage({
                 </button>
               )}
 
+              {/* PWA Mobile App Install Button */}
+              <button 
+                type="button" 
+                onClick={handleInstallApp} 
+                className="btn-nav-install"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'rgba(56, 189, 248, 0.12)',
+                  color: '#38bdf8',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  borderRadius: '10px',
+                  padding: '0.45rem 0.85rem',
+                  fontSize: '0.84rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                title={isEn ? "Install as Mobile/Desktop App" : "মোবাইল বা পিসি অ্যাপ হিসেবে ইনস্টল করুন"}
+              >
+                <Smartphone size={15} /> {isEn ? 'App' : 'অ্যাপ'}
+              </button>
+
               {/* Single Unified Login Button */}
               {(!isAdminLoggedIn && !isStudentLoggedIn) && (
                 <button 
@@ -629,6 +679,27 @@ function LandingPage({
               <a href="#contact" className="mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>{isEn ? 'Contact' : 'যোগাযোগ'}</a>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginTop: '0.75rem' }}>
+                <button 
+                  type="button" 
+                  onClick={() => { setMobileMenuOpen(false); handleInstallApp(); }} 
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    padding: '0.65rem 1rem',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontWeight: '700',
+                    fontSize: '0.9rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Smartphone size={17} /> {isEn ? 'Install Mobile App' : 'মোবাইল অ্যাপ ইনস্টল করুন'}
+                </button>
+
                 {isAdminLoggedIn && (
                   <button 
                     type="button" 

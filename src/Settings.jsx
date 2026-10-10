@@ -79,7 +79,15 @@ function Settings({ lang: propLang }) {
   const handleDownloadBackup = async () => {
     setIsBackupLoading(true);
     try {
-      const data = await api.exportDatabase();
+      let data = null;
+      try {
+        data = await api.exportDatabase();
+      } catch (err) {
+        console.warn('Backend export unavailable, using local dataStore backup:', err.message);
+      }
+      if (!data || Object.keys(data).length === 0) {
+        data = dataStore.exportAllData();
+      }
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -107,7 +115,17 @@ function Settings({ lang: propLang }) {
     try {
       const text = await file.text();
       const data = JSON.parse(text);
-      await api.importDatabase(data);
+      
+      // Update backend MySQL database if reachable
+      try {
+        await api.importDatabase(data);
+      } catch (backendErr) {
+        console.warn('Backend import notice:', backendErr.message);
+      }
+
+      // Also update local dataStore so changes take effect immediately
+      dataStore.importAllData(data);
+
       alert(lang === 'BN' ? 'ডাটাবেজ সফলভাবে রিস্টোর হয়েছে! পেজটি রিলোড করা হচ্ছে...' : 'Database restored successfully! Reloading...');
       window.location.reload();
     } catch (e) {
